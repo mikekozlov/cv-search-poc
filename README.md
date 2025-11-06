@@ -8,10 +8,8 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e .
 
-# 0) make sure to add .env file with next keys set: 
+# 0) make sure to update .env file with your OpenAI API key 
 OPENAI_API_KEY=sk-proj-*****************
-OPENAI_MODEL=gpt-4.1-mini
-OPENAI_EMBED_MODEL=text-embedding-3-large
 
 # 1) init DB (if not done yet)
 python .\main.py init-db 
