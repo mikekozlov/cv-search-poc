@@ -14,11 +14,11 @@ from enum import Enum
 from pydantic import BaseModel, Field, model_validator
 from openai import OpenAI
 
-from src.cvsearch.settings import Settings
-from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
-from src.cvsearch.normalize import build_inverse_index, extract_by_lexicon
-from src.cvsearch.storage import CVDatabase
-from src.cvsearch.justification import CandidateJustification
+from cv_search.settings import Settings
+from cv_search.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
+from cv_search.normalize import build_inverse_index, extract_by_lexicon
+from cv_search.storage import CVDatabase
+from cv_search.justification import CandidateJustification
 class SeniorityEnum(str, Enum):
     junior = "junior"
     middle = "middle"

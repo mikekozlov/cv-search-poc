@@ -1,4 +1,4 @@
-# src/cvsearch/planner.py
+# src/cv_search/planner.py
 # Stateless business logic for deriving project/presale teams.
 # No orchestration, no DB, no API calls.
 
@@ -8,7 +8,7 @@ import json
 from dataclasses import asdict, is_dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from src.cvsearch.parser import (
+from cv_search.parser import (
     Criteria,
     TeamMember,
     TeamSize,

@@ -4,11 +4,11 @@ from typing import List, Dict, Any, Iterable, Tuple
 import sqlite3, json, os
 import faiss
 import numpy as np
-from src.cvsearch.data import load_mock_cvs
-from src.cvsearch.settings import Settings
-from src.cvsearch.api_client import OpenAIClient
-from src.cvsearch.storage import CVDatabase
-from src.cvsearch.local_embedder import LocalEmbedder
+from cv_search.data import load_mock_cvs
+from cv_search.settings import Settings
+from cv_search.api_client import OpenAIClient
+from cv_search.storage import CVDatabase
+from cv_search.local_embedder import LocalEmbedder
 
 class CVIngestionPipeline:
     """

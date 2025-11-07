@@ -8,12 +8,12 @@ if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 try:
-    from src.cvsearch.settings import Settings
-    from src.cvsearch.api_client import OpenAIClient
-    from src.cvsearch.storage import CVDatabase
-    from src.cvsearch.search_processor import SearchProcessor
-    from src.cvsearch.planner import Planner
-    from src.cvsearch.lexicons import (
+    from cv_search.settings import Settings
+    from cv_search.api_client import OpenAIClient
+    from cv_search.storage import CVDatabase
+    from cv_search.search_processor import SearchProcessor
+    from cv_search.planner import Planner
+    from cv_search.lexicons import (
         load_role_lexicon,
         load_tech_synonyms,
         load_domain_lexicon,

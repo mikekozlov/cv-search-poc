@@ -6,10 +6,10 @@ from typing import Any, Dict, List, Tuple, Optional
 import faiss
 import numpy as np
 
-from src.cvsearch.storage import CVDatabase
-from src.cvsearch.local_embedder import LocalEmbedder
-from src.cvsearch.settings import Settings
-from src.cvsearch.utils import cosine
+from cv_search.storage import CVDatabase
+from cv_search.local_embedder import LocalEmbedder
+from cv_search.settings import Settings
+from cv_search.utils import cosine
 
 def _allowed_seniorities(seat_seniority: str) -> Tuple[str, ...]:
     """

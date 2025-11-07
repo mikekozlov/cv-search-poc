@@ -26,10 +26,10 @@ class Settings(BaseSettings):
     search_w_lex: float = 1.0
     search_w_sem: float = 0.8
 
-    db_path: Path = Field(default_factory=lambda: REPO_ROOT / "cvsearch.db")
+    db_path: Path = Field(default_factory=lambda: REPO_ROOT / "cv_search.db")
     data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data")
     lexicon_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "lexicons")
-    schema_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cvsearch" / "schema.sql")
+    schema_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "schema.sql")
 
     faiss_index_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search.faiss")
     faiss_doc_map_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search_docs.json")

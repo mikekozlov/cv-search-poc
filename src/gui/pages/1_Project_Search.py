@@ -9,12 +9,12 @@ if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 try:
-    from src.cvsearch.storage import CVDatabase
-    from src.cvsearch.search_processor import SearchProcessor
-    from src.cvsearch.planner import Planner
-    from src.cvsearch.api_client import OpenAIClient
-    from src.cvsearch.settings import Settings
-    from src.cvsearch.parser import parse_request, Criteria, TeamSize, TeamMember
+    from cv_search.storage import CVDatabase
+    from cv_search.search_processor import SearchProcessor
+    from cv_search.planner import Planner
+    from cv_search.api_client import OpenAIClient
+    from cv_search.settings import Settings
+    from cv_search.parser import parse_request, Criteria, TeamSize, TeamMember
 except ImportError as e:
     st.error(f"""
     **Failed to import project modules.**

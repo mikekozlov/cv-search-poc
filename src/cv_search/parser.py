@@ -7,8 +7,8 @@ from typing import List, Dict, Any, Optional, Iterable
 from enum import Enum
 from pathlib import Path
 
-from src.cvsearch.api_client import OpenAIClient
-from src.cvsearch.settings import Settings
+from cv_search.api_client import OpenAIClient
+from cv_search.settings import Settings
 class SeniorityEnum(str, Enum):
     junior = "junior"
     middle = "middle"

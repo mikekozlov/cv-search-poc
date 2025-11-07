@@ -1,46 +1,51 @@
 # cv-search
 
-Step 0: Repo scaffold & env only.
+This repo provides a simple CV search POC with a CLI and a small Streamlit UI.
 
+Installation and usage now use uv for dependency management and running.
 
+## Install and setup (uv)
 
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e .
+1. Install uv (if you don't have it):
+   - macOS/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
+   - Windows (PowerShell): iwr https://astral.sh/uv/install.ps1 -UseBasicParsing | iex
+2. Create a virtual environment and install dependencies:
+   - uv venv
+   - source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+   - uv sync
+3. Create/update your .env with your OpenAI API key:
+   - OPENAI_API_KEY=sk-proj-*****************
 
-# 0) make sure to update .env file with your OpenAI API key 
-OPENAI_API_KEY=sk-proj-*****************
+## Initialize data
 
-# 1) init DB (if not done yet)
-python .\main.py init-db 
+- Init DB (if not done yet):
+  - uv run cv_search init-db
+- Ingest mock CVs (local DB + vector store upsert):
+  - uv run cv_search ingest-mock
 
-# 2) ingest mock CVs // both local db + vector store(upsert)
-python .\main.py ingest-mock 
+## Run the UI
 
-# 3) now you can run UI via streamlit or scripts directly 
+- uv run app
 
-## 3.1) RUN UI
-streamlit run app.py
+## CLI examples
 
-## 3.1) parse-request
-python .\main.py parse-request
+- Parse request:
+  - uv run cv_search parse-request
+- Search seat:
+  - uv run cv_search search-seat
+- Search (hybrid by default) with explicit criteria:
+  - uv run cv_search search-seat --criteria ./criteria.json --topk 2
 
-## 3.2) search-seat
-python .\main.py search-seat
+## Presale / Project flows
 
-## 3.3) search hybrid by default
-python main.py search-seat --criteria ./criteria.json --topk 2
+1) Presale — roles only (budget ignored):
+   - uv run cv_search presale-plan --text "Mobile + web app with Flutter/React; AI chatbot for goal setting; partner marks failures; donation on failure."
 
-## PRESALE
+2) Project phase — free text → seats → per-seat shortlists:
+   - uv run cv_search project-search --db ./cvsearch.db --text "Mobile+web app in Flutter/React; AI chatbot; partner marks failures; donation on failure." --topk 3
 
-# 1) Presale — roles only (budget ignored)
-python main.py presale-plan --text "Mobile + web app with Flutter/React; AI chatbot for goal setting; partner marks failures; donation on failure."
-
-# 2) Project phase — free text → seats → per-seat shortlists
-python main.py project-search --db ./cvsearch.db --text "Mobile+web app in Flutter/React; AI chatbot; partner marks failures; donation on failure." --topk 3
-
-# 3) Or, with explicit canonical criteria (JSON)
-python main.py project-search --criteria ./criteria.json --topk 3
+3) Or, with explicit canonical criteria (JSON):
+   - uv run cv_search project-search --criteria ./criteria.json --topk 3
 
 
 

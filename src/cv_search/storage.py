@@ -4,7 +4,7 @@ import json
 import math
 from typing import Dict, Any, Optional, List, Tuple, Iterable
 
-from src.cvsearch.settings import Settings
+from cv_search.settings import Settings
 
 
 class CVDatabase:

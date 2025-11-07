@@ -5,13 +5,13 @@ from typing import Any, Dict, List, Tuple, Optional
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
-from src.cvsearch.api_client import OpenAIClient
-from src.cvsearch.settings import Settings
-from src.cvsearch.storage import CVDatabase
-from src.cvsearch.retrieval import GatingFilter, LexicalRetriever, LocalSemanticRetriever
-from src.cvsearch.ranking import HybridRanker
-from src.cvsearch.planner import Planner
-from src.cvsearch.parser import Criteria
+from cv_search.api_client import OpenAIClient
+from cv_search.settings import Settings
+from cv_search.storage import CVDatabase
+from cv_search.retrieval import GatingFilter, LexicalRetriever, LocalSemanticRetriever
+from cv_search.ranking import HybridRanker
+from cv_search.planner import Planner
+from cv_search.parser import Criteria
 
 def default_run_dir() -> str:
     """Helper for default run dir stamp (used by main)."""
