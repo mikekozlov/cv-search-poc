@@ -317,13 +317,13 @@ def sync_gdrive_cmd(ctx):
     finally:
         db.close()
 
-# --- START NEW COMMAND ---
+# --- START MODIFIED COMMAND ---
 
 @cli.command("ingest-gdrive")
 @click.pass_context
 def ingest_gdrive_cmd(ctx):
     """
-    Parses .pptx CVs from the GDrive inbox, normalizes them,
+    Parses .pptx CVs from the GDrive inbox, saves to JSON for debug,
     and ingests them into the database and FAISS index.
     """
     # 1. Setup services
@@ -340,7 +340,9 @@ def ingest_gdrive_cmd(ctx):
     # 2. Define paths
     inbox_dir = settings.gdrive_local_dest_dir
     archive_dir = inbox_dir / "_archive"
+    json_output_dir = settings.data_dir / "ingested_cvs_json" # <-- NEW: JSON output path
     archive_dir.mkdir(exist_ok=True)
+    json_output_dir.mkdir(exist_ok=True) # <-- NEW: Create JSON dir
 
     # 3. Find files to process
     pptx_files = list(inbox_dir.glob("*.pptx"))
@@ -370,11 +372,18 @@ def ingest_gdrive_cmd(ctx):
             cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
             cv_data_dict["last_updated"] = datetime.now().isoformat().split('T')[0]
 
+            # --- NEW: Save JSON for debugging ---
+            json_filename = f"{cv_data_dict['candidate_id']}.json"
+            json_save_path = json_output_dir / json_filename
+            with open(json_save_path, 'w', encoding='utf-8') as f:
+                json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
+            # --- END NEW ---
+
             cvs_to_ingest.append(cv_data_dict)
 
             # Move processed file to archive
             shutil.move(str(file_path), str(archive_dir / file_path.name))
-            click.secho(f"  -> Successfully parsed and archived {file_path.name}", fg="green")
+            click.secho(f"  -> Successfully parsed, saved to JSON, and archived {file_path.name}", fg="green")
 
         except Exception as e:
             # Catch errors per-file so the batch can continue
@@ -398,6 +407,9 @@ def ingest_gdrive_cmd(ctx):
             f"✅ Successfully ingested {count} new CV(s) and rebuilt FAISS index.",
             fg="green"
         )
+        # --- NEW: Report JSON save location ---
+        click.echo(f"Debug JSON files saved in: {json_output_dir}")
+        # --- END NEW ---
 
         unmapped = [
             cv.get("unmapped_tags") for cv in cvs_to_ingest
@@ -405,14 +417,15 @@ def ingest_gdrive_cmd(ctx):
         ]
         if unmapped:
             click.secho("Review: The following tags were found but are not in your lexicons:", fg="yellow")
-            click.echo(", ".join(set(t for tags in unmapped for t in tags.split(','))))
+            all_unmapped = ", ".join(set(t.strip() for tags in unmapped for t in tags.split(',')))
+            click.echo(all_unmapped)
 
     except Exception as e:
         click.secho(f"❌ FAILED during database ingestion: {e}", fg="red")
     finally:
         db.close()
 
-# --- END NEW COMMAND ---
+# --- END MODIFIED COMMAND ---
 
 if __name__ == "__main__":
     cli()
