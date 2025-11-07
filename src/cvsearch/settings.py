@@ -17,9 +17,35 @@ class Settings(BaseSettings):
         extra='ignore'
     )
 
-    openai_api_key: Optional[SecretStr] = None
-    openai_model: str = "gpt-4.1-mini"
-    openai_embed_model: str = "text-embedding-3-large"
+    # --- Client Toggle ---
+    use_azure_openai: bool = Field(
+        default=False,
+        description="Set to True to use AzureOpenAI, False for standard OpenAI."
+    )
+
+    # --- Standard OpenAI Settings ---
+    openai_api_key: Optional[SecretStr] = None # This will ALSO be used for Azure's 'api_key'
+
+    # --- Azure OpenAI Settings ---
+    azure_endpoint: Optional[str] = Field(
+        default=None,
+        description="The endpoint for your Azure OpenAI resource (e.g., 'https://...')"
+    )
+    azure_api_version: Optional[str] = Field(
+        default=None,
+        description="The API version for Azure OpenAI (e.g., '2024-12-01-preview')"
+    )
+
+    # --- Model Names (Deployment Names for Azure) ---
+    openai_model: str = Field(
+        default="gpt-4.1-mini",
+        description="The model name (OpenAI) or deployment name (Azure) for chat."
+    )
+    openai_embed_model: str = Field(
+        default="text-embedding-3-large",
+        description="The model name (OpenAI) or deployment name (Azure) for embeddings."
+    )
+
 
     search_mode: str = "hybrid"
     search_vs_topk: int = 8

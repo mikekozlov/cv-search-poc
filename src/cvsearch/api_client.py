@@ -12,17 +12,27 @@ from pathlib import Path
 from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
-from openai import OpenAI
+from openai import OpenAI, AzureOpenAI
+# --- NEW IMPORT ---
+try:
+    # Newer SDKs may expose it under openai.tools.pydantic (rare)
+    from openai.tools.pydantic import pydantic_function_tool  # type: ignore
+except Exception:
+    # Current stable path (your environment shows this works)
+    from openai import pydantic_function_tool  # type: ignore
+# --- END NEW IMPORT ---
 
 from src.cvsearch.settings import Settings
 from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
 from src.cvsearch.normalize import build_inverse_index, extract_by_lexicon
 from src.cvsearch.storage import CVDatabase
 from src.cvsearch.justification import CandidateJustification
-# --- DELETED IMPORT ---
+# This import is fine, it just defines the schema
 # from src.cvsearch.schemas.cv import ExperienceItemStrict, CandidateCVStrict
 
+
 class SeniorityEnum(str, Enum):
+    # ... (no changes)
     junior = "junior"
     middle = "middle"
     senior = "senior"
@@ -31,9 +41,11 @@ class SeniorityEnum(str, Enum):
 _PROJECT_TYPES = ("greenfield", "modernization", "migration", "support")
 _SENIORITY = tuple(s.value for s in SeniorityEnum)
 def _enum_from_keys(name: str, keys: Iterable[str]) -> Enum:
+    # ... (no changes)
     uniq = {k: k for k in sorted(set(keys))}
     return Enum(name, uniq)
 def _dedupe_enum_list(seq: List[Enum]) -> List[Enum]:
+    # ... (no changes)
     seen: set[str] = set()
     out: List[Enum] = []
     for x in seq:
@@ -48,20 +60,34 @@ class OpenAIClient:
     """
     Centralized client for all OpenAI API interactions, including
     chat/parsing, embeddings, and vector store management.
+
+    Can be configured to use either standard OpenAI or AzureOpenAI.
     """
     def __init__(self, settings: Settings):
+        # ... (no changes to __init__)
         self.settings = settings
-        self.client = OpenAI(
-            api_key=settings.openai_api_key_str
-        )
+
+        if settings.use_azure_openai:
+            if not settings.azure_endpoint or not settings.azure_api_version:
+                raise ValueError("USE_AZURE_OPENAI is True, but AZURE_ENDPOINT or AZURE_API_VERSION is missing in .env")
+
+            print("--- Initializing AzureOpenAI Client ---")
+            self.client = AzureOpenAI(
+                api_version=settings.azure_api_version,
+                azure_endpoint=settings.azure_endpoint,
+                api_key=settings.openai_api_key_str
+            )
+        else:
+            print("--- Initializing standard OpenAI Client ---")
+            self.client = OpenAI(
+                api_key=settings.openai_api_key_str
+            )
+
         self._strict_schema_cache: Dict[str, Any] = {}
         self._cv_schema_cache: Dict[str, Any] = {}
 
     def get_embeddings(self, texts: List[str]) -> List[List[float]]:
-        """
-        Batch-embed texts using the model specified in settings.
-        (This is now only used by the old, soon-to-be-deleted code)
-        """
+        # ... (no changes)
         if not texts:
             return []
         res = self.client.embeddings.create(
@@ -72,10 +98,7 @@ class OpenAIClient:
         return [d.embedding for d in res.data]
 
     def _build_strict_schema(self, lexicon_dir: Path) -> Type[BaseModel]:
-        """
-        Create strict Pydantic models with closed enums built from lexicons.
-        Caches the schema class for efficiency.
-        """
+        # ... (no changes)
         cache_key = str(lexicon_dir)
         if cache_key in self._strict_schema_cache:
             return self._strict_schema_cache[cache_key]
@@ -153,6 +176,7 @@ class OpenAIClient:
         return self._strict_schema_cache[cache_key]
 
     def _preselect_candidates(self, text: str, lex: Dict[str, List[str]], max_aliases_per_key: int = 6) -> Dict[str, List[str]]:
+        # ... (no changes)
         inv = build_inverse_index(lex)
         matched = extract_by_lexicon(text, inv)
         out: Dict[str, List[str]] = {}
@@ -165,7 +189,7 @@ class OpenAIClient:
                              role_lex: Dict[str, List[str]],
                              tech_syn: Dict[str, List[str]],
                              domain_lex: Dict[str, List[str]]) -> str:
-
+        # ... (no changes)
         cand_roles = self._preselect_candidates(text, role_lex)
         cand_techs = self._preselect_candidates(text, tech_syn)
         cand_domains = self._preselect_candidates(text, domain_lex)
@@ -200,6 +224,7 @@ class OpenAIClient:
         ]
         return "\n".join(instr)
 
+    # --- START MODIFIED get_structured_criteria ---
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         """
         Single call that returns canonicalized, schema-valid data.
@@ -208,46 +233,53 @@ class OpenAIClient:
         CriteriaStrict, role_lex, tech_syn, domain_lex = self._build_strict_schema(settings.lexicon_dir)
         sys_prompt = self._build_system_prompt(text, role_lex, tech_syn, domain_lex)
 
-        resp = self.client.responses.parse(
-            model=model,
-            instructions=sys_prompt,
-            input=text,
-            text_format=CriteriaStrict,
-            temperature=0,
-            max_output_tokens=600,
-        )
-        parsed: BaseModel = resp.output_parsed  # type: ignore
-        return parsed.model_dump(mode="json")
+        # 1. Create the tool from the Pydantic model
+        tool = pydantic_function_tool(CriteriaStrict)
 
-    # --- START REVISED CV PARSING METHODS ---
+        # 2. Make the explicit chat completions call
+        try:
+            resp = self.client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": text}
+                ],
+                tools=[tool],
+                tool_choice=tool
+            )
+        except Exception as e:
+            print(f"Error calling Azure OpenAI: {e}")
+            raise
+
+        # 3. Manually parse the tool call response
+        tool_call = resp.choices[0].message.tool_calls[0]
+        if not tool_call:
+            raise ValueError("LLM failed to return a tool call. Check Azure deployment name/config.")
+
+        # The arguments are a JSON string, so we must parse them
+        tool_args = json.loads(tool_call.function.arguments)
+        parsed = CriteriaStrict(**tool_args) # Unpack the dict into the model
+
+        return parsed.model_dump(mode="json")
+    # --- END MODIFIED get_structured_criteria ---
+
 
     def _build_cv_schema(self, lexicon_dir: Path) -> Tuple[Type[BaseModel], Dict, Dict, Dict]:
-        """
-        Create strict Pydantic models for CV parsing, using lexicons
-        for normalization. Caches for efficiency.
-        """
+        # ... (no changes)
         cache_key = str(lexicon_dir)
         if cache_key in self._cv_schema_cache:
             return self._cv_schema_cache[cache_key]
 
-        # 1. Load lexicons
         role_lex = load_role_lexicon(lexicon_dir)
         tech_syn = load_tech_synonyms(lexicon_dir)
         domain_lex = load_domain_lexicon(lexicon_dir)
 
-        # 2. Create dynamic Enums
         RoleEnumDyn = _enum_from_keys("RoleEnumDyn", role_lex.keys())
         TechEnumDyn = _enum_from_keys("TechEnumDyn", tech_syn.keys())
         DomainEnumDyn = _enum_from_keys("DomainEnumDyn", domain_lex.keys())
 
-        # 3. Define schemas *inside* the function, using the dynamic Enums
-        #    This mirrors the robust pattern in _build_strict_schema
 
         class ExperienceItemStrict(BaseModel):
-            """
-            Pydantic model for a single experience entry in a CV,
-            enforcing normalized tags.
-            """
             title: str = Field(..., description="The job title, e.g., 'Software Engineer'.")
             company: str = Field(..., description="The company name or project description.")
             domain_tags: List[DomainEnumDyn] = Field(
@@ -274,13 +306,9 @@ class OpenAIClient:
             )
 
             class Config:
-                populate_by_name = True # Allows using 'from' and 'to' as field names
+                populate_by_name = True
 
         class CandidateCVStrict(BaseModel):
-            """
-            Pydantic model for a full candidate CV, enforcing normalized
-            tags from lexicons.
-            """
             name: str = Field(..., description="Candidate's full name.")
             location: Optional[str] = Field(
                 default=None,
@@ -311,7 +339,6 @@ class OpenAIClient:
                 description="A comma-separated list of technologies found in the CV that were not in the official tech enum. This is for admin review."
             )
 
-        # 4. Cache and return
         self._cv_schema_cache[cache_key] = (CandidateCVStrict, role_lex, tech_syn, domain_lex)
         return self._cv_schema_cache[cache_key]
 
@@ -320,14 +347,11 @@ class OpenAIClient:
                                 role_lex: Dict[str, List[str]],
                                 tech_syn: Dict[str, List[str]],
                                 domain_lex: Dict[str, List[str]]) -> str:
-        """
-        Builds the system prompt for CV parsing, including lexicon hints.
-        """
+        # ... (no changes)
         cand_roles = self._preselect_candidates(text, role_lex)
-        cand_techs = self._preselect_candidates(text, tech_syn, max_aliases_per_key=3) # Limit noise
+        cand_techs = self._preselect_candidates(text, tech_syn, max_aliases_per_key=3)
         cand_domains = self._preselect_candidates(text, domain_lex)
 
-        # Reuse the 'block' helper from _build_system_prompt
         def block(name: str, cand: Dict[str, List[str]], full_keys: Iterable[str]) -> str:
             if cand:
                 lines = [f"- {canon}: {', '.join(aliases)}" for canon, aliases in cand.items()]
@@ -357,6 +381,7 @@ class OpenAIClient:
         ]
         return "\n".join(instr)
 
+    # --- START MODIFIED get_structured_cv ---
     def get_structured_cv(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         """
         Single call that parses raw CV text and returns normalized,
@@ -368,25 +393,37 @@ class OpenAIClient:
         # 2. Build the targeted system prompt
         sys_prompt = self._build_cv_system_prompt(text, role_lex, tech_syn, domain_lex)
 
-        # 3. Call the LLM
-        resp = self.client.responses.parse(
-            model=model,
-            instructions=sys_prompt,
-            input=text,
-            text_format=CandidateCVStrict,
-            temperature=0,
-            max_output_tokens=2048, # CVs can be long
-        )
-        parsed: BaseModel = resp.output_parsed  # type: ignore
+        # 3. Create the tool
+        tool = pydantic_function_tool(CandidateCVStrict)
 
-        # 4. Return as a dict
-        return parsed.model_dump(mode="json", by_alias=True) # Use by_alias=True for from/to
+        # 4. Call the LLM
+        try:
+            resp = self.client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": text}
+                ],
+                tools=[tool],
+                tool_choice=tool, # Force the LLM to use this tool
+            )
+        except Exception as e:
+            print(f"Error calling Azure OpenAI: {e}")
+            raise
 
-    # --- END REVISED CV PARSING METHODS ---
+        # 5. Manually parse the tool call response
+        tool_call = resp.choices[0].message.tool_calls[0]
+        if not tool_call:
+            raise ValueError("LLM failed to return a tool call. Check Azure deployment name/config.")
+
+        tool_args = json.loads(tool_call.function.arguments)
+        parsed = CandidateCVStrict(**tool_args)
+
+        return parsed.model_dump(mode="json", by_alias=True)
+    # --- END MODIFIED get_structured_cv ---
 
     def _build_justification_prompt(self, seat_details: str, cv_context: str) -> Tuple[str, str]:
-        """Builds the system and user prompts for justification."""
-
+        # ... (no changes)
         system_prompt = (
             "You are an expert technical recruiter and talent analyst. "
             "Your job is to write a concise, evidence-based justification for why a "
@@ -412,6 +449,7 @@ Base your analysis *only* on the provided texts.
 """
         return system_prompt, user_prompt
 
+    # --- START MODIFIED get_candidate_justification ---
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
         """
         Calls the LLM to get a structured justification for a single candidate.
@@ -419,19 +457,35 @@ Base your analysis *only* on the provided texts.
         system_prompt, user_prompt = self._build_justification_prompt(seat_details, cv_context)
 
         try:
-            resp = self.client.responses.parse(
+            # 1. Create the tool
+            tool = pydantic_function_tool(CandidateJustification)
+
+            # 2. Call the LLM
+            resp = self.client.chat.completions.create(
                 model=self.settings.openai_model,
-                instructions=system_prompt,
-                input=user_prompt,
-                text_format=CandidateJustification,
-                temperature=0,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                tools=[tool],
+                tool_choice=tool, # Force the LLM to use this tool
             )
-            parsed: CandidateJustification = resp.output_parsed  # type: ignore
+
+            # 3. Manually parse the tool call response
+            tool_call = resp.choices[0].message.tool_calls[0]
+            if not tool_call:
+                raise ValueError("LLM failed to return a tool call for justification.")
+
+            tool_args = json.loads(tool_call.function.arguments)
+            parsed = CandidateJustification(**tool_args)
+
             return parsed.model_dump(mode="json")
         except Exception as e:
+            print(f"Error during justification: {e}")
             return {
                 "match_summary": "Error generating justification.",
                 "strength_analysis": [],
                 "gap_analysis": [f"Error: {str(e)}"],
                 "overall_match_score": 0.0
             }
+    # --- END MODIFIED get_candidate_justification ---
