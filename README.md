@@ -17,7 +17,19 @@ python .\main.py init-db
 # 2) ingest mock CVs // both local db + vector store(upsert)
 python .\main.py ingest-mock 
 
+## 2.1) sync items from g-drive
+python .\main.py sync-gdrive
+
+    Configure settings in your .env file:
+    - GDRIVE_RCLONE_CONFIG_PATH (optional)
+    - GDRIVE_REMOTE_NAME
+    - GDRIVE_SOURCE_DIR
+    - GDRIVE_LOCAL_DEST_DIR
+    """
+
 # 3) now you can run UI via streamlit or scripts directly 
+
+
 
 ## 3.1) RUN UI
 streamlit run app.py
@@ -30,6 +42,8 @@ python .\main.py search-seat
 
 ## 3.3) search hybrid by default
 python main.py search-seat --criteria ./criteria.json --topk 2
+
+
 
 ## PRESALE
 
