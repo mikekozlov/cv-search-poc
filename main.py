@@ -13,6 +13,10 @@ from datetime import datetime
 from src.cvsearch.cv_parser import CVParser
 # --- END NEW IMPORTS ---
 
+# --- NEW IMPORT for Parallelism ---
+from concurrent.futures import ThreadPoolExecutor, as_completed
+# --- END NEW IMPORT ---
+
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from src.cvsearch.search_processor import SearchProcessor, default_run_dir
 from src.cvsearch.planner import Planner
@@ -317,7 +321,63 @@ def sync_gdrive_cmd(ctx):
     finally:
         db.close()
 
-# --- START MODIFIED COMMAND ---
+# --- START MODIFIED HELPER FUNCTION ---
+def _process_single_cv_file(
+        file_path: Path,
+        parser: CVParser,
+        client: OpenAIClient,
+        settings: Settings,
+        json_output_dir: Path
+) -> tuple[Path, dict | None]:
+    """
+    Worker function to process one CV file.
+    This is designed to be run in a ThreadPoolExecutor.
+    Returns the original file_path and the processed data, or None on failure.
+    """
+    try:
+        click.echo(f"  -> Processing {file_path.name}...")
+
+        # Component 1: Extract text from PPTX
+        raw_text = parser.extract_text(file_path)
+
+        # Component 2: Map text to normalized JSON (The slow I/O part)
+        cv_data_dict = client.get_structured_cv(
+            raw_text, settings.openai_model, settings
+        )
+
+        # --- START METADATA BLOCK ---
+        # Generate and add missing metadata
+        ingestion_time = datetime.now() # Get the ingestion time once
+
+        file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
+        cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
+
+        # Get file stats to read the last modification time
+        file_stat = file_path.stat()
+        mod_time = datetime.fromtimestamp(file_stat.st_mtime)
+        cv_data_dict["last_updated"] = mod_time.isoformat() # File's last mod time
+
+        # Add new fields requested by user
+        cv_data_dict["source_filename"] = file_path.name # The original .pptx filename
+        cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat() # The time it was ingested
+        # --- END METADATA BLOCK ---
+
+        # Save JSON for debugging
+        json_filename = f"{cv_data_dict['candidate_id']}.json"
+        json_save_path = json_output_dir / json_filename
+        with open(json_save_path, 'w', encoding='utf-8') as f:
+            json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
+
+        # Return path and success data
+        return (file_path, cv_data_dict)
+
+    except Exception as e:
+        # Catch errors per-file so the batch can continue
+        click.secho(f"  -> FAILED to parse {file_path.name}: {e}", fg="red")
+        # Return path and failure data
+        return (file_path, None)
+# --- END MODIFIED HELPER FUNCTION ---
+
 
 @cli.command("ingest-gdrive")
 @click.pass_context
@@ -339,7 +399,10 @@ def ingest_gdrive_cmd(ctx):
 
     # 2. Define paths
     inbox_dir = settings.gdrive_local_dest_dir
-    archive_dir = inbox_dir / "_archive"
+
+    # Place the archive folder *next to* the inbox, not inside it
+    archive_dir = inbox_dir.parent / "gdrive_archive"
+
     json_output_dir = settings.data_dir / "ingested_cvs_json" # JSON output path
     archive_dir.mkdir(exist_ok=True)
     json_output_dir.mkdir(exist_ok=True) # Create JSON dir
@@ -352,47 +415,60 @@ def ingest_gdrive_cmd(ctx):
         return
 
     click.echo(f"Found {len(pptx_files)} .pptx CV(s) to process...")
+
+    # --- START MODIFIED BLOCK (PARALLEL PROCESSING) ---
+
+    # 4. Loop, Extract, and Map (Parallelized)
     cvs_to_ingest = []
+    processed_files = [] # To track what was successfully processed
+    failed_files = []    # To track failures
 
-    # 4. Loop, Extract, and Map
-    #    The database connection remains open for the entire loop
-    #    so that get_or_create_faiss_id works in a single transaction.
+    # Use ThreadPoolExecutor to process files in parallel.
+    # Set max_workers to a reasonable number for parallel API calls.
+    max_workers = min(10, len(pptx_files))
+
     try:
-        for file_path in pptx_files:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all jobs to the executor
+            future_to_path = {
+                executor.submit(
+                    _process_single_cv_file,
+                    file_path,
+                    parser,
+                    client,
+                    settings,
+                    json_output_dir
+                ): file_path for file_path in pptx_files
+            }
+
+            # Collect results as they complete
+            for future in as_completed(future_to_path):
+                original_path, cv_data = future.result()
+
+                if cv_data:
+                    # Success
+                    cvs_to_ingest.append(cv_data)
+                    processed_files.append(original_path)
+                else:
+                    # Failure
+                    failed_files.append(original_path)
+
+        # 5. Archive successfully processed files
+        click.echo(f"Archiving {len(processed_files)} successfully processed file(s)...")
+        for file_path in processed_files:
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            archive_filename = f"{file_path.stem}_archived_at_{timestamp}{file_path.suffix}"
+            archive_dest_path = archive_dir / archive_filename
             try:
-                click.echo(f"  -> Processing {file_path.name}...")
-
-                # Component 1: Extract text from PPTX
-                raw_text = parser.extract_text(file_path)
-
-                # Component 2: Map text to normalized JSON
-                cv_data_dict = client.get_structured_cv(
-                    raw_text, settings.openai_model, settings
-                )
-
-                # Generate and add missing metadata
-                file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
-                cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
-                cv_data_dict["last_updated"] = datetime.now().isoformat().split('T')[0]
-
-                # Save JSON for debugging
-                json_filename = f"{cv_data_dict['candidate_id']}.json"
-                json_save_path = json_output_dir / json_filename
-                with open(json_save_path, 'w', encoding='utf-8') as f:
-                    json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
-
-                cvs_to_ingest.append(cv_data_dict)
-
-                # Move processed file to archive
-                shutil.move(str(file_path), str(archive_dir / file_path.name))
-                click.secho(f"  -> Successfully parsed, saved to JSON, and archived {file_path.name}", fg="green")
-
+                shutil.move(str(file_path), str(archive_dest_path))
+                click.secho(f"  -> Archived {file_path.name} as {archive_filename}", fg="green")
             except Exception as e:
-                # Catch errors per-file so the batch can continue
-                click.secho(f"  -> FAILED to parse {file_path.name}: {e}", fg="red")
-                # You could move to a '_failed' directory here if desired
+                click.secho(f"  -> FAILED to archive {file_path.name}: {e}", fg="red")
 
-        # 5. Ingest processed CVs into DB and FAISS
+        if failed_files:
+            click.secho(f"{len(failed_files)} file(s) failed to process and were not archived. See errors above.", fg="yellow")
+
+        # 6. Ingest processed CVs into DB and FAISS
         if not cvs_to_ingest:
             click.echo("No CVs were successfully processed.")
             return
@@ -400,10 +476,7 @@ def ingest_gdrive_cmd(ctx):
         click.echo(f"Ingesting {len(cvs_to_ingest)} processed CV(s) into database...")
         pipeline = CVIngestionPipeline(db, settings)
 
-        # --- THIS IS THE KEY CHANGE ---
-        # Call the new upsert method instead of run_ingestion_from_list
         count = pipeline.upsert_cvs(cvs_to_ingest)
-        # --- END KEY CHANGE ---
 
         click.secho(
             f"✅ Successfully upserted {count} new CV(s). Index is updated.",
@@ -426,8 +499,7 @@ def ingest_gdrive_cmd(ctx):
     finally:
         # This ensures the DB connection is closed no matter what
         db.close()
-
-# --- END MODIFIED COMMAND ---
+    # --- END MODIFIED BLOCK ---
 
 if __name__ == "__main__":
     cli()

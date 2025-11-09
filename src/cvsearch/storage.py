@@ -60,7 +60,7 @@ class CVDatabase:
             """
             INSERT INTO app_config(key, value)
             VALUES (?, ?)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
             """,
             (key, value),
         )
@@ -82,17 +82,19 @@ class CVDatabase:
         self.conn.execute("DELETE FROM experience WHERE candidate_id = ?", (candidate_id,))
         self.conn.execute("DELETE FROM candidate_tag WHERE candidate_id = ?", (candidate_id,))
 
+    # --- START MODIFIED FUNCTION ---
     def upsert_candidate(self, cv: Dict[str, Any]) -> None:
         """(Moved from ingest.py)"""
         self.conn.execute(
             """
-            INSERT INTO candidate(candidate_id, name, location, seniority, last_updated)
-            VALUES(?,?,?,?,?)
-            ON CONFLICT(candidate_id) DO UPDATE SET
-                                                    name=excluded.name,
-                                                    location=excluded.location,
-                                                    seniority=excluded.seniority,
-                                                    last_updated=excluded.last_updated
+            INSERT INTO candidate(candidate_id, name, location, seniority, last_updated, source_filename)
+            VALUES(?,?,?,?,?,?)
+                ON CONFLICT(candidate_id) DO UPDATE SET
+                name=excluded.name,
+                                                 location=excluded.location,
+                                                 seniority=excluded.seniority,
+                                                 last_updated=excluded.last_updated,
+                                                 source_filename=excluded.source_filename
             """,
             (
                 cv["candidate_id"],
@@ -100,8 +102,10 @@ class CVDatabase:
                 cv.get("location", ""),
                 cv.get("seniority", ""),
                 cv.get("last_updated", ""),
+                cv.get("source_filename", None), # Get the new field (will be None for mocks)
             ),
         )
+    # --- END MODIFIED FUNCTION ---
 
     def insert_experiences_and_tags(self, candidate_id: str, experiences: List[Dict[str, Any]], domain_tags_list: List[str], tech_tags_list: List[str]) -> List[int]:
         """(Refactored from ingest.py)"""
@@ -173,7 +177,7 @@ class CVDatabase:
             """
             INSERT INTO candidate_tag(candidate_id, tag_type, tag_key, weight)
             VALUES (?,?,?,?)
-            ON CONFLICT(candidate_id, tag_type, tag_key)
+                ON CONFLICT(candidate_id, tag_type, tag_key)
                 DO UPDATE SET weight = excluded.weight
             """,
             tags_to_insert
@@ -191,13 +195,13 @@ class CVDatabase:
             """
             INSERT INTO candidate_doc(candidate_id, summary_text, experience_text, tags_text, last_updated, location, seniority)
             VALUES (?,?,?,?,?,?,?)
-            ON CONFLICT(candidate_id) DO UPDATE SET
-                                                    summary_text=excluded.summary_text,
-                                                    experience_text=excluded.experience_text,
-                                                    tags_text=excluded.tags_text,
-                                                    last_updated=excluded.last_updated,
-                                                    location=excluded.location,
-                                                    seniority=excluded.seniority
+                ON CONFLICT(candidate_id) DO UPDATE SET
+                summary_text=excluded.summary_text,
+                                                 experience_text=excluded.experience_text,
+                                                 tags_text=excluded.tags_text,
+                                                 last_updated=excluded.last_updated,
+                                                 location=excluded.location,
+                                                 seniority=excluded.seniority
             """,
             (candidate_id, summary_text, experience_text, tags_text, last_updated, location, seniority),
         )
