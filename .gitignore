@@ -143,6 +143,7 @@ venv
 /runs/
 /src/cvsearch.egg-info/
 /data/cv_search.faiss
+/data/ingested_cvs_json/
 /data/gdrive_inbox/
-# FAISS index file (from screenshot)
+/data/gdrive_archive/
 cv_search.faiss
