@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from typing import List, Dict, Any, Iterable, Tuple
-import sqlite3, json, os
+import sqlite3, json, os, re, hashlib, shutil
+from datetime import datetime
+from collections import defaultdict
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import click # For secho in reporting
+
 import faiss
 import numpy as np
 from src.cvsearch.data import load_mock_cvs
@@ -9,6 +15,8 @@ from src.cvsearch.settings import Settings
 from src.cvsearch.api_client import OpenAIClient
 from src.cvsearch.storage import CVDatabase
 from src.cvsearch.local_embedder import LocalEmbedder
+from src.cvsearch.cv_parser import CVParser
+from src.cvsearch.lexicons import load_role_lexicon
 
 class CVIngestionPipeline:
     """
@@ -277,3 +285,203 @@ class CVIngestionPipeline:
 
         print(f"--- Mock Ingestion Complete: {count} CVs ---")
         return count
+
+
+    # --- START REFACTORED GDRIVE INGESTION LOGIC ---
+
+    def _normalize_folder_name(self, name: str) -> str:
+        """Converts a folder name to a potential lexicon key."""
+        s = name.lower().strip()
+        s = re.sub(r'\s+', '_', s) # Replace spaces with underscores
+        s = re.sub(r'[^a-z0-9_]', '', s) # Remove non-alphanumeric chars
+        return s
+
+    def _process_single_cv_file(
+            self,
+            file_path: Path,
+            parser: CVParser,
+            client: OpenAIClient,
+            json_output_dir: Path,
+            inbox_dir: Path
+    ) -> tuple[str, dict | tuple[Path, str] | Path]:
+        """
+        Worker function to process one CV file.
+        This is designed to be run in a ThreadPoolExecutor.
+
+        Returns a tuple of (status, data):
+        - ("processed", (Path, cv_dict))
+        - ("skipped_ambiguous", Path)
+        - ("failed_parsing", Path)
+        """
+        try:
+            # 1. Find Role Hint and Apply Quality Gate
+            relative_path = file_path.relative_to(inbox_dir)
+            source_gdrive_path_str = str(relative_path.as_posix())
+
+            path_parts = relative_path.parent.parts
+
+            if not path_parts:
+                return "skipped_ambiguous", file_path
+
+            source_category = path_parts[0]
+
+            if len(path_parts) < 2:
+                return "skipped_ambiguous", file_path
+
+            role_folder_name = path_parts[1]
+            role_key = self._normalize_folder_name(role_folder_name)
+
+            # 2. Process the file (slow part)
+            click.echo(f"  -> Processing {file_path.name} (Hint: {role_key})...")
+
+            raw_text = parser.extract_text(file_path)
+
+            cv_data_dict = client.get_structured_cv(
+                raw_text,
+                role_key,
+                self.settings.openai_model,
+                self.settings
+            )
+
+            # 3. Add All Metadata
+            ingestion_time = datetime.now()
+
+            file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
+            cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
+
+            file_stat = file_path.stat()
+            mod_time = datetime.fromtimestamp(file_stat.st_mtime)
+            cv_data_dict["last_updated"] = mod_time.isoformat()
+
+            cv_data_dict["source_filename"] = file_path.name
+            cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
+            cv_data_dict["source_gdrive_path"] = source_gdrive_path_str
+            cv_data_dict["source_category"] = source_category
+
+            # 4. Save JSON for debugging
+            json_filename = f"{cv_data_dict['candidate_id']}.json"
+            json_save_path = json_output_dir / json_filename
+            with open(json_save_path, 'w', encoding='utf-8') as f:
+                json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
+
+            return "processed", (file_path, cv_data_dict)
+
+        except Exception as e:
+            click.secho(f"  -> FAILED to parse {file_path.name}: {e}", fg="red")
+            return "failed_parsing", file_path
+
+    def run_gdrive_ingestion(self, client: OpenAIClient) -> Dict[str, Any]:
+        """
+        Parses .pptx CVs from the GDrive inbox, saves to JSON for debug,
+        and ingests them into the database and FAISS index.
+        Returns a report dictionary of the outcomes.
+        """
+        parser = CVParser()
+
+        # Load role lexicon (used for logging skips, not hard gating)
+        try:
+            roles_lex = load_role_lexicon(self.settings.lexicon_dir)
+            role_keys_lookup = set(roles_lex.keys())
+            click.echo(f"Loaded {len(role_keys_lookup)} role keys from lexicon.")
+        except Exception as e:
+            click.secho(f"❌ FAILED to load role lexicon: {e}", fg="red")
+            raise
+
+        # Define paths
+        inbox_dir = self.settings.gdrive_local_dest_dir
+        archive_dir = inbox_dir.parent / "gdrive_archive"
+        json_output_dir = self.settings.data_dir / "ingested_cvs_json"
+        archive_dir.mkdir(exist_ok=True)
+        json_output_dir.mkdir(exist_ok=True)
+
+        # Find files to process (RECURSIVE)
+        pptx_files = list(inbox_dir.rglob("*.pptx"))
+        pptx_files = [p for p in pptx_files if "_archive" not in str(p.parent).lower()]
+
+        if not pptx_files:
+            click.echo(f"No .pptx files found in {inbox_dir}")
+            return {"processed_count": 0, "status": "no_files_found"}
+
+        click.echo(f"Found {len(pptx_files)} .pptx CV(s) to process...")
+
+        # Loop, Extract, and Map (Parallelized)
+        cvs_to_ingest = []
+        processed_files = []
+        failed_files = []
+        skipped_ambiguous = []
+        skipped_roles = defaultdict(list)
+
+        max_workers = min(10, len(pptx_files))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_path = {
+                executor.submit(
+                    self._process_single_cv_file,
+                    file_path,
+                    parser,
+                    client,
+                    json_output_dir,
+                    inbox_dir
+                ): file_path for file_path in pptx_files
+            }
+
+            for future in as_completed(future_to_path):
+                status, data = future.result()
+
+                if status == "processed":
+                    file_path, cv_data = data
+                    if cv_data.get("source_folder_role_hint") is None:
+                        role_key = self._normalize_folder_name(file_path.relative_to(inbox_dir).parent.parts[1])
+                        skipped_roles[role_key].append(str(file_path))
+                    else:
+                        cvs_to_ingest.append(cv_data)
+                        processed_files.append(file_path)
+                elif status == "failed_parsing":
+                    failed_files.append(str(data))
+                elif status == "skipped_ambiguous":
+                    skipped_ambiguous.append(str(data.relative_to(inbox_dir)))
+
+        # Archive *only* successfully processed files
+        archived_files = []
+        archival_failures = []
+        for file_path in processed_files:
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            archive_filename = f"{file_path.stem}_archived_at_{timestamp}{file_path.suffix}"
+            archive_dest_path = archive_dir / archive_filename
+            try:
+                shutil.move(str(file_path), str(archive_dest_path))
+                archived_files.append(archive_filename)
+            except Exception as e:
+                archival_failures.append((file_path.name, str(e)))
+
+        # Ingest processed CVs into DB and FAISS
+        ingested_count = 0
+        if cvs_to_ingest:
+            click.echo(f"\nIngesting {len(cvs_to_ingest)} processed CV(s) into database...")
+            ingested_count = self.upsert_cvs(cvs_to_ingest)
+            click.secho(f"✅ Successfully upserted {ingested_count} new CV(s). Index is updated.", fg="green")
+        else:
+            click.echo("\nNo new CVs to ingest.")
+
+        unmapped = [
+            cv.get("unmapped_tags") for cv in cvs_to_ingest
+            if cv.get("unmapped_tags")
+        ]
+        all_unmapped_tags = []
+        if unmapped:
+            all_unmapped_tags = sorted(list(set(
+                t.strip() for tags in unmapped for t in tags.split(',') if t.strip()
+            )))
+
+        return {
+            "processed_count": ingested_count,
+            "archived_files": archived_files,
+            "archival_failures": archival_failures,
+            "skipped_roles": dict(skipped_roles),
+            "skipped_ambiguous": skipped_ambiguous,
+            "failed_files": failed_files,
+            "unmapped_tags": all_unmapped_tags,
+            "json_output_dir": str(json_output_dir)
+        }
+
+    # --- END REFACTORED GDRIVE INGESTION LOGIC ---
