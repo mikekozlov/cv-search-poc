@@ -87,17 +87,19 @@ class OpenAIClient:
         # These imports are deferred to method-level to avoid
         # potential circular dependencies if lexicons ever needed this client.
         from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
-        role_lex = load_role_lexicon(settings.lexicon_dir)
-        tech_lex = load_tech_synonyms(settings.lexicon_dir)
-        domain_lex = load_domain_lexicon(settings.lexicon_dir)
+
+        # Load the new list-based lexicons
+        role_lex_list = load_role_lexicon(settings.lexicon_dir)
+        tech_lex_list = load_tech_synonyms(settings.lexicon_dir)
+        domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
 
         system_prompt = f"""
         You are a TA (Talent Acquisition) expert. Your task is to parse a user's free-text project brief
         into a structured JSON object.
 
-        Available Role Lexicon: {json.dumps(list(role_lex.keys()), indent=2)}
-        Available Tech Lexicon: {json.dumps(list(tech_lex.keys()), indent=2)}
-        Available Domain Lexicon: {json.dumps(list(domain_lex.keys()), indent=2)}
+        Available Role Lexicon: {json.dumps(role_lex_list, indent=2)}
+        Available Tech Lexicon: {json.dumps(tech_lex_list, indent=2)}
+        Available Domain Lexicon: {json.dumps(domain_lex_list, indent=2)}
 
         Strictly follow these rules:
         1.  Map all found skills, roles, and domains to their *canonical* keys from the lexicons provided.
@@ -142,18 +144,17 @@ class OpenAIClient:
         """Calls LLM to parse raw CV text into structured JSON."""
 
         from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
-        # We need the full lexicon, not just the keys, to check synonyms
-        role_lex = load_role_lexicon(settings.lexicon_dir)
-        tech_lex = load_tech_synonyms(settings.lexicon_dir)
-        domain_lex = load_domain_lexicon(settings.lexicon_dir)
 
-        # Create a reverse index for the prompt to help the LLM map synonyms
-        # e.g., "data analyst": "bi_analyst"
-        role_synonym_map = {}
-        for key, synonyms in role_lex.items():
-            role_synonym_map[key] = key # Map key to itself
-            for syn in synonyms:
-                role_synonym_map[syn.lower().replace(" ", "_")] = key
+        # Load the new list-based lexicons
+        role_lex_list = load_role_lexicon(settings.lexicon_dir)
+        tech_lex_list = load_tech_synonyms(settings.lexicon_dir)
+        domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
+
+        # Create a simple lookup map from the role list for the hint rule
+        # e.g., "data_analyst": "bi_analyst" (from role_lexicon.json)
+        # This is no longer possible with a flat list, so we trust the LLM
+        # to find the "best matching canonical key" from the list.
+        # The old role_synonym_map logic is removed.
 
         system_prompt = f"""
         You are an expert CV parser. Your task is to parse raw text from a CV slide deck
@@ -161,15 +162,15 @@ class OpenAIClient:
 
         You are given a HINT: the normalized parent folder for this CV is '{role_folder_hint}'.
         
-        Available Role Lexicon (Canonical Keys): {json.dumps(list(role_lex.keys()), indent=2)}
-        Available Tech Lexicon (Canonical Keys): {json.dumps(list(tech_lex.keys()), indent=2)}
-        Available Domain Lexicon (Canonical Keys): {json.dumps(list(domain_lex.keys()), indent=2)}
+        Available Role Lexicon (Canonical Keys): {json.dumps(role_lex_list, indent=2)}
+        Available Tech Lexicon (Canonical Keys): {json.dumps(tech_lex_list, indent=2)}
+        Available Domain Lexicon (Canonical Keys): {json.dumps(domain_lex_list, indent=2)}
 
         Strictly follow these rules:
         1.  `source_folder_role_hint`:
             * Analyze the HINT: `{role_folder_hint}`.
             * Determine if this hint represents a valid professional role.
-            * If it **is** a valid role, find the **best matching canonical key** from the Role Lexicon. For example, a hint of 'data_analyst' should be mapped to the canonical key 'bi_analyst'. A hint of 'etl_developer' should map to 'data_engineer'. Set this field to that canonical key.
+            * If it **is** a valid role, find the **best matching canonical key** from the Role Lexicon. For example, a hint of 'data_analyst' or 'bi developer' should be mapped to the canonical key 'bi_analyst'. A hint of 'etl_developer' should map to 'data_engineer'. Set this field to that canonical key.
             * If the HINT is **not** a valid role (e.g., it's a person's name like 'yaroslav_siomka' or a technology like 'ruby' or 'golang'), you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract all relevant roles from the CV *text itself*, mapping them to the Role Lexicon keys.

@@ -1,6 +1,7 @@
 import streamlit as st
 import sys
 from pathlib import Path
+from typing import List, Dict, Any # <-- Added List, Dict, Any for type hints
 
 APP_ROOT = Path(__file__).resolve().parent
 SRC_PATH = APP_ROOT / "src"
@@ -45,9 +46,11 @@ def load_stateless_services():
     planner = Planner()
 
     lexicon_dir = settings.lexicon_dir
-    role_lex = load_role_lexicon(lexicon_dir)
-    tech_lex = load_tech_synonyms(lexicon_dir)
-    domain_lex = load_domain_lexicon(lexicon_dir)
+
+    # These functions now return List[str]
+    role_lex: List[str] = load_role_lexicon(lexicon_dir)
+    tech_lex: List[str] = load_tech_synonyms(lexicon_dir)
+    domain_lex: List[str] = load_domain_lexicon(lexicon_dir)
 
     print("--- Stateless services loaded and cached. ---")
 
@@ -78,6 +81,7 @@ st.subheader("System Status")
 
 try:
     col1, col2, col3 = st.columns(3)
+    # len() works on both lists and dicts, so this logic is unchanged.
     col1.metric("Role Lexicons", len(st.session_state.role_lex))
     col2.metric("Tech Lexicons", len(st.session_state.tech_lex))
     col3.metric("Domain Lexicons", len(st.session_state.domain_lex))

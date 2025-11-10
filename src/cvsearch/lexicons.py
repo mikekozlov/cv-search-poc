@@ -8,11 +8,14 @@ from typing import Dict, List
 def _load_json(p: Path):
     with open(p, "r", encoding="utf-8") as f: return json.load(f)
 
-def load_role_lexicon(lexicon_dir: Path) -> Dict[str, List[str]]:
+def load_role_lexicon(lexicon_dir: Path) -> List[str]:
+    """Loads the flat list of canonical role keys."""
     return _load_json(lexicon_dir / "role_lexicon.json")
 
-def load_tech_synonyms(lexicon_dir: Path) -> Dict[str, List[str]]:
+def load_tech_synonyms(lexicon_dir: Path) -> List[str]:
+    """Loads the flat list of canonical tech keys."""
     return _load_json(lexicon_dir / "tech_synonyms.json")
 
-def load_domain_lexicon(lexicon_dir: Path) -> Dict[str, List[str]]:
+def load_domain_lexicon(lexicon_dir: Path) -> List[str]:
+    """Loads the flat list of canonical domain keys."""
     return _load_json(lexicon_dir / "domain_lexicon.json")
