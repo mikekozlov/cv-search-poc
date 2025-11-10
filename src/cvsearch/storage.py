@@ -3,6 +3,7 @@ import sqlite3
 import json
 import math
 from typing import Dict, Any, Optional, List, Tuple, Iterable
+from pathlib import Path
 
 from src.cvsearch.settings import Settings
 
@@ -20,7 +21,9 @@ class CVDatabase:
 
     def _get_db(self) -> sqlite3.Connection:
         """Creates and returns a new DB connection."""
-        conn = sqlite3.connect(self.db_path)
+        db_file = Path(self.db_path)
+        db_file.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(str(db_file))
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON;")
         return conn

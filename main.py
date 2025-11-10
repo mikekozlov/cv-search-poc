@@ -120,7 +120,7 @@ def parse_request_cmd(ctx, text, model):
     click.echo(c.to_json())
 
 @cli.command("search-seat")
-@click.option("--criteria", type=click.Path(exists=True, dir_okay=False), default='./criteria.json', required=True, help="Path to canonical criteria JSON")
+@click.option("--criteria", type=click.Path(exists=True, dir_okay=False), default='./data/test/criteria.json', required=True, help="Path to canonical criteria JSON")
 @click.option("--topk", type=int, default=3, help="Top-K results to return")
 @click.option("--mode", type=click.Choice(["lexical","semantic","hybrid"]), default=None, help="Ranking mode")
 @click.option("--vs-topk", type=int, default=None, help="Vector-store fan-in (K)")

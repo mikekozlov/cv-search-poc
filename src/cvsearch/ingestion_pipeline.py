@@ -275,8 +275,8 @@ class CVIngestionPipeline:
         print("Initializing new database schema...")
         self.db.initialize_schema() # This method auto-commits
 
-        # 3. Load mock CVs
-        cvs = load_mock_cvs(self.settings.data_dir)
+        # 3. Load mock CVs (now from data/test)
+        cvs = load_mock_cvs(self.settings.test_data_dir)
         print(f"Loaded {len(cvs)} mock CVs from JSON.")
 
         # 4. Call the new upsert method
