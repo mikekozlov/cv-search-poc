@@ -374,29 +374,37 @@ def _process_single_cv_file(
 
         # This is the "Role-Gated Ingestion" logic
         role_folder_name = path_parts[1] # e.g., "Analytics Engineer", "Ruby", "Yaroslav Siomka"
-        role_key = _normalize_folder_name(role_folder_name)
+        role_key = _normalize_folder_name(role_folder_name) # e.g., "analytics_engineer", "ruby"
 
-        if role_key not in role_keys_lookup:
-            # THE GATE: Role key not in lexicon, skip this file.
-            return "skipped_role", (file_path, role_key)
+        # --- LOGIC CHANGE (PHASE 1) ---
+        # The rigid 'if role_key not in role_keys_lookup:' check has been REMOVED.
+        # We now pass *all* role_keys (e.g. "data_analyst", "ruby") to the LLM.
+        # --- END LOGIC CHANGE ---
 
         # If we are here, the gate passed.
-        source_folder_role_hint = role_key
+        source_folder_role_hint = role_key # This will be "data_analyst", "ruby", etc.
 
         # --- 2. Process the file (slow part) ---
-        click.echo(f"  -> Processing {file_path.name} (Role: {role_key})...")
+        click.echo(f"  -> Processing {file_path.name} (Hint: {role_key})...")
 
         # Component 1: Extract text from PPTX
         raw_text = parser.extract_text(file_path)
 
         # Component 2: Map text to normalized JSON (The slow I/O part)
+        # --- LOGIC CHANGE (PHASE 1) ---
+        # We now pass 4 arguments, including the role_key as the hint.
         cv_data_dict = client.get_structured_cv(
-            raw_text, settings.openai_model, settings
+            raw_text,
+            role_key, # The hint (e.g., "data_analyst", "ruby")
+            settings.openai_model,
+            settings
         )
+        # --- END LOGIC CHANGE ---
 
         # --- 3. Add All Metadata ---
         ingestion_time = datetime.now()
 
+        # Use file name for hash to get a consistent ID
         file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
         cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
 
@@ -409,7 +417,9 @@ def _process_single_cv_file(
         cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
         cv_data_dict["source_gdrive_path"] = source_gdrive_path_str
         cv_data_dict["source_category"] = source_category
-        cv_data_dict["source_folder_role_hint"] = source_folder_role_hint
+
+        # This field is now set by the LLM, so we just use what it returned.
+        # cv_data_dict["source_folder_role_hint"] is already in cv_data_dict
 
         # --- 4. Save JSON for debugging ---
         json_filename = f"{cv_data_dict['candidate_id']}.json"
@@ -449,6 +459,8 @@ def ingest_gdrive_cmd(ctx):
     # --- START NEW: Load Role Lexicon for Gating ---
     try:
         roles_lex = load_role_lexicon(settings.lexicon_dir)
+        # We still load this, but we no longer use it for the rigid check.
+        # It's good practice to keep it loaded for potential future rules.
         role_keys_lookup = set(roles_lex.keys())
         click.echo(f"Loaded {len(role_keys_lookup)} role keys from lexicon for gating.")
     except Exception as e:
@@ -509,25 +521,34 @@ def ingest_gdrive_cmd(ctx):
 
                 if status == "processed":
                     file_path, cv_data = data
-                    cvs_to_ingest.append(cv_data)
-                    processed_files.append(file_path)
+                    # --- NEW GATE: Check if LLM returned null for role hint ---
+                    if cv_data.get("source_folder_role_hint") is None:
+                        # The LLM decided this folder is not a role (e.g., "ruby")
+                        role_key = _normalize_folder_name(file_path.relative_to(inbox_dir).parent.parts[1])
+                        skipped_roles[role_key].append(file_path)
+                    else:
+                        # The LLM successfully mapped it! (e.g., "data_analyst" -> "bi_analyst")
+                        cvs_to_ingest.append(cv_data)
+                        processed_files.append(file_path)
                 elif status == "failed_parsing":
                     failed_files.append(data)
                 elif status == "skipped_ambiguous":
                     skipped_ambiguous.append(data)
                 elif status == "skipped_role":
+                    # This case should no longer happen, but we'll leave it
+                    # in case the old logic wasn't fully removed.
                     file_path, missing_role_key = data
                     skipped_roles[missing_role_key].append(file_path)
 
         # --- 5. Print Summary Report & Archive ---
 
-        # 5a. Print the Data Quality Gate report (VERY IMPORTANT)
+        # 5a. Print the Data Quality Gate report
         if skipped_roles:
             click.secho("\n--- Data Quality Gate: Skipped CVs ---", fg="yellow")
-            click.secho("The following CVs were skipped because their role folder is not in 'role_lexicon.json'.", fg="yellow")
+            click.secho("The following CVs were skipped because their role folder could not be mapped to a known role in 'role_lexicon.json'.", fg="yellow")
             for role_key, files in skipped_roles.items():
-                click.echo(f"  - Missing Role: '{role_key}' (Skipped {len(files)} CV(s))")
-            click.secho("Please add these keys to the lexicon and re-run ingestion.", fg="yellow")
+                click.echo(f"  - Unmapped Role Folder: '{role_key}' (Skipped {len(files)} CV(s))")
+            click.secho("The LLM determined these are not valid role folders.", fg="yellow")
 
         if skipped_ambiguous:
             click.secho("\n--- Skipped Ambiguous CVs ---", fg="yellow")
@@ -548,7 +569,7 @@ def ingest_gdrive_cmd(ctx):
                 click.secho(f"  -> FAILED to archive {file_path.name}: {e}", fg="red")
 
         if failed_files:
-            click.secho(f"{len(failed_files)} file(s) failed to parse and were not archived. See errors above.", fg="yellow")
+            click.secho(f"{len(failed_files)} file(s) failed to parse and were not archived. See errors above.", fg="red")
 
         # 6. Ingest processed CVs into DB and FAISS
         if not cvs_to_ingest:

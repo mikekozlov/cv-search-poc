@@ -1,491 +1,186 @@
 from __future__ import annotations
-
 import os
 import json
-import tempfile
-import sqlite3
-import time
-import re
-import math
-from typing import Dict, Any, Optional, List, Tuple, Iterable, Type
-from pathlib import Path
-from enum import Enum
+from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field, model_validator
+import openai
 from openai import OpenAI, AzureOpenAI
-# --- NEW IMPORT ---
-try:
-    # Newer SDKs may expose it under openai.tools.pydantic (rare)
-    from openai.tools.pydantic import pydantic_function_tool  # type: ignore
-except Exception:
-    # Current stable path (your environment shows this works)
-    from openai import pydantic_function_tool  # type: ignore
-# --- END NEW IMPORT ---
 
 from src.cvsearch.settings import Settings
-from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
-from src.cvsearch.normalize import build_inverse_index, extract_by_lexicon
-from src.cvsearch.storage import CVDatabase
 from src.cvsearch.justification import CandidateJustification
-# This import is fine, it just defines the schema
-# from src.cvsearch.schemas.cv import ExperienceItemStrict, CandidateCVStrict
 
+# Helper for Pydantic models
+try:
+    from pydantic.v1 import BaseModel, Field
+except ImportError:
+    from pydantic import BaseModel, Field
 
-class SeniorityEnum(str, Enum):
-    # ... (no changes)
-    junior = "junior"
-    middle = "middle"
-    senior = "senior"
-    lead = "lead"
-    manager = "manager"
-_PROJECT_TYPES = ("greenfield", "modernization", "migration", "support")
-_SENIORITY = tuple(s.value for s in SeniorityEnum)
-def _enum_from_keys(name: str, keys: Iterable[str]) -> Enum:
-    # ... (no changes)
-    uniq = {k: k for k in sorted(set(keys))}
-    return Enum(name, uniq)
-def _dedupe_enum_list(seq: List[Enum]) -> List[Enum]:
-    # ... (no changes)
-    seen: set[str] = set()
-    out: List[Enum] = []
-    for x in seq:
-        val = x.value if isinstance(x, Enum) else str(x)
-        if val not in seen:
-            seen.add(val)
-            out.append(x)
-    return out
+# --- Schemas for LLM responses ---
+# These models define the expected JSON structure from the LLM.
+
+class LLMCriteria(BaseModel):
+    """
+    Pydantic model for parsing a free-text project brief.
+    """
+    domain: List[str] = Field(..., description="List of canonical domain tags (e.g., 'fintech', 'healthtech').")
+    tech_stack: List[str] = Field(..., description="List of canonical tech stack tags (e.g., 'python', 'react', 'dotnet').")
+    expert_roles: List[str] = Field(..., description="List of canonical expert role tags (e.g., 'backend_engineer', 'frontend_engineer').")
+    project_type: str | None = Field(None, description="The project type (e.g., 'greenfield', 'migration').")
+    team_size: Dict[str, Any] | None = Field(None, description="Team size object, if specified.")
+
+class LLMCV(BaseModel):
+    """
+    Pydantic model for parsing a raw CV text.
+    """
+    name: str | None = Field(None, description="Candidate's full name.")
+    location: str | None = Field(None, description="Candidate's location (e.g., 'USA', 'Poland').")
+    seniority: str = Field(..., description="Canonical seniority (e.g., 'junior', 'middle', 'senior', 'lead').")
+    role_tags: List[str] = Field(..., description="List of canonical role tags (e.g., 'backend_engineer', 'data_analyst').")
+    summary: str | None = Field(None, description="A brief professional summary.")
+    experience: List[Dict[str, Any]] = Field(..., description="List of professional experiences.")
+    tech_tags: List[str] = Field(..., description="A comprehensive list of all canonical tech tags mentioned.")
+    unmapped_tags: str | None = Field(None, description="A comma-separated string of tags found in the CV but not in the lexicons.")
+    source_folder_role_hint: str | None = Field(None, description="The role key derived from the CV's parent folder. If the folder name (e.g., 'John Doe') is not a role, this field must be null.")
 
 
 class OpenAIClient:
     """
-    Centralized client for all OpenAI API interactions, including
-    chat/parsing, embeddings, and vector store management.
-
-    Can be configured to use either standard OpenAI or AzureOpenAI.
+    A client for handling all interactions with the OpenAI or Azure OpenAI API.
     """
     def __init__(self, settings: Settings):
-        # ... (no changes to __init__)
         self.settings = settings
-
         if settings.use_azure_openai:
-            if not settings.azure_endpoint or not settings.azure_api_version:
-                raise ValueError("USE_AZURE_OPENAI is True, but AZURE_ENDPOINT or AZURE_API_VERSION is missing in .env")
-
-            print("--- Initializing AzureOpenAI Client ---")
+            if not all([settings.azure_endpoint, settings.azure_api_version, settings.openai_api_key_str]):
+                raise ValueError("Azure settings (endpoint, version, key) are not fully configured.")
             self.client = AzureOpenAI(
+                api_key=settings.openai_api_key_str,
                 api_version=settings.azure_api_version,
-                azure_endpoint=settings.azure_endpoint,
-                api_key=settings.openai_api_key_str
+                azure_endpoint=settings.azure_endpoint
             )
         else:
-            print("--- Initializing standard OpenAI Client ---")
-            self.client = OpenAI(
-                api_key=settings.openai_api_key_str
+            if not settings.openai_api_key_str:
+                raise ValueError("OPENAI_API_KEY is not set.")
+            self.client = OpenAI(api_key=settings.openai_api_key_str)
+
+    def _get_structured_response(self, prompt: str, system_prompt: str, model: str, pydantic_model: BaseModel) -> Dict[str, Any]:
+        """Helper to get structured JSON output from the LLM."""
+        try:
+            response = self.client.chat.completions.create(
+                model=model,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": f"{system_prompt}\n\nYou must respond with JSON matching the following Pydantic schema:\n{pydantic_model.schema_json(indent=2)}"},
+                    {"role": "user", "content": prompt}
+                ]
             )
+            content = response.choices[0].message.content
+            return json.loads(content)
+        except Exception as e:
+            print(f"Error in _get_structured_response: {e}")
+            print(f"Model: {model}")
+            # Fallback or re-raise
+            raise
 
-        self._strict_schema_cache: Dict[str, Any] = {}
-        self._cv_schema_cache: Dict[str, Any] = {}
-
-    def get_embeddings(self, texts: List[str]) -> List[List[float]]:
-        # ... (no changes)
-        if not texts:
-            return []
-        res = self.client.embeddings.create(
-            model=self.settings.openai_embed_model,
-            input=texts,
-            encoding_format="float"
-        )
-        return [d.embedding for d in res.data]
-
-    def _build_strict_schema(self, lexicon_dir: Path) -> Type[BaseModel]:
-        # ... (no changes)
-        cache_key = str(lexicon_dir)
-        if cache_key in self._strict_schema_cache:
-            return self._strict_schema_cache[cache_key]
-
-        role_lex = load_role_lexicon(lexicon_dir)
-        tech_syn = load_tech_synonyms(lexicon_dir)
-        domain_lex = load_domain_lexicon(lexicon_dir)
-
-        RoleEnumDyn = _enum_from_keys("RoleEnumDyn", role_lex.keys())
-        TechEnumDyn = _enum_from_keys("TechEnumDyn", tech_syn.keys())
-        DomainEnumDyn = _enum_from_keys("DomainEnumDyn", domain_lex.keys())
-        ProjectTypeEnumDyn = _enum_from_keys("ProjectTypeEnumDyn", _PROJECT_TYPES)
-
-        _FE_BLACKLIST: set[str] = {
-            "kubernetes", "docker", "postgresql", "sql_server", "mysql",
-            "redis", "kafka", "rabbitmq", "aws", "azure", "gcp"
-        }
-
-        class TeamMemberStrict(BaseModel):
-            role: RoleEnumDyn = Field(..., description="Canonical role key from role_lexicon.json")
-            seniority: Optional[SeniorityEnum] = Field(default=None)
-            domains: List[DomainEnumDyn] = Field(default_factory=list)
-            tech_tags: List[TechEnumDyn] = Field(default_factory=list)
-            nice_to_have: List[TechEnumDyn] = Field(default_factory=list)
-            rationale: Optional[str] = Field(default=None)
-
-            @model_validator(mode="after")
-            def _dedupe_and_partition(self) -> "TeamMemberStrict":
-                self.domains = _dedupe_enum_list(list(self.domains))
-                self.tech_tags = _dedupe_enum_list(list(self.tech_tags))
-                self.nice_to_have = _dedupe_enum_list(list(self.nice_to_have))
-                must_vals = {t.value for t in self.tech_tags}
-                self.nice_to_have = [t for t in self.nice_to_have if t.value not in must_vals]
-                if self.role.value == "frontend_engineer":
-                    self.tech_tags = [t for t in self.tech_tags if t.value not in _FE_BLACKLIST]
-                    self.nice_to_have = [t for t in self.nice_to_have if t.value not in _FE_BLACKLIST]
-                return self
-
-        class TeamSizeStrict(BaseModel):
-            total: Optional[int] = Field(default=None, ge=0)
-            members: List[TeamMemberStrict] = Field(default_factory=list)
-
-            @model_validator(mode="after")
-            def ensure_total(self) -> "TeamSizeStrict":
-                if self.total is None:
-                    self.total = len(self.members)
-                return self
-
-        class CriteriaStrict(BaseModel):
-            domain: List[DomainEnumDyn] = Field(default_factory=list)
-            tech_stack: List[TechEnumDyn] = Field(default_factory=list)
-            expert_roles: List[RoleEnumDyn] = Field(default_factory=list)
-            project_type: Optional[ProjectTypeEnumDyn] = Field(default=None)
-            team_size: TeamSizeStrict
-
-            @model_validator(mode="after")
-            def dedupe_all(self) -> "CriteriaStrict":
-                self.domain = _dedupe_enum_list(list(self.domain))
-                self.tech_stack = _dedupe_enum_list(list(self.tech_stack))
-                self.expert_roles = _dedupe_enum_list(list(self.expert_roles))
-                return self
-
-            @model_validator(mode="after")
-            def ensure_roles_cover_members(self) -> "CriteriaStrict":
-                existing_vals = [r.value for r in self.expert_roles]
-                for m in self.team_size.members:
-                    rv = m.role.value
-                    if rv not in existing_vals:
-                        self.expert_roles.append(RoleEnumDyn(rv))
-                        existing_vals.append(rv)
-                self.expert_roles = _dedupe_enum_list(list(self.expert_roles))
-                return self
-
-        self._strict_schema_cache[cache_key] = (CriteriaStrict, role_lex, tech_syn, domain_lex)
-        return self._strict_schema_cache[cache_key]
-
-    def _preselect_candidates(self, text: str, lex: Dict[str, List[str]], max_aliases_per_key: int = 6) -> Dict[str, List[str]]:
-        # ... (no changes)
-        inv = build_inverse_index(lex)
-        matched = extract_by_lexicon(text, inv)
-        out: Dict[str, List[str]] = {}
-        for canon in matched:
-            aliases = [canon] + (lex.get(canon, [])[:max_aliases_per_key])
-            out[canon] = aliases
-        return out
-
-    def _build_system_prompt(self, text: str,
-                             role_lex: Dict[str, List[str]],
-                             tech_syn: Dict[str, List[str]],
-                             domain_lex: Dict[str, List[str]]) -> str:
-        # ... (no changes)
-        cand_roles = self._preselect_candidates(text, role_lex)
-        cand_techs = self._preselect_candidates(text, tech_syn)
-        cand_domains = self._preselect_candidates(text, domain_lex)
-
-        def block(name: str, cand: Dict[str, List[str]], full_keys: Iterable[str]) -> str:
-            if cand:
-                lines = [f"- {canon}: {', '.join(aliases)}" for canon, aliases in cand.items()]
-                return f"{name} (canonical → aliases):\n" + "\n".join(lines)
-            sample = ", ".join(list(sorted(set(full_keys)))[:40])
-            return f"{name} (canonical keys): {sample}"
-
-        instr = [
-            "You normalize a free-text client brief into a strict JSON object.",
-            "Rules:",
-            "- Only output values that are in the allowed enums (the schema enforces this).",
-            "- Map any mention or synonym to the proper canonical key before output.",
-            "- For team_size: materialize one member per requested headcount; set total = len(members).",
-            "- expert_roles must include every role listed in team_size.members (no omissions).",
-            f"- project_type is one of: {', '.join(_PROJECT_TYPES)}.",
-            f"- seniority is one of: {', '.join(_SENIORITY)}.",
-            "- For each team member, set tech_tags (primary) and nice_to_have (optional/possible/nice to have) .",
-            "- Partition the global tech list across roles using typical responsibility boundaries.",
-            "- For example Do NOT assign infra/DB/cloud tech (e.g., kubernetes, docker, postgresql, kafka, cloud providers) to frontend_engineer unless the brief explicitly demands it.",
-            "- Always set member.domains; inherit from top-level if not seat-specific.",
-            "- Include a one-line rationale explaining why allocated this member.",
-            "",
-            block("ROLES",   cand_roles,   role_lex.keys()),
-            "",
-            block("TECH",    cand_techs,   tech_syn.keys()),
-            "",
-            block("DOMAINS", cand_domains, domain_lex.keys()),
-        ]
-        return "\n".join(instr)
-
-    # --- START MODIFIED get_structured_criteria ---
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        """Calls LLM to parse free-text request into structured Criteria."""
+
+        # These imports are deferred to method-level to avoid
+        # potential circular dependencies if lexicons ever needed this client.
+        from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
+        role_lex = load_role_lexicon(settings.lexicon_dir)
+        tech_lex = load_tech_synonyms(settings.lexicon_dir)
+        domain_lex = load_domain_lexicon(settings.lexicon_dir)
+
+        system_prompt = f"""
+        You are a TA (Talent Acquisition) expert. Your task is to parse a user's free-text project brief
+        into a structured JSON object.
+
+        Available Role Lexicon: {json.dumps(list(role_lex.keys()), indent=2)}
+        Available Tech Lexicon: {json.dumps(list(tech_lex.keys()), indent=2)}
+        Available Domain Lexicon: {json.dumps(list(domain_lex.keys()), indent=2)}
+
+        Strictly follow these rules:
+        1.  Map all found skills, roles, and domains to their *canonical* keys from the lexicons provided.
+        2.  If a `team_size` or specific roles (e.g., "2 .net devs") are mentioned, populate the `team_size.members` list.
+        3.  `tech_stack` should be a rollup of *all* technologies mentioned in the brief.
         """
-        Single call that returns canonicalized, schema-valid data.
-        (Moved from parser.py)
-        """
-        CriteriaStrict, role_lex, tech_syn, domain_lex = self._build_strict_schema(settings.lexicon_dir)
-        sys_prompt = self._build_system_prompt(text, role_lex, tech_syn, domain_lex)
-
-        # 1. Create the tool from the Pydantic model
-        tool = pydantic_function_tool(CriteriaStrict)
-
-        # 2. Make the explicit chat completions call
-        try:
-            resp = self.client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": text}
-                ],
-                tools=[tool],
-                tool_choice=tool
-            )
-        except Exception as e:
-            print(f"Error calling Azure OpenAI: {e}")
-            raise
-
-        # 3. Manually parse the tool call response
-        tool_call = resp.choices[0].message.tool_calls[0]
-        if not tool_call:
-            raise ValueError("LLM failed to return a tool call. Check Azure deployment name/config.")
-
-        # The arguments are a JSON string, so we must parse them
-        tool_args = json.loads(tool_call.function.arguments)
-        parsed = CriteriaStrict(**tool_args) # Unpack the dict into the model
-
-        return parsed.model_dump(mode="json")
-    # --- END MODIFIED get_structured_criteria ---
-
-
-    def _build_cv_schema(self, lexicon_dir: Path) -> Tuple[Type[BaseModel], Dict, Dict, Dict]:
-        # ... (no changes)
-        cache_key = str(lexicon_dir)
-        if cache_key in self._cv_schema_cache:
-            return self._cv_schema_cache[cache_key]
-
-        role_lex = load_role_lexicon(lexicon_dir)
-        tech_syn = load_tech_synonyms(lexicon_dir)
-        domain_lex = load_domain_lexicon(lexicon_dir)
-
-        RoleEnumDyn = _enum_from_keys("RoleEnumDyn", role_lex.keys())
-        TechEnumDyn = _enum_from_keys("TechEnumDyn", tech_syn.keys())
-        DomainEnumDyn = _enum_from_keys("DomainEnumDyn", domain_lex.keys())
-
-
-        class ExperienceItemStrict(BaseModel):
-            title: str = Field(..., description="The job title, e.g., 'Software Engineer'.")
-            company: str = Field(..., description="The company name or project description.")
-            domain_tags: List[DomainEnumDyn] = Field(
-                default_factory=list,
-                description="A list of canonical domain tags, e.g., 'fintech'."
-            )
-            tech_tags: List[TechEnumDyn] = Field(
-                default_factory=list,
-                description="A list of canonical tech tags used in this role."
-            )
-            from_date: Optional[str] = Field(
-                default=None,
-                alias="from",
-                description="Start date (YYYY-MM), if available."
-            )
-            to_date: Optional[str] = Field(
-                default=None,
-                alias="to",
-                description="End date (YYYY-MM or 'Present'), if available."
-            )
-            highlights: List[str] = Field(
-                default_factory=list,
-                description="A list of bullet points for responsibilities or achievements."
-            )
-
-            class Config:
-                populate_by_name = True
-
-        class CandidateCVStrict(BaseModel):
-            name: str = Field(..., description="Candidate's full name.")
-            location: Optional[str] = Field(
-                default=None,
-                description="Candidate's location, if available."
-            )
-            seniority: Optional[SeniorityEnum] = Field(
-                default=None,
-                description="Inferred seniority level."
-            )
-            role_tags: List[RoleEnumDyn] = Field(
-                default_factory=list,
-                description="A list of canonical role tags, e.g., 'backend_engineer'."
-            )
-            summary: str = Field(
-                ...,
-                description="The 1-3 sentence summary from the top of the CV."
-            )
-            experience: List[ExperienceItemStrict] = Field(
-                default_factory=list,
-                description="A list of the candidate's work experiences or projects."
-            )
-            tech_tags: List[TechEnumDyn] = Field(
-                default_factory=list,
-                description="A top-level list of all canonical tech tags."
-            )
-            unmapped_tags: Optional[str] = Field(
-                default=None,
-                description="A comma-separated list of technologies found in the CV that were not in the official tech enum. This is for admin review."
-            )
-
-        self._cv_schema_cache[cache_key] = (CandidateCVStrict, role_lex, tech_syn, domain_lex)
-        return self._cv_schema_cache[cache_key]
-
-    def _build_cv_system_prompt(self,
-                                text: str,
-                                role_lex: Dict[str, List[str]],
-                                tech_syn: Dict[str, List[str]],
-                                domain_lex: Dict[str, List[str]]) -> str:
-        # ... (no changes)
-        cand_roles = self._preselect_candidates(text, role_lex)
-        cand_techs = self._preselect_candidates(text, tech_syn, max_aliases_per_key=3)
-        cand_domains = self._preselect_candidates(text, domain_lex)
-
-        def block(name: str, cand: Dict[str, List[str]], full_keys: Iterable[str]) -> str:
-            if cand:
-                lines = [f"- {canon}: {', '.join(aliases)}" for canon, aliases in cand.items()]
-                return f"{name} (canonical → aliases):\n" + "\n".join(lines)
-            sample = ", ".join(list(sorted(set(full_keys)))[:40])
-            return f"{name} (canonical keys): {sample}"
-
-        instr = [
-            "You are an expert HR and technical recruiting analyst. Your task is to parse the raw text from a CV and convert it into a structured JSON object, adhering strictly to the provided Pydantic schema.",
-            "Rules:",
-            "- Only output values that are in the allowed enums (the schema enforces this).",
-            "- Map any mention or synonym (e.g., 'K8S', 'Kubernetes (AKS)') to the proper canonical key (e.g., 'kubernetes').",
-            "- Infer 'seniority' and 'role_tags' from the candidate's title and summary.",
-            "- Aggregate all technologies from 'Qualifications', 'Skills', and 'Tools' sections into the single top-level 'tech_tags' list.",
-            "- Treat each 'Project' or 'Work Experience' entry as one item in the 'experience' array.",
-            "- **IMPORTANT**: For each 'experience' item, if a company name is not obvious, use the 'Project Description' text as the 'company' field.",
-            "- Map 'Responsibilities' to the 'highlights' array.",
-            "- Map project-specific technologies to the 'experience.tech_tags' list.",
-            "- Infer 'experience.domain_tags' from the project context (e.g., 'digital banking' -> 'fintech').",
-            "- If you find technologies not in the 'TECH' hints, add them to the 'unmapped_tags' field as a comma-separated string.",
-            "",
-            block("ROLES",   cand_roles,   role_lex.keys()),
-            "",
-            block("TECH",    cand_techs,   tech_syn.keys()),
-            "",
-            block("DOMAINS", cand_domains, domain_lex.keys()),
-        ]
-        return "\n".join(instr)
-
-    # --- START MODIFIED get_structured_cv ---
-    def get_structured_cv(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
-        """
-        Single call that parses raw CV text and returns normalized,
-        schema-valid data.
-        """
-        # 1. Get the strict schema and lexicons
-        CandidateCVStrict, role_lex, tech_syn, domain_lex = self._build_cv_schema(settings.lexicon_dir)
-
-        # 2. Build the targeted system prompt
-        sys_prompt = self._build_cv_system_prompt(text, role_lex, tech_syn, domain_lex)
-
-        # 3. Create the tool
-        tool = pydantic_function_tool(CandidateCVStrict)
-
-        # 4. Call the LLM
-        try:
-            resp = self.client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": text}
-                ],
-                tools=[tool],
-                tool_choice=tool, # Force the LLM to use this tool
-            )
-        except Exception as e:
-            print(f"Error calling Azure OpenAI: {e}")
-            raise
-
-        # 5. Manually parse the tool call response
-        tool_call = resp.choices[0].message.tool_calls[0]
-        if not tool_call:
-            raise ValueError("LLM failed to return a tool call. Check Azure deployment name/config.")
-
-        tool_args = json.loads(tool_call.function.arguments)
-        parsed = CandidateCVStrict(**tool_args)
-
-        return parsed.model_dump(mode="json", by_alias=True)
-    # --- END MODIFIED get_structured_cv ---
-
-    def _build_justification_prompt(self, seat_details: str, cv_context: str) -> Tuple[str, str]:
-        # ... (no changes)
-        system_prompt = (
-            "You are an expert technical recruiter and talent analyst. "
-            "Your job is to write a concise, evidence-based justification for why a "
-            "candidate is a good or bad match for a specific role, based on their CV. "
-            "You must be critical and balanced, citing specific strengths and weaknesses. "
-            "You must provide an 'overall_match_score' from 0.0 (no match) to 1.0 (perfect match) "
-            "based *only* on the provided context."
+        return self._get_structured_response(
+            prompt=text,
+            system_prompt=system_prompt,
+            model=model,
+            pydantic_model=LLMCriteria
         )
 
-        user_prompt = f"""
-Here are the job requirements (the 'seat'):
----
-{seat_details}
----
-
-Here is the candidate's CV data:
----
-{cv_context}
----
-
-Analyze the candidate's CV against the job requirements and provide your justification.
-Base your analysis *only* on the provided texts.
-"""
-        return system_prompt, user_prompt
-
-    # --- START MODIFIED get_candidate_justification ---
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
+        """Calls LLM to justify a candidate match."""
+
+        system_prompt = f"""
+        You are an expert Talent Acquisition manager. Your task is to evaluate a candidate's CV
+        against a specific role's requirements.
+
+        You will be given:
+        1.  [ROLE]: A JSON object describing the role's requirements (role, seniority, must-have tech, nice-to-have tech, domains).
+        2.  [CV]: The candidate's CV context (summary, experience, and tags).
+
+        Your task is to provide a structured JSON justification.
+        - `match_summary`: A 1-2 sentence executive summary.
+        - `strength_analysis`: Bullet points of specific strengths, citing CV evidence.
+        - `gap_analysis`: Bullet points of missing skills or gaps.
+        - `overall_match_score`: A float from 0.0 to 1.0.
         """
-        Calls the LLM to get a structured justification for a single candidate.
+
+        prompt = f"[ROLE]\n{seat_details}\n\n[CV]\n{cv_context}"
+
+        return self._get_structured_response(
+            prompt=prompt,
+            system_prompt=system_prompt,
+            model=self.settings.openai_model, # Use the default model for justification
+            pydantic_model=CandidateJustification
+        )
+
+    def get_structured_cv(self, raw_text: str, role_folder_hint: str, model: str, settings: Settings) -> Dict[str, Any]:
+        """Calls LLM to parse raw CV text into structured JSON."""
+
+        from src.cvsearch.lexicons import load_role_lexicon, load_tech_synonyms, load_domain_lexicon
+        # We need the full lexicon, not just the keys, to check synonyms
+        role_lex = load_role_lexicon(settings.lexicon_dir)
+        tech_lex = load_tech_synonyms(settings.lexicon_dir)
+        domain_lex = load_domain_lexicon(settings.lexicon_dir)
+
+        # Create a reverse index for the prompt to help the LLM map synonyms
+        # e.g., "data analyst": "bi_analyst"
+        role_synonym_map = {}
+        for key, synonyms in role_lex.items():
+            role_synonym_map[key] = key # Map key to itself
+            for syn in synonyms:
+                role_synonym_map[syn.lower().replace(" ", "_")] = key
+
+        system_prompt = f"""
+        You are an expert CV parser. Your task is to parse raw text from a CV slide deck
+        into a structured JSON object.
+
+        You are given a HINT: the normalized parent folder for this CV is '{role_folder_hint}'.
+        
+        Available Role Lexicon (Canonical Keys): {json.dumps(list(role_lex.keys()), indent=2)}
+        Available Tech Lexicon (Canonical Keys): {json.dumps(list(tech_lex.keys()), indent=2)}
+        Available Domain Lexicon (Canonical Keys): {json.dumps(list(domain_lex.keys()), indent=2)}
+
+        Strictly follow these rules:
+        1.  `source_folder_role_hint`:
+            * Analyze the HINT: `{role_folder_hint}`.
+            * Determine if this hint represents a valid professional role.
+            * If it **is** a valid role, find the **best matching canonical key** from the Role Lexicon. For example, a hint of 'data_analyst' should be mapped to the canonical key 'bi_analyst'. A hint of 'etl_developer' should map to 'data_engineer'. Set this field to that canonical key.
+            * If the HINT is **not** a valid role (e.g., it's a person's name like 'yaroslav_siomka' or a technology like 'ruby' or 'golang'), you **MUST** set this field to `null`.
+
+        2.  `role_tags`: Extract all relevant roles from the CV *text itself*, mapping them to the Role Lexicon keys.
+        3.  `tech_tags`: Extract all technologies from the CV *text*, mapping them to the Tech Lexicon keys.
+        4.  `unmapped_tags`: List any tech/tools found but *not* in the lexicons as a comma-separated string.
+        5.  `experience.domain_tags` / `experience.tech_tags`: Map these to the lexicons as well.
         """
-        system_prompt, user_prompt = self._build_justification_prompt(seat_details, cv_context)
 
-        try:
-            # 1. Create the tool
-            tool = pydantic_function_tool(CandidateJustification)
-
-            # 2. Call the LLM
-            resp = self.client.chat.completions.create(
-                model=self.settings.openai_model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                tools=[tool],
-                tool_choice=tool, # Force the LLM to use this tool
-            )
-
-            # 3. Manually parse the tool call response
-            tool_call = resp.choices[0].message.tool_calls[0]
-            if not tool_call:
-                raise ValueError("LLM failed to return a tool call for justification.")
-
-            tool_args = json.loads(tool_call.function.arguments)
-            parsed = CandidateJustification(**tool_args)
-
-            return parsed.model_dump(mode="json")
-        except Exception as e:
-            print(f"Error during justification: {e}")
-            return {
-                "match_summary": "Error generating justification.",
-                "strength_analysis": [],
-                "gap_analysis": [f"Error: {str(e)}"],
-                "overall_match_score": 0.0
-            }
-    # --- END MODIFIED get_candidate_justification ---
+        return self._get_structured_response(
+            prompt=raw_text,
+            system_prompt=system_prompt,
+            model=model,
+            pydantic_model=LLMCV
+        )

@@ -30,7 +30,7 @@ class CVDatabase:
         if self.conn:
             self.conn.close()
 
-    def commit(selfself):
+    def commit(self):
         """Commits the current transaction."""
         self.conn.commit()
 
