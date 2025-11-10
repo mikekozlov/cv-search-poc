@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS candidate (
                                          name         TEXT,
                                          location     TEXT,
                                          seniority    TEXT,
-                                         last_updated TEXT
+                                         last_updated TEXT,
+                                         source_filename TEXT,
+                                         source_gdrive_path TEXT,      -- <-- NEW
+                                         source_category TEXT,         -- <-- NEW
+                                         source_folder_role_hint TEXT  -- <-- NEW
 );
 
 CREATE TABLE IF NOT EXISTS cv_file (
@@ -14,7 +18,7 @@ CREATE TABLE IF NOT EXISTS cv_file (
                                        mime         TEXT,
                                        sha256       TEXT,
                                        FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-);
+    );
 
 -- Experience with clarified CSV caches of tags (normalized tags live elsewhere)
 CREATE TABLE IF NOT EXISTS experience (
@@ -28,7 +32,7 @@ CREATE TABLE IF NOT EXISTS experience (
                                           tech_tags_csv    TEXT,  -- was tech
                                           highlights       TEXT,
                                           FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-);
+    );
 
 -- Optional legacy skills table (unchanged)
 CREATE TABLE IF NOT EXISTS skill (
@@ -38,25 +42,25 @@ CREATE TABLE IF NOT EXISTS skill (
                                      skill_norm   TEXT,
                                      weight       REAL DEFAULT 1.0,
                                      FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-);
+    );
 
 -- Normalized tags -----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS candidate_tag (
                                              candidate_id TEXT NOT NULL,
                                              tag_type     TEXT NOT NULL CHECK (tag_type IN ('role','tech','domain','seniority')),
-                                             tag_key      TEXT NOT NULL,
-                                             weight       REAL NOT NULL DEFAULT 1.0,
-                                             FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE,
-                                             UNIQUE(candidate_id, tag_type, tag_key)
-);
+    tag_key      TEXT NOT NULL,
+    weight       REAL NOT NULL DEFAULT 1.0,
+    FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE,
+    UNIQUE(candidate_id, tag_type, tag_key)
+    );
 
 CREATE TABLE IF NOT EXISTS experience_tag (
                                               experience_id INTEGER NOT NULL,
                                               tag_type      TEXT NOT NULL CHECK (tag_type IN ('tech','domain')),
-                                              tag_key       TEXT NOT NULL,
-                                              FOREIGN KEY(experience_id) REFERENCES experience(id) ON DELETE CASCADE,
-                                              UNIQUE(experience_id, tag_type, tag_key)
-);
+    tag_key       TEXT NOT NULL,
+    FOREIGN KEY(experience_id) REFERENCES experience(id) ON DELETE CASCADE,
+    UNIQUE(experience_id, tag_type, tag_key)
+    );
 
 -- Candidate-level document (search unit) -----------------------------------
 CREATE TABLE IF NOT EXISTS candidate_doc (
@@ -68,7 +72,7 @@ CREATE TABLE IF NOT EXISTS candidate_doc (
                                              location        TEXT,
                                              seniority       TEXT,
                                              FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-);
+    );
 
 -- REMOVED: embedding_doc table
 -- This table is no longer needed as embeddings are stored in the FAISS file.
@@ -89,7 +93,7 @@ CREATE TABLE IF NOT EXISTS faiss_id_map (
                                             faiss_id     INTEGER PRIMARY KEY, -- The integer index ID from the FAISS file
                                             candidate_id TEXT NOT NULL,
                                             FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-);
+    );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_faiss_map_candidate ON faiss_id_map(candidate_id);
 
 

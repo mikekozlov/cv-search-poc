@@ -6,34 +6,11 @@ from typing import Dict, List, Iterable, Set
 def _norm(s: str) -> str:
     return " ".join(s.lower().strip().split())
 
-def build_inverse_index(lex: Dict[str, List[str]]) -> Dict[str, str]:
-    """
-    Build map from any synonym -> canonical label.
-    """
-    inv: Dict[str, str] = {}
-    for canon, syns in lex.items():
-        inv[_norm(canon)] = canon
-        for s in syns:
-            inv[_norm(s)] = canon
-    return inv
+# REMOVED: build_inverse_index(lex: Dict[str, List[str]])
+# This function is incompatible with the new List[str] lexicon format.
 
-def extract_by_lexicon(text: str, inv_index: Dict[str, str]) -> List[str]:
-    """
-    Greedy substring match using the inverse index (normalized).
-    Returns unique canonicals in insertion order.
-    """
-    t = _norm(text)
-    seen: Set[str] = set()
-    out: List[str] = []
-    # Match longer phrases first
-    keys = sorted(inv_index.keys(), key=len, reverse=True)
-    for k in keys:
-        if k and k in t:
-            canon = inv_index[k]
-            if canon not in seen:
-                seen.add(canon)
-                out.append(canon)
-    return out
+# REMOVED: extract_by_lexicon(text: str, inv_index: Dict[str, str])
+# This function depended on build_inverse_index.
 
 PROJECT_TYPES = ["greenfield", "modernization", "migration", "support"]
 
@@ -69,19 +46,5 @@ def infer_roles(text: str, existing: Iterable[str]) -> List[str]:
             out.append("UI Developer")
     return out
 
-def expand_terms(canon_list: Iterable[str], lex: Dict[str, List[str]]) -> List[str]:
-    """
-    Expand canonical labels to a list including their synonyms (for FTS queries).
-    """
-    out: List[str] = []
-    for c in canon_list:
-        out.append(c)
-        out.extend(lex.get(c, []))
-    # de-dup while preserving order
-    seen = set()
-    keep = []
-    for x in out:
-        if x.lower() not in seen:
-            seen.add(x.lower())
-            keep.append(x)
-    return keep
+# REMOVED: expand_terms(canon_list: Iterable[str], lex: Dict[str, List[str]])
+# This function is incompatible with the new List[str] lexicon format.

@@ -60,7 +60,7 @@ class CVDatabase:
             """
             INSERT INTO app_config(key, value)
             VALUES (?, ?)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
             """,
             (key, value),
         )
@@ -82,17 +82,23 @@ class CVDatabase:
         self.conn.execute("DELETE FROM experience WHERE candidate_id = ?", (candidate_id,))
         self.conn.execute("DELETE FROM candidate_tag WHERE candidate_id = ?", (candidate_id,))
 
+    # --- START MODIFIED FUNCTION ---
     def upsert_candidate(self, cv: Dict[str, Any]) -> None:
         """(Moved from ingest.py)"""
         self.conn.execute(
             """
-            INSERT INTO candidate(candidate_id, name, location, seniority, last_updated)
-            VALUES(?,?,?,?,?)
-            ON CONFLICT(candidate_id) DO UPDATE SET
-                                                    name=excluded.name,
-                                                    location=excluded.location,
-                                                    seniority=excluded.seniority,
-                                                    last_updated=excluded.last_updated
+            INSERT INTO candidate(candidate_id, name, location, seniority, last_updated,
+                                  source_filename, source_gdrive_path, source_category, source_folder_role_hint)
+            VALUES(?,?,?,?,?,?,?,?,?)
+                ON CONFLICT(candidate_id) DO UPDATE SET
+                name=excluded.name,
+                                                 location=excluded.location,
+                                                 seniority=excluded.seniority,
+                                                 last_updated=excluded.last_updated,
+                                                 source_filename=excluded.source_filename,
+                                                 source_gdrive_path=excluded.source_gdrive_path,
+                                                 source_category=excluded.source_category,
+                                                 source_folder_role_hint=excluded.source_folder_role_hint
             """,
             (
                 cv["candidate_id"],
@@ -100,8 +106,13 @@ class CVDatabase:
                 cv.get("location", ""),
                 cv.get("seniority", ""),
                 cv.get("last_updated", ""),
+                cv.get("source_filename", None),
+                cv.get("source_gdrive_path", None),     # <-- NEW
+                cv.get("source_category", None),        # <-- NEW
+                cv.get("source_folder_role_hint", None) # <-- NEW
             ),
         )
+    # --- END MODIFIED FUNCTION ---
 
     def insert_experiences_and_tags(self, candidate_id: str, experiences: List[Dict[str, Any]], domain_tags_list: List[str], tech_tags_list: List[str]) -> List[int]:
         """(Refactored from ingest.py)"""
@@ -173,7 +184,7 @@ class CVDatabase:
             """
             INSERT INTO candidate_tag(candidate_id, tag_type, tag_key, weight)
             VALUES (?,?,?,?)
-            ON CONFLICT(candidate_id, tag_type, tag_key)
+                ON CONFLICT(candidate_id, tag_type, tag_key)
                 DO UPDATE SET weight = excluded.weight
             """,
             tags_to_insert
@@ -191,13 +202,13 @@ class CVDatabase:
             """
             INSERT INTO candidate_doc(candidate_id, summary_text, experience_text, tags_text, last_updated, location, seniority)
             VALUES (?,?,?,?,?,?,?)
-            ON CONFLICT(candidate_id) DO UPDATE SET
-                                                    summary_text=excluded.summary_text,
-                                                    experience_text=excluded.experience_text,
-                                                    tags_text=excluded.tags_text,
-                                                    last_updated=excluded.last_updated,
-                                                    location=excluded.location,
-                                                    seniority=excluded.seniority
+                ON CONFLICT(candidate_id) DO UPDATE SET
+                summary_text=excluded.summary_text,
+                                                 experience_text=excluded.experience_text,
+                                                 tags_text=excluded.tags_text,
+                                                 last_updated=excluded.last_updated,
+                                                 location=excluded.location,
+                                                 seniority=excluded.seniority
             """,
             (candidate_id, summary_text, experience_text, tags_text, last_updated, location, seniority),
         )
@@ -472,3 +483,37 @@ class CVDatabase:
         """
         rows = self.conn.execute(sql, faiss_ids).fetchall()
         return {row["faiss_id"]: row["candidate_id"] for row in rows}
+
+    def get_or_create_faiss_id(self, candidate_id: str) -> int:
+        """
+        Atomically retrieves the 64-bit int FAISS ID for a candidate.
+        If the candidate is new, it generates a new ID by incrementing
+        the maximum existing ID.
+
+        This method MUST be called from within an existing transaction
+        to ensure atomicity of the SELECT MAX / INSERT.
+        """
+        # 1. Check if ID already exists
+        cur = self.conn.execute(
+            "SELECT faiss_id FROM faiss_id_map WHERE candidate_id = ?",
+            (candidate_id,)
+        )
+        row = cur.fetchone()
+
+        if row:
+            return int(row["faiss_id"])
+
+        # 2. If not, create a new one
+        # This is safe from race conditions ONLY because the
+        # calling function (pipeline.upsert_cvs) holds a transaction.
+        cur = self.conn.execute("SELECT MAX(faiss_id) FROM faiss_id_map")
+        row = cur.fetchone()
+
+        new_id = (int(row[0]) if row and row[0] is not None else 0) + 1
+
+        self.conn.execute(
+            "INSERT INTO faiss_id_map (faiss_id, candidate_id) VALUES (?, ?)",
+            (new_id, candidate_id)
+        )
+
+        return new_id

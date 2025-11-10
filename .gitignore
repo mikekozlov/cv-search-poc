@@ -138,10 +138,16 @@ ServiceFabricBackup/
 **/uv.lock
 .venv
 venv
-/.idea/vcs.xml
+.idea
 /cvsearch.db
 /runs/
-/.idea/data_source_mapping.xml
 /src/cvsearch.egg-info/
 /data/cv_search.faiss
-/data/cv_search_docs.json
+/data/ingested_cvs_json/
+/data/gdrive_inbox/
+/data/gdrive_archive/
+
+
+# Python cache
+__pycache__/
+*.pyc

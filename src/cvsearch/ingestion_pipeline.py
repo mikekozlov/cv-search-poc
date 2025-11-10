@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from typing import List, Dict, Any, Iterable, Tuple
-import sqlite3, json, os
+import sqlite3, json, os, re, hashlib, shutil
+from datetime import datetime
+from collections import defaultdict
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import click # For secho in reporting
+
 import faiss
 import numpy as np
 from src.cvsearch.data import load_mock_cvs
@@ -9,6 +15,8 @@ from src.cvsearch.settings import Settings
 from src.cvsearch.api_client import OpenAIClient
 from src.cvsearch.storage import CVDatabase
 from src.cvsearch.local_embedder import LocalEmbedder
+from src.cvsearch.cv_parser import CVParser
+from src.cvsearch.lexicons import load_role_lexicon
 
 class CVIngestionPipeline:
     """
@@ -136,75 +144,344 @@ class CVIngestionPipeline:
 
         return (candidate_id, vs_text)
 
-    def _build_global_faiss_index(self, embedding_data: List[Tuple[str, str]]) -> None:
+    # --- START NEW METHODS ---
+
+    def load_or_create_index(self) -> faiss.IndexIDMap:
         """
-        Builds and saves a global FAISS index from the provided candidate text blobs.
-        This follows the RAG-challenge's VectorDBIngestor pattern.
+        Safely loads the FAISS index from disk.
+        If it doesn't exist, creates a new IndexIDMap.
         """
-        if not embedding_data:
-            print("No candidate data provided to build FAISS index. Skipping.")
-            return
-
-        print(f"Starting FAISS index build for {len(embedding_data)} candidates...")
-
-        self.db.clear_faiss_id_map()
-
-        candidate_ids = [d[0] for d in embedding_data]
-        texts_to_embed = [d[1] for d in embedding_data]
-
-        mappings: List[Tuple[int, str]] = [(i, cid) for i, cid in enumerate(candidate_ids)]
-
-        all_embeddings = self.local_embedder.get_embeddings(texts_to_embed)
-
-        dims = self.local_embedder.dims
-        index = faiss.IndexFlatIP(dims)
-
-        embeddings_array = np.array(all_embeddings).astype('float32')
-        faiss.normalize_L2(embeddings_array)
-        index.add(embeddings_array)
-
-        print(f"FAISS index created with {index.ntotal} vectors.")
-
         index_path = str(self.settings.faiss_index_path)
+        if os.path.exists(index_path):
+            try:
+                print(f"Loading existing FAISS index from: {index_path}")
+                index = faiss.read_index(index_path)
+                # Ensure it's an IndexIDMap (or can be cast to one)
+                if not isinstance(index, faiss.IndexIDMap):
+                    print(f"Warning: Index is not an IndexIDMap. Re-creating.")
+                    # This is a recovery step if the old index type is found
+                    return self._create_new_index()
+                print(f"FAISS index loaded. Total vectors: {index.ntotal}")
+                return index
+            except Exception as e:
+                print(f"Error loading FAISS index: {e}. Re-creating.")
+                return self._create_new_index()
+        else:
+            return self._create_new_index()
 
-        os.makedirs(os.path.dirname(index_path), exist_ok=True)
-        faiss.write_index(index, index_path)
+    def _create_new_index(self) -> faiss.IndexIDMap:
+        """Helper to create a new, empty IndexIDMap."""
+        print(f"No FAISS index found. Creating new IndexIDMap...")
+        dims = self.local_embedder.dims
+        # Create the core flat index (IP = Inner Product for cosine similarity)
+        index_flat = faiss.IndexFlatIP(dims)
+        # Wrap it with IndexIDMap to allow 64-bit int IDs
+        index = faiss.IndexIDMap(index_flat)
+        print(f"New FAISS index created (dims: {dims}).")
+        return index
 
-        self.db.insert_faiss_id_map_batch(mappings)
-        self.db.commit()
-
-        print(f"FAISS index saved to: {index_path}")
-        print(f"FAISS ID map saved to SQLite table 'faiss_id_map'.")
-
-    def run_ingestion_from_list(self, cvs: List[Dict[str, Any]]) -> int:
+    def upsert_cvs(self, cvs: List[Dict[str, Any]]) -> int:
         """
-        Ingest all CVs from a list, transactionally. Safe to re-run.
+        Ingests a list of CVs into SQLite and "upserts" their
+        vectors into the FAISS index using stable IDs.
+        Manages its own database transaction.
         """
-        embedding_data: List[Tuple[str, str]] = []
+        if not cvs:
+            print("No CVs provided for upsert. Skipping.")
+            return 0
+
+        print(f"Starting upsert process for {len(cvs)} CV(s)...")
+        index = self.load_or_create_index()
+
+        embeddings_to_add = []
+        faiss_ids_to_add = []
+
         try:
             for cv in cvs:
-                data_for_embedding = self._ingest_single_cv(cv)
-                embedding_data.append(data_for_embedding)
+                # 1. Ingest text/metadata into SQLite
+                (candidate_id, vs_text) = self._ingest_single_cv(cv)
 
+                # 2. Get stable, persistent 64-bit ID (from Phase 1)
+                faiss_id = self.db.get_or_create_faiss_id(candidate_id)
+
+                # 3. Get embedding for the candidate's text blob
+                embedding = self.local_embedder.get_embeddings([vs_text])[0]
+
+                embeddings_to_add.append(embedding)
+                faiss_ids_to_add.append(faiss_id)
+
+            print(f"Batching {len(embeddings_to_add)} vectors into FAISS index...")
+
+            # 4. Batch add/overwrite vectors in FAISS
+            embeddings_array = np.array(embeddings_to_add).astype('float32')
+            ids_array = np.array(faiss_ids_to_add).astype('int64')
+
+            faiss.normalize_L2(embeddings_array)
+            # add_with_ids handles both new additions and updates
+            index.add_with_ids(embeddings_array, ids_array)
+
+            # 5. Save the updated index back to disk
+            index_path = str(self.settings.faiss_index_path)
+            os.makedirs(os.path.dirname(index_path), exist_ok=True)
+            faiss.write_index(index, index_path)
+
+            # 6. Commit all DB changes (candidate data, faiss_id_map)
             self.db.commit()
-            print(f"Successfully ingested {len(cvs)} candidates into SQLite.")
+
+            print(f"FAISS index upsert complete. Total vectors: {index.ntotal}")
+            print(f"Index saved to: {index_path}")
+            print(f"Database changes for {len(cvs)} CVs committed.")
+
+            return len(cvs)
 
         except Exception as e:
-            print(f"Error during SQLite ingestion: {e}. Rolling back.")
+            print(f"Error during FAISS/DB upsert: {e}. Rolling back.")
             self.db.conn.rollback()
             raise
 
-        try:
-            self._build_global_faiss_index(embedding_data)
-        except Exception as e:
-            print(f"Error building FAISS index: {e}")
-            raise
+    # --- END NEW METHODS ---
 
-        return len(cvs)
+    # --- DELETED METHODS ---
+    # _build_global_faiss_index(self, ...)
+    # run_ingestion_from_list(self, ...)
+    # --- END DELETED METHODS ---
 
     def run_mock_ingestion(self) -> int:
         """
-        Loads mock CVs and runs the ingestion pipeline.
+        Clears the database and FAISS index, then ingests mock CVs.
+        This is a true "re-ingest" for development.
         """
+        print("--- Running Mock Ingestion (Full Rebuild) ---")
+
+        # 1. Delete old DB and FAISS files
+        db_path = str(self.settings.db_path)
+        index_path = str(self.settings.faiss_index_path)
+
+        if os.path.exists(db_path):
+            print(f"Removing old database: {db_path}")
+            try:
+                self.db.close() # Close connection before deleting
+            except Exception as e:
+                print(f"Could not close DB connection (may be closed): {e}")
+            os.remove(db_path)
+
+        if os.path.exists(index_path):
+            print(f"Removing old FAISS index: {index_path}")
+            os.remove(index_path)
+
+        # 2. Re-initialize DB and schema
+        # We need to create a new connection object for the new file
+        self.db = CVDatabase(self.settings)
+        print("Initializing new database schema...")
+        self.db.initialize_schema() # This method auto-commits
+
+        # 3. Load mock CVs
         cvs = load_mock_cvs(self.settings.data_dir)
-        return self.run_ingestion_from_list(cvs)
+        print(f"Loaded {len(cvs)} mock CVs from JSON.")
+
+        # 4. Call the new upsert method
+        # This method now manages its own transaction
+        count = self.upsert_cvs(cvs)
+
+        print(f"--- Mock Ingestion Complete: {count} CVs ---")
+        return count
+
+
+    # --- START REFACTORED GDRIVE INGESTION LOGIC ---
+
+    def _normalize_folder_name(self, name: str) -> str:
+        """Converts a folder name to a potential lexicon key."""
+        s = name.lower().strip()
+        s = re.sub(r'\s+', '_', s) # Replace spaces with underscores
+        s = re.sub(r'[^a-z0-9_]', '', s) # Remove non-alphanumeric chars
+        return s
+
+    def _process_single_cv_file(
+            self,
+            file_path: Path,
+            parser: CVParser,
+            client: OpenAIClient,
+            json_output_dir: Path,
+            inbox_dir: Path
+    ) -> tuple[str, dict | tuple[Path, str] | Path]:
+        """
+        Worker function to process one CV file.
+        This is designed to be run in a ThreadPoolExecutor.
+
+        Returns a tuple of (status, data):
+        - ("processed", (Path, cv_dict))
+        - ("skipped_ambiguous", Path)
+        - ("failed_parsing", Path)
+        """
+        try:
+            # 1. Find Role Hint and Apply Quality Gate
+            relative_path = file_path.relative_to(inbox_dir)
+            source_gdrive_path_str = str(relative_path.as_posix())
+
+            path_parts = relative_path.parent.parts
+
+            if not path_parts:
+                return "skipped_ambiguous", file_path
+
+            source_category = path_parts[0]
+
+            if len(path_parts) < 2:
+                return "skipped_ambiguous", file_path
+
+            role_folder_name = path_parts[1]
+            role_key = self._normalize_folder_name(role_folder_name)
+
+            # 2. Process the file (slow part)
+            click.echo(f"  -> Processing {file_path.name} (Hint: {role_key})...")
+
+            raw_text = parser.extract_text(file_path)
+
+            cv_data_dict = client.get_structured_cv(
+                raw_text,
+                role_key,
+                self.settings.openai_model,
+                self.settings
+            )
+
+            # 3. Add All Metadata
+            ingestion_time = datetime.now()
+
+            file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
+            cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
+
+            file_stat = file_path.stat()
+            mod_time = datetime.fromtimestamp(file_stat.st_mtime)
+            cv_data_dict["last_updated"] = mod_time.isoformat()
+
+            cv_data_dict["source_filename"] = file_path.name
+            cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
+            cv_data_dict["source_gdrive_path"] = source_gdrive_path_str
+            cv_data_dict["source_category"] = source_category
+
+            # 4. Save JSON for debugging
+            json_filename = f"{cv_data_dict['candidate_id']}.json"
+            json_save_path = json_output_dir / json_filename
+            with open(json_save_path, 'w', encoding='utf-8') as f:
+                json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
+
+            return "processed", (file_path, cv_data_dict)
+
+        except Exception as e:
+            click.secho(f"  -> FAILED to parse {file_path.name}: {e}", fg="red")
+            return "failed_parsing", file_path
+
+    def run_gdrive_ingestion(self, client: OpenAIClient) -> Dict[str, Any]:
+        """
+        Parses .pptx CVs from the GDrive inbox, saves to JSON for debug,
+        and ingests them into the database and FAISS index.
+        Returns a report dictionary of the outcomes.
+        """
+        parser = CVParser()
+
+        # Load role lexicon (used for logging skips, not hard gating)
+        try:
+            roles_lex = load_role_lexicon(self.settings.lexicon_dir)
+            role_keys_lookup = set(roles_lex.keys())
+            click.echo(f"Loaded {len(role_keys_lookup)} role keys from lexicon.")
+        except Exception as e:
+            click.secho(f"❌ FAILED to load role lexicon: {e}", fg="red")
+            raise
+
+        # Define paths
+        inbox_dir = self.settings.gdrive_local_dest_dir
+        archive_dir = inbox_dir.parent / "gdrive_archive"
+        json_output_dir = self.settings.data_dir / "ingested_cvs_json"
+        archive_dir.mkdir(exist_ok=True)
+        json_output_dir.mkdir(exist_ok=True)
+
+        # Find files to process (RECURSIVE)
+        pptx_files = list(inbox_dir.rglob("*.pptx"))
+        pptx_files = [p for p in pptx_files if "_archive" not in str(p.parent).lower()]
+
+        if not pptx_files:
+            click.echo(f"No .pptx files found in {inbox_dir}")
+            return {"processed_count": 0, "status": "no_files_found"}
+
+        click.echo(f"Found {len(pptx_files)} .pptx CV(s) to process...")
+
+        # Loop, Extract, and Map (Parallelized)
+        cvs_to_ingest = []
+        processed_files = []
+        failed_files = []
+        skipped_ambiguous = []
+        skipped_roles = defaultdict(list)
+
+        max_workers = min(10, len(pptx_files))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_path = {
+                executor.submit(
+                    self._process_single_cv_file,
+                    file_path,
+                    parser,
+                    client,
+                    json_output_dir,
+                    inbox_dir
+                ): file_path for file_path in pptx_files
+            }
+
+            for future in as_completed(future_to_path):
+                status, data = future.result()
+
+                if status == "processed":
+                    file_path, cv_data = data
+                    if cv_data.get("source_folder_role_hint") is None:
+                        role_key = self._normalize_folder_name(file_path.relative_to(inbox_dir).parent.parts[1])
+                        skipped_roles[role_key].append(str(file_path))
+                    else:
+                        cvs_to_ingest.append(cv_data)
+                        processed_files.append(file_path)
+                elif status == "failed_parsing":
+                    failed_files.append(str(data))
+                elif status == "skipped_ambiguous":
+                    skipped_ambiguous.append(str(data.relative_to(inbox_dir)))
+
+        # Archive *only* successfully processed files
+        archived_files = []
+        archival_failures = []
+        for file_path in processed_files:
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            archive_filename = f"{file_path.stem}_archived_at_{timestamp}{file_path.suffix}"
+            archive_dest_path = archive_dir / archive_filename
+            try:
+                shutil.move(str(file_path), str(archive_dest_path))
+                archived_files.append(archive_filename)
+            except Exception as e:
+                archival_failures.append((file_path.name, str(e)))
+
+        # Ingest processed CVs into DB and FAISS
+        ingested_count = 0
+        if cvs_to_ingest:
+            click.echo(f"\nIngesting {len(cvs_to_ingest)} processed CV(s) into database...")
+            ingested_count = self.upsert_cvs(cvs_to_ingest)
+            click.secho(f"✅ Successfully upserted {ingested_count} new CV(s). Index is updated.", fg="green")
+        else:
+            click.echo("\nNo new CVs to ingest.")
+
+        unmapped = [
+            cv.get("unmapped_tags") for cv in cvs_to_ingest
+            if cv.get("unmapped_tags")
+        ]
+        all_unmapped_tags = []
+        if unmapped:
+            all_unmapped_tags = sorted(list(set(
+                t.strip() for tags in unmapped for t in tags.split(',') if t.strip()
+            )))
+
+        return {
+            "processed_count": ingested_count,
+            "archived_files": archived_files,
+            "archival_failures": archival_failures,
+            "skipped_roles": dict(skipped_roles),
+            "skipped_ambiguous": skipped_ambiguous,
+            "failed_files": failed_files,
+            "unmapped_tags": all_unmapped_tags,
+            "json_output_dir": str(json_output_dir)
+        }
+
+    # --- END REFACTORED GDRIVE INGESTION LOGIC ---

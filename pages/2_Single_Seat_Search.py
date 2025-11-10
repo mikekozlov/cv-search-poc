@@ -1,6 +1,7 @@
 import streamlit as st
 import sys
 from pathlib import Path
+from typing import List, Dict, Any # <-- Added List, Dict, Any for type hints
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 SRC_PATH = APP_ROOT / "src"
@@ -37,9 +38,11 @@ if "services_loaded" not in st.session_state:
 try:
     settings: Settings = st.session_state.settings
     client: OpenAIClient = st.session_state.client
-    role_lex: dict = st.session_state.role_lex
-    tech_lex: dict = st.session_state.tech_lex
-    domain_lex: dict = st.session_state.domain_lex
+
+    # Load the new list-based lexicons
+    role_lex_list: List[str] = st.session_state.role_lex
+    tech_lex_list: List[str] = st.session_state.tech_lex
+    domain_lex_list: List[str] = st.session_state.domain_lex
 except KeyError as e:
     st.error(f"Failed to load service or lexicon: {e}. Please return to the Home page and reload.")
     st.stop()
@@ -51,7 +54,8 @@ with st.form("seat_query_form"):
     with col1:
         role = st.selectbox(
             "Role",
-            options=[""] + sorted(list(role_lex.keys())),
+            # Use the list directly
+            options=[""] + sorted(role_lex_list),
             help="The primary role for this seat."
         )
     with col2:
@@ -65,17 +69,20 @@ with st.form("seat_query_form"):
     st.subheader("Technical Skills & Domains")
     must_have = st.multiselect(
         "Must-Have Tech",
-        options=sorted(list(tech_lex.keys())),
+        # Use the list directly
+        options=sorted(tech_lex_list),
         help="Hard requirements. Candidates will be ranked on matching these."
     )
     nice_to_have = st.multiselect(
         "Nice-to-Have Tech",
-        options=sorted(list(tech_lex.keys())),
+        # Use the list directly
+        options=sorted(tech_lex_list),
         help="Optional skills that add to the score."
     )
     domains = st.multiselect(
         "Domains",
-        options=sorted(list(domain_lex.keys())),
+        # Use the list directly
+        options=sorted(domain_lex_list),
         help="Optional domain experience (e.g., 'fintech', 'healthtech')."
     )
 

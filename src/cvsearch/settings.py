@@ -17,9 +17,35 @@ class Settings(BaseSettings):
         extra='ignore'
     )
 
-    openai_api_key: Optional[SecretStr] = None
-    openai_model: str = "gpt-4.1-mini"
-    openai_embed_model: str = "text-embedding-3-large"
+    # --- Client Toggle ---
+    use_azure_openai: bool = Field(
+        default=False,
+        description="Set to True to use AzureOpenAI, False for standard OpenAI."
+    )
+
+    # --- Standard OpenAI Settings ---
+    openai_api_key: Optional[SecretStr] = None # This will ALSO be used for Azure's 'api_key'
+
+    # --- Azure OpenAI Settings ---
+    azure_endpoint: Optional[str] = Field(
+        default=None,
+        description="The endpoint for your Azure OpenAI resource (e.g., 'https://...')"
+    )
+    azure_api_version: Optional[str] = Field(
+        default=None,
+        description="The API version for Azure OpenAI (e.g., '2024-12-01-preview')"
+    )
+
+    # --- Model Names (Deployment Names for Azure) ---
+    openai_model: str = Field(
+        default="gpt-4.1-mini",
+        description="The model name (OpenAI) or deployment name (Azure) for chat."
+    )
+    openai_embed_model: str = Field(
+        default="text-embedding-3-large",
+        description="The model name (OpenAI) or deployment name (Azure) for embeddings."
+    )
+
 
     search_mode: str = "hybrid"
     search_vs_topk: int = 8
@@ -33,6 +59,24 @@ class Settings(BaseSettings):
 
     faiss_index_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search.faiss")
     faiss_doc_map_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search_docs.json")
+
+    # --- NEW: Google Drive Sync Settings ---
+    gdrive_rclone_config_path: Optional[Path] = Field(
+        default=None,
+        description="Path to your rclone.conf file. If None, rclone will try its default locations."
+    )
+    gdrive_remote_name: str = Field(
+        default="gdrive",
+        description="The name of your Google Drive remote in rclone (e.g., 'gdrive')."
+    )
+    gdrive_source_dir: str = Field(
+        default="CV_Inbox",
+        description="The specific folder path on Google Drive to sync from."
+    )
+    gdrive_local_dest_dir: Path = Field(
+        default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox",
+        description="The local directory to download/sync files into."
+    )
 
     @property
     def openai_api_key_str(self) -> str | None:
