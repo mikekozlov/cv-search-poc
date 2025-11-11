@@ -387,3 +387,6 @@ class CVIngestionPipeline:
             "unmapped_tags": all_unmapped_tags,
             "json_output_dir": str(json_output_dir)
         }
+
+    def run_ingestion_from_list(self, cvs: List[Dict[str, Any]]) -> int:
+        return self.upsert_cvs(cvs)
