@@ -237,19 +237,14 @@ class CVIngestionPipeline:
             source_gdrive_path_str = str(relative_path.as_posix())
 
             path_parts = relative_path.parent.parts
+            source_category = path_parts[0] if path_parts else None
 
-            if not path_parts:
-                return "skipped_ambiguous", file_path
+            role_key = ""
+            if len(path_parts) >= 2:
+                role_key = self._normalize_folder_name(path_parts[1])
 
-            source_category = path_parts[0]
-
-            if len(path_parts) < 2:
-                return "skipped_ambiguous", file_path
-
-            role_folder_name = path_parts[1]
-            role_key = self._normalize_folder_name(role_folder_name)
-
-            click.echo(f"  -> Processing {file_path.name} (Hint: {role_key})...")
+            hint_display = role_key if role_key else "n/a"
+            click.echo(f"  -> Processing {file_path.name} (Hint: {hint_display})...")
 
             raw_text = parser.extract_text(file_path)
 
@@ -364,12 +359,8 @@ class CVIngestionPipeline:
 
                 if status == "processed":
                     file_path, cv_data = data
-                    if cv_data.get("source_folder_role_hint") is None:
-                        role_key = self._normalize_folder_name(file_path.relative_to(inbox_dir).parent.parts[1])
-                        skipped_roles[role_key].append(str(file_path))
-                    else:
-                        cvs_to_ingest.append(cv_data)
-                        processed_files.append(file_path)
+                    cvs_to_ingest.append(cv_data)
+                    processed_files.append(file_path)
                 elif status == "failed_parsing":
                     failed_files.append(str(data))
                 elif status == "skipped_ambiguous":
@@ -409,7 +400,7 @@ class CVIngestionPipeline:
             "processed_count": ingested_count,
             "archived_files": archived_files,
             "archival_failures": archival_failures,
-            "skipped_roles": dict(skipped_roles),
+            "skipped_roles": {},
             "skipped_ambiguous": skipped_ambiguous,
             "failed_files": failed_files,
             "unmapped_tags": all_unmapped_tags,
