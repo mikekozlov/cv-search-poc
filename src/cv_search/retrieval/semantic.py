@@ -39,7 +39,7 @@ class LocalSemanticRetriever:
         musts = ", ".join(seat["must_have"]) if seat["must_have"] else "(no hard musts)"
         nice = ", ".join(seat["nice_to_have"]) if seat["nice_to_have"] else "(optional)"
         return (
-            f"{seniority}+ {role} in {domains}. "
+            f"{seniority} {role} in {domains}. "
             f"Must: {musts}. Nice: {nice}. "
             f"Prefer demonstrated outcomes and similar patterns (latency, availability, LCP, etc.)."
         )
