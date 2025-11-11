@@ -8,6 +8,7 @@ from openai import AzureOpenAI, OpenAI
 from cv_search.config.settings import Settings
 from cv_search.lexicon.loader import load_domain_lexicon, load_role_lexicon, load_tech_synonyms
 from cv_search.llm.justification import CandidateJustification
+from cv_search.llm.logger import log_chat
 
 try:
     from pydantic.v1 import BaseModel, Field
@@ -67,22 +68,34 @@ class OpenAIClient:
             model: str,
             pydantic_model: Type[BaseModel],
     ) -> Dict[str, Any]:
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    f"{system_prompt}\n\n"
+                    "You must respond with JSON matching the following Pydantic schema:\n"
+                    f"{self._schema_json(pydantic_model)}"
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ]
         response = self.client.chat.completions.create(
             model=model,
             response_format={"type": "json_object"},
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        f"{system_prompt}\n\n"
-                        "You must respond with JSON matching the following Pydantic schema:\n"
-                        f"{self._schema_json(pydantic_model)}"
-                    ),
-                },
-                {"role": "user", "content": prompt},
-            ],
+            messages=messages,
         )
         content = response.choices[0].message.content
+        usage_obj = getattr(response, "usage", None)
+        usage = usage_obj.model_dump() if hasattr(usage_obj, "model_dump") else None
+        provider = "azure_openai" if self.settings.use_azure_openai else "openai"
+        log_chat(
+            messages=messages,
+            model=model,
+            response_content=content,
+            provider=provider,
+            usage=usage,
+            meta={"pydantic_model": getattr(pydantic_model, "__name__", "Unknown")},
+        )
         return json.loads(content)
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
