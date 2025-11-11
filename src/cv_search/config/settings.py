@@ -7,7 +7,6 @@ from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-# Resolve repository root:
 # settings.py -> config -> cv_search -> src -> <repo root>
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
