@@ -356,6 +356,7 @@ def _print_gdrive_report(report: Dict[str, Any]):
     archival_failures = report.get("archival_failures", [])
     unmapped_tags = report.get("unmapped_tags", [])
     json_output_dir = report.get("json_output_dir", "data/ingested_cvs_json")
+    skipped_unchanged = report.get("skipped_unchanged", [])
 
     if skipped_roles:
         click.secho("\n--- Data Quality Gate: Skipped CVs ---", fg="yellow")
@@ -369,6 +370,11 @@ def _print_gdrive_report(report: Dict[str, Any]):
         click.secho("The following CVs were skipped because they were not in a role folder:", fg="yellow")
         for file_path in skipped_ambiguous:
             click.echo(f"  - {file_path}")
+
+    if skipped_unchanged:
+        click.secho("\n--- Skipped Unchanged CVs ---", fg="yellow")
+        for rel_path in skipped_unchanged:
+            click.echo(f"  - {rel_path}")
 
     if archival_failures:
         click.secho("\n--- Archival Failures ---", fg="red")
@@ -388,11 +394,13 @@ def _print_gdrive_report(report: Dict[str, Any]):
 
 
 @cli.command("ingest-gdrive")
+@click.option("--file", "single_file", type=str, required=False, help="Process only this file name (basename with extension) from the GDrive inbox.")
 @click.pass_context
-def ingest_gdrive_cmd(ctx):
+def ingest_gdrive_cmd(ctx, single_file):
     """
     Parses .pptx CVs from the GDrive inbox, saves to JSON for debug,
     and ingests them into the database and FAISS index.
+    If --file is provided, only that file name (basename + extension) will be processed.
     """
     settings: Settings = ctx.obj["settings"]
     client: OpenAIClient = ctx.obj["client"]
@@ -400,7 +408,7 @@ def ingest_gdrive_cmd(ctx):
 
     try:
         pipeline = CVIngestionPipeline(db, settings)
-        report = pipeline.run_gdrive_ingestion(client)
+        report = pipeline.run_gdrive_ingestion(client, target_filename=single_file)
         _print_gdrive_report(report)
 
     except Exception as e:

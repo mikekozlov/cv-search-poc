@@ -285,7 +285,7 @@ class CVIngestionPipeline:
             click.secho(f"  -> FAILED to parse {file_path.name}: {e}", fg="red")
             return "failed_parsing", file_path
 
-    def run_gdrive_ingestion(self, client: OpenAIClient) -> Dict[str, Any]:
+    def run_gdrive_ingestion(self, client: OpenAIClient, target_filename: str | None = None) -> Dict[str, Any]:
         parser = CVParser()
 
         try:
@@ -305,11 +305,39 @@ class CVIngestionPipeline:
         pptx_files = list(inbox_dir.rglob("*.pptx"))
         pptx_files = [p for p in pptx_files if "_archive" not in str(p.parent).lower()]
 
+        if target_filename:
+            pptx_files = [p for p in pptx_files if p.name == target_filename]
+
         if not pptx_files:
             click.echo(f"No .pptx files found in {inbox_dir}")
             return {"processed_count": 0, "status": "no_files_found"}
 
-        click.echo(f"Found {len(pptx_files)} .pptx CV(s) to process...")
+        skipped_unchanged: List[str] = []
+        filtered: List[Path] = []
+        for p in pptx_files:
+            mtime_iso = datetime.fromtimestamp(p.stat().st_mtime).isoformat()
+            last_upd = self.db.get_candidate_last_updated_by_source_filename(p.name)
+            if last_upd and last_upd == mtime_iso:
+                skipped_unchanged.append(str(p.relative_to(inbox_dir)))
+            else:
+                filtered.append(p)
+
+        if not filtered and skipped_unchanged:
+            click.echo("No new or modified .pptx files to process.")
+            return {
+                "processed_count": 0,
+                "status": "no_changes",
+                "skipped_unchanged": skipped_unchanged,
+                "archived_files": [],
+                "archival_failures": [],
+                "skipped_roles": {},
+                "skipped_ambiguous": [],
+                "failed_files": [],
+                "unmapped_tags": [],
+                "json_output_dir": str(json_output_dir),
+            }
+
+        click.echo(f"Found {len(filtered)} .pptx CV(s) to process...")
 
         cvs_to_ingest = []
         processed_files = []
@@ -317,7 +345,7 @@ class CVIngestionPipeline:
         skipped_ambiguous = []
         skipped_roles = defaultdict(list)
 
-        max_workers = min(10, len(pptx_files))
+        max_workers = min(10, len(filtered))
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_path = {
@@ -328,7 +356,7 @@ class CVIngestionPipeline:
                     client,
                     json_output_dir,
                     inbox_dir
-                ): file_path for file_path in pptx_files
+                ): file_path for file_path in filtered
             }
 
             for future in as_completed(future_to_path):
@@ -385,7 +413,8 @@ class CVIngestionPipeline:
             "skipped_ambiguous": skipped_ambiguous,
             "failed_files": failed_files,
             "unmapped_tags": all_unmapped_tags,
-            "json_output_dir": str(json_output_dir)
+            "json_output_dir": str(json_output_dir),
+            "skipped_unchanged": skipped_unchanged,
         }
 
     def run_ingestion_from_list(self, cvs: List[Dict[str, Any]]) -> int:

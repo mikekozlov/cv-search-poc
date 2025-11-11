@@ -415,3 +415,12 @@ class CVDatabase:
         if not row:
             return None
         return {k: row[k] for k in row.keys()}
+
+    def get_candidate_last_updated_by_source_filename(self, source_filename: str) -> Optional[str]:
+        row = self.conn.execute(
+            "SELECT last_updated FROM candidate WHERE source_filename = ?",
+            (source_filename,),
+        ).fetchone()
+        if not row:
+            return None
+        return row["last_updated"]
