@@ -6,13 +6,11 @@ from typing import Optional
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# settings.py -> config -> cv_search -> src -> <repo root>
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class Settings(BaseSettings):
-    """Centralized configuration shared across CLI, Streamlit, and services."""
-
     model_config = SettingsConfigDict(
         env_file=REPO_ROOT / ".env",
         env_file_encoding="utf-8",
@@ -37,9 +35,9 @@ class Settings(BaseSettings):
     search_w_lex: float = 1.0
     search_w_sem: float = 0.8
 
-    # Place DB under repo-root/data/db/cvsearch.db
     db_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "db" / "cvsearch.db")
     data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data")
+    test_data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test")
     lexicon_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "lexicons")
     schema_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "db" / "schema.sql")
 
