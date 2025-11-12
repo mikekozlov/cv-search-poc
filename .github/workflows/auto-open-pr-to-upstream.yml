@@ -1,0 +1,49 @@
+name: Auto PR to upstream when ahead
+
+on:
+  push:
+    branches:
+      - main              # change or add patterns if you want more branches
+  workflow_dispatch:       # optional manual run
+
+jobs:
+  pr-to-upstream:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create/Update PR to upstream if this branch is ahead
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_PR_TOKEN }}   # your PAT
+          UPSTREAM_REPO: mikekozlov/cv-search-poc
+          BASE_BRANCH: main
+          HEAD_OWNER: ${{ github.repository_owner }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cmp=$(curl -sSL -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${UPSTREAM_REPO}/compare/${BASE_BRANCH}...${HEAD_OWNER}:${HEAD_BRANCH}")
+          ahead=$(echo "$cmp" | jq -r '.ahead_by // 0')
+          if [ "$ahead" -le 0 ]; then echo "Not ahead"; exit 0; fi
+
+          existing=$(gh pr list -R "${UPSTREAM_REPO}" \
+                       --head "${HEAD_OWNER}:${HEAD_BRANCH}" --base "${BASE_BRANCH}" \
+                       --state open --json number --jq '.[0].number')
+          if [ -n "${existing}" ] && [ "${existing}" != "null" ]; then
+            echo "PR #${existing} already open"; exit 0
+          fi
+
+          title="Auto PR: ${HEAD_OWNER}:${HEAD_BRANCH} → ${UPSTREAM_REPO}:${BASE_BRANCH}"
+          body="Created automatically because the fork branch is ahead."
+
+          gh pr create -R "${UPSTREAM_REPO}" \
+            --base "${BASE_BRANCH}" \
+            --head "${HEAD_OWNER}:${HEAD_BRANCH}" \
+            --title "${title}" \
+            --body "${body}" \
+            --no-maintainer-edit
+
+          echo "Opened a new PR to ${UPSTREAM_REPO}."
