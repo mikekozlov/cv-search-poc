@@ -5,7 +5,6 @@ from typing import Dict, List
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.config.settings import Settings
 from cv_search.lexicon.loader import (
-    RoleExpertiseEntry,
     load_domain_lexicon,
     load_expertise_lexicon,
     load_role_lexicon,
@@ -23,7 +22,7 @@ def load_stateless_services() -> Dict[str, object]:
     role_lex: List[str] = load_role_lexicon(lexicon_dir)
     tech_lex: List[str] = load_tech_synonyms(lexicon_dir)
     domain_lex: List[str] = load_domain_lexicon(lexicon_dir)
-    expertise_lex: List[RoleExpertiseEntry] = load_expertise_lexicon(lexicon_dir)
+    expertise_lex: List[str] = load_expertise_lexicon(lexicon_dir)
 
     return {
         "settings": settings,

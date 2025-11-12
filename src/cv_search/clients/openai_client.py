@@ -175,7 +175,7 @@ class OpenAIClient:
         Available Role Lexicon (Canonical Keys): {json.dumps(role_lex_list, indent=2)}
         Available Tech Lexicon (Canonical Keys): {json.dumps(tech_lex_list, indent=2)}
         Available Domain Lexicon (Canonical Keys): {json.dumps(domain_lex_list, indent=2)}
-        Available Role-to-Expertise Lexicon: {json.dumps(expertise_lex_list, indent=2)}
+        Available Expertise Lexicon (Canonical Keys): {json.dumps(expertise_lex_list, indent=2)}
 
         Strictly follow these rules:
         1.  `source_folder_role_hint`:
@@ -185,8 +185,8 @@ class OpenAIClient:
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract all relevant roles from the CV *text itself*, mapping them to the Role Lexicon keys.
-        3.  `expertise_tags`: Infer direction/expertise areas for the candidate. Use the Role-to-Expertise lexicon to
-            choose canonical expertise keys aligned with the detected roles whenever possible.
+        3.  `expertise_tags`: Infer direction/expertise areas for the candidate. Map all inferred expertise to the
+            canonical keys provided in the Expertise Lexicon.
         4.  `tech_tags`: Extract all technologies from the CV *text*, mapping them to the Tech Lexicon keys.
         5.  `unmapped_tags`: List any tech/tools found but *not* in the lexicons as a comma-separated string.
         6.  `experience.domain_tags` / `experience.tech_tags`: Map these to the lexicons as well.

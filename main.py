@@ -100,8 +100,7 @@ def show_lexicons_cmd(ctx):
     doms = load_domain_lexicon(settings.lexicon_dir)
     expertise = load_expertise_lexicon(settings.lexicon_dir)
 
-    expertise_count = sum(len(entry["expertises"]) for entry in expertise)
-    click.echo(f"Roles: {len(roles)} | Techs: {len(techs)} | Domains: {len(doms)} | Expertise: {expertise_count}")
+    click.echo(f"Roles: {len(roles)} | Techs: {len(techs)} | Domains: {len(doms)} | Expertise: {len(expertise)}")
 
     # Backward-compatible preview: handle list or dict
     if isinstance(techs, dict):
