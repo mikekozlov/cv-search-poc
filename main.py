@@ -413,5 +413,47 @@ def ingest_gdrive_cmd(ctx, single_file):
         db.close()
 
 
+@cli.command("ingest-watcher")
+@click.pass_context
+def ingest_watcher_cmd(ctx):
+    """Starts the file watcher (Producer)."""
+    from cv_search.ingestion.async_pipeline import Watcher
+    from cv_search.ingestion.redis_client import RedisClient
+    
+    settings: Settings = ctx.obj["settings"]
+    redis_client = RedisClient()
+    
+    watcher = Watcher(settings, redis_client)
+    watcher.run()
+
+
+@cli.command("ingest-extractor")
+@click.pass_context
+def ingest_extractor_cmd(ctx):
+    """Starts the extractor worker (Worker A)."""
+    from cv_search.ingestion.async_pipeline import ExtractorWorker
+    from cv_search.ingestion.redis_client import RedisClient
+    
+    settings: Settings = ctx.obj["settings"]
+    redis_client = RedisClient()
+    
+    worker = ExtractorWorker(settings, redis_client)
+    worker.run()
+
+
+@cli.command("ingest-enricher")
+@click.pass_context
+def ingest_enricher_cmd(ctx):
+    """Starts the enricher worker (Worker B)."""
+    from cv_search.ingestion.async_pipeline import EnricherWorker
+    from cv_search.ingestion.redis_client import RedisClient
+    
+    settings: Settings = ctx.obj["settings"]
+    redis_client = RedisClient()
+    
+    worker = EnricherWorker(settings, redis_client)
+    worker.run()
+
+
 if __name__ == "__main__":
     cli()
