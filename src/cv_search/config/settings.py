@@ -38,12 +38,7 @@ class Settings(BaseSettings):
     db_url: str = Field(
         default="postgresql://cvsearch:cvsearch@localhost:5433/cvsearch",
         validation_alias="DB_URL",
-        description="Primary Postgres DSN used outside agentic mode.",
-    )
-    agentic_db_url: str = Field(
-        default="postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test",
-        validation_alias="AGENTIC_DB_URL",
-        description="Isolated Postgres DSN used when AGENTIC_TEST_MODE=1.",
+        description="Primary Postgres DSN for all environments.",
     )
     db_pool_min_size: int = Field(default=1)
     db_pool_max_size: int = Field(default=4)
@@ -52,14 +47,13 @@ class Settings(BaseSettings):
     data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data")
     test_data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test")
     lexicon_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "lexicons")
+    runs_dir: Path = Field(default_factory=lambda: REPO_ROOT / "runs")
 
     gdrive_rclone_config_path: Optional[Path] = Field(default=None)
     gdrive_remote_name: str = Field(default="gdrive")
     gdrive_source_dir: str = Field(default="CV_Inbox")
     gdrive_local_dest_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox")
 
-    agentic_test_mode: bool = Field(default=False, validation_alias="AGENTIC_TEST_MODE")
-    agentic_runs_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_runs")
     llm_stub_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "llm_stubs")
 
     @property
@@ -68,8 +62,8 @@ class Settings(BaseSettings):
 
     @property
     def active_db_url(self) -> str:
-        return self.agentic_db_url if self.agentic_test_mode else self.db_url
+        return self.db_url
 
     @property
     def active_runs_dir(self) -> Path:
-        return self.agentic_runs_dir if self.agentic_test_mode else REPO_ROOT / "runs"
+        return self.runs_dir

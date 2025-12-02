@@ -4,7 +4,7 @@
 
 This document sets expectations for how automated agents (and humans following the same conventions) should work in this repository. It complements `.agent/PLANS.md`, which defines how to author and maintain ExecPlans.
 
-Whenever you are making non‑trivial changes (new features, significant refactors, or multi-file edits), you must:
+Whenever you are making non-trivial changes (new features, significant refactors, or multi-file edits), you must:
 
 - Drive the work from an ExecPlan as described in `.agent/PLANS.md`.
 - Assume a **Windows host** and **PowerShell** as the only supported shell.
@@ -28,16 +28,16 @@ All commands shown in ExecPlans or in your final answers must be valid **PowerSh
 - Use PowerShell environment variable syntax:
 
     - Correct:
-        - `$env:AGENTIC_TEST_MODE = "1"`
+        - `$env:DB_URL = "postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test"`
         - `$env:REDIS_URL = "redis://:Temp@Pass_word1@localhost:6379/15"`
     - Do **not** use Bash syntax such as:
-        - `export AGENTIC_TEST_MODE=1`
+        - `export DB_URL=...`
         - `REDIS_URL=... pytest ...`
         - `./venv/bin/python`
 
 - When you show commands, include the working directory where relevant, e.g.:
 
-    - `PS C:\Users\<username>\Projects\cv-search-poc> $env:AGENTIC_TEST_MODE = "1"`
+    - `PS C:\Users\<username>\Projects\cv-search-poc> $env:DB_URL = "postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test"`
     - `PS C:\Users\<username>\Projects\cv-search-poc> python scripts\run_agentic_suite.py`
 
 If you copy or adapt instructions from upstream or other docs that use Bash/zsh syntax, you must rewrite them into PowerShell form in your ExecPlan or final answer.
@@ -50,7 +50,7 @@ When writing **complex features** or **significant refactors**, you must use an 
 
 - ExecPlans are stored under `.agent/plans/*.md`.
 - The rules for structure, formatting, and maintenance are defined in `.agent/PLANS.md`.
-- Treat `.agent/PLANS.md` as authoritative and follow it “to the letter”.
+- Treat `.agent/PLANS.md` as authoritative and follow it "to the letter".
 
 At a minimum, before changing code:
 
@@ -68,7 +68,24 @@ If you change **any code or tests**, you must run tests and ensure they pass bef
 
 From the repository root (for example `PS C:\Users\<username>\Projects\cv-search-poc>`):
 
-1. Enable agentic test mode so tests run against deterministic stubs and isolated paths:
+1. Start Postgres with pgvector locally if it is not already running:
 
    ```powershell
-   PS C:\Users\<username>\Projects\cv-search-poc> $env:AGENTIC_TEST_MODE = "1"
+   PS C:\Users\<username>\Projects\cv-search-poc> docker compose -f docker-compose.pg.yml up -d
+   ```
+
+2. Point settings to the isolated test database and paths:
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:DB_URL = "postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test"
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:RUNS_DIR = "data/test/tmp/runs"
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:DATA_DIR = "data/test"
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:GDRIVE_LOCAL_DEST_DIR = "data/test/gdrive_inbox"
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:OPENAI_API_KEY = "test-key"
+   ```
+
+3. Run the integration suite:
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> uv run pytest tests\integration -q
+   ```

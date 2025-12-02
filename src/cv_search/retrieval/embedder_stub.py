@@ -15,7 +15,7 @@ class EmbedderProtocol(Protocol):
 
 class DeterministicEmbedder:
     """
-    Lightweight, deterministic embedder for agentic/offline test runs.
+    Lightweight, deterministic embedder for offline or test runs.
     Produces normalized vectors derived from a stable hash of the input text.
     """
 

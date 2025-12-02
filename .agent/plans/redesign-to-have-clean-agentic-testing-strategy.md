@@ -9,7 +9,7 @@ Eliminate the implicit AGENTIC_TEST_MODE toggle and the silent fallbacks it enab
 ## Progress
 
 - [x] (2025-12-02 14:57Z) Read .agent/PLANS.md and current code; replaced the placeholder with a full ExecPlan for removing AGENTIC_TEST_MODE-driven fallbacks.
-- [ ] Catalog every AGENTIC_TEST_MODE usage and define the post-removal default for each component (DB, embedder, parser, OpenAI client, data paths, runs dir).
+- [x] (2025-12-02 15:22Z) Cataloged AGENTIC_TEST_MODE usage across settings, DB, ingestion (sync/async), pgvector retriever, OpenAI client, and tests; defined new defaults: always Postgres pgvector, explicit LocalEmbedder/CVParser/LiveOpenAI defaults, stubs only via injection, runs_dir/data_dir set directly on Settings.
 - [ ] Implement the refactor, update tests/docs, and verify the Postgres/pgvector-only path with deterministic test doubles.
 
 ## Surprises & Discoveries

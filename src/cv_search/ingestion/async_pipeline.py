@@ -9,11 +9,10 @@ from typing import Optional
 from cv_search.config.settings import Settings
 from cv_search.ingestion.redis_client import RedisClient
 from cv_search.ingestion.events import FileDetectedEvent, TextExtractedEvent, EnrichmentCompleteEvent
-from cv_search.ingestion.cv_parser import CVParser
-from cv_search.ingestion.parser_stub import StubCVParser
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.db.database import CVDatabase
-from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
+from cv_search.ingestion.cv_parser import CVParser
+from cv_search.retrieval.embedder_stub import EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
 # Constants for Redis Channels/Queues
@@ -27,8 +26,6 @@ class Watcher:
         self.settings = settings
         self.redis = redis_client
         self.inbox_dir = self.settings.gdrive_local_dest_dir
-        if self.settings.agentic_test_mode:
-            self.inbox_dir = self.settings.test_data_dir / "gdrive_inbox"
         self.db = CVDatabase(settings) # Needed to check for existing files if we want to be smart, 
                                        # but for now we'll just scan and push. 
                                        # Actually, let's reuse the logic to skip unchanged files.
@@ -56,8 +53,7 @@ class Watcher:
 
     def _scan_and_publish(self):
         pptx_files = list(self.inbox_dir.rglob("*.pptx"))
-        if self.settings.agentic_test_mode:
-            pptx_files += list(self.inbox_dir.rglob("*.txt"))
+        pptx_files += list(self.inbox_dir.rglob("*.txt"))
         if not pptx_files:
             return
 
@@ -107,12 +103,7 @@ class ExtractorWorker:
     def __init__(self, settings: Settings, redis_client: RedisClient, parser: CVParser | None = None):
         self.settings = settings
         self.redis = redis_client
-        if parser:
-            self.parser = parser
-        elif settings.agentic_test_mode:
-            self.parser = StubCVParser()
-        else:
-            self.parser = CVParser()
+        self.parser = parser or CVParser()
 
     def run(self):
         click.echo("Extractor Worker started. Waiting for tasks...")
@@ -179,19 +170,9 @@ class EnricherWorker:
         self.settings = settings
         self.redis = redis_client
         self.db = db or CVDatabase(settings)
-        if embedder:
-            self.embedder = embedder
-        elif settings.agentic_test_mode:
-            self.embedder = DeterministicEmbedder()
-        else:
-            self.embedder = LocalEmbedder()
+        self.embedder = embedder or LocalEmbedder()
         self.client = client or OpenAIClient(settings)
-        if parser:
-            self.parser = parser
-        elif settings.agentic_test_mode:
-            self.parser = StubCVParser()
-        else:
-            self.parser = CVParser()
+        self.parser = parser or CVParser()
 
     def close(self):
         if self.db:
@@ -266,7 +247,7 @@ class EnricherWorker:
             cv_data_dict["source_category"] = source_category
             
             # Save JSON (optional, but good for debug)
-            base_data_dir = self.settings.test_data_dir if self.settings.agentic_test_mode else self.settings.data_dir
+            base_data_dir = self.settings.data_dir
             json_output_dir = base_data_dir / "ingested_cvs_json"
             json_output_dir.mkdir(exist_ok=True)
             json_filename = f"{candidate_id}.json"

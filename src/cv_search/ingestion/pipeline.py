@@ -15,12 +15,11 @@ import click
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
-from cv_search.ingestion.cv_parser import CVParser
-from cv_search.ingestion.parser_stub import StubCVParser
 from cv_search.ingestion.data_loader import load_mock_cvs
+from cv_search.ingestion.cv_parser import CVParser
 from cv_search.lexicon.loader import load_role_lexicon
+from cv_search.retrieval.embedder_stub import EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
-from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 
 class CVIngestionPipeline:
     def __init__(
@@ -33,19 +32,9 @@ class CVIngestionPipeline:
     ):
         self.db = db
         self.settings = settings
-        if embedder:
-            self.embedder = embedder
-        elif settings.agentic_test_mode:
-            self.embedder = DeterministicEmbedder()
-        else:
-            self.embedder = LocalEmbedder()
+        self.embedder = embedder or LocalEmbedder()
         self.client = client or OpenAIClient(settings)
-        if parser:
-            self.parser = parser
-        elif settings.agentic_test_mode:
-            self.parser = StubCVParser()
-        else:
-            self.parser = CVParser()
+        self.parser = parser or CVParser()
 
     def close(self) -> None:
         """Release DB handle held by this pipeline."""
@@ -196,24 +185,19 @@ class CVIngestionPipeline:
             self.db.rollback()
             raise
 
-    def reset_agentic_state(self) -> None:
-        """
-        Remove agentic DB artifacts so integration tests start clean.
-        Safe to call multiple times; no-op outside agentic mode.
-        """
-        if not self.settings.agentic_test_mode:
-            return
-
+    def reset_state(self, clear_runs_dir: bool = True) -> None:
+        """Remove database artifacts so tests and mock ingestion start clean."""
         try:
             if self.db:
-                self.db.reset_agentic_state()
+                self.db.reset_state()
         finally:
-            runs_dir = Path(self.settings.agentic_runs_dir)
-            if runs_dir.exists():
-                shutil.rmtree(runs_dir)
+            if clear_runs_dir:
+                runs_dir = Path(self.settings.runs_dir)
+                if runs_dir.exists():
+                    shutil.rmtree(runs_dir)
 
     def run_mock_ingestion(self) -> int:
-        self.reset_agentic_state()
+        self.reset_state()
         try:
             self.db.close()
         except Exception:
@@ -335,15 +319,12 @@ class CVIngestionPipeline:
             raise
 
         inbox_dir = self.settings.gdrive_local_dest_dir
-        if self.settings.agentic_test_mode:
-            inbox_dir = self.settings.test_data_dir / "gdrive_inbox"
-        base_data_dir = self.settings.test_data_dir if self.settings.agentic_test_mode else self.settings.data_dir
+        base_data_dir = self.settings.data_dir
         json_output_dir = base_data_dir / "ingested_cvs_json"
         json_output_dir.mkdir(exist_ok=True)
 
         pptx_files = list(inbox_dir.rglob("*.pptx"))
-        if self.settings.agentic_test_mode:
-            pptx_files += list(inbox_dir.rglob("*.txt"))
+        pptx_files += list(inbox_dir.rglob("*.txt"))
 
         if target_filename:
             pptx_files = [p for p in pptx_files if p.name == target_filename]

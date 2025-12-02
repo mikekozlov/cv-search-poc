@@ -5,7 +5,7 @@ from pathlib import Path
 
 class StubCVParser:
     """
-    Minimal parser for agentic/offline runs.
+    Minimal parser for offline or test runs.
     Reads plain text files and returns their content.
     """
 

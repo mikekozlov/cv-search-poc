@@ -33,20 +33,12 @@ from cv_search.clients.openai_client import OpenAIClient
 
 @click.group()
 @click.option("--db-url", type=str, default=None, help="Override Postgres DSN for this session.")
-@click.option(
-    "--agentic-db-url",
-    type=str,
-    default=None,
-    help="Override Postgres DSN when AGENTIC_TEST_MODE=1.",
-)
 @click.pass_context
-def cli(ctx, db_url: str | None, agentic_db_url: str | None):
+def cli(ctx, db_url: str | None):
     """cv-search CLI."""
     settings = Settings()
     if db_url:
         settings.db_url = db_url
-    if agentic_db_url:
-        settings.agentic_db_url = agentic_db_url
     client = OpenAIClient(settings)
     db = CVDatabase(settings)
     ctx.obj = {"settings": settings, "client": client, "db": db}
@@ -63,8 +55,7 @@ def env_info_cmd(ctx):
             return "(unset)"
         return (s[:4] + "..." + s[-4:]) if len(s) > 8 else "***"
 
-    click.echo(f"--- Loaded from Settings ---")
-    click.echo(f"AGENTIC_TEST_MODE: {settings.agentic_test_mode}")
+    click.echo("--- Loaded from Settings ---")
     click.echo(f"OPENAI_API_KEY: {mask(settings.openai_api_key_str)}")
     click.echo(f"OPENAI_MODEL:   {settings.openai_model}")
     click.echo(f"SEARCH_MODE:    {settings.search_mode}")

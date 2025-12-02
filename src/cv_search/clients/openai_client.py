@@ -246,14 +246,12 @@ class StubOpenAIBackend(OpenAIBackendProtocol):
 
 
 class OpenAIClient:
-    """Adapter around OpenAI/Azure with stub support for agentic mode."""
+    """Adapter around OpenAI/Azure with optional stub backend for explicit tests."""
 
     def __init__(self, settings: Settings, backend: OpenAIBackendProtocol | None = None):
         self.settings = settings
         if backend:
             self.backend = backend
-        elif settings.agentic_test_mode or not settings.openai_api_key_str:
-            self.backend = StubOpenAIBackend(settings)
         else:
             self.backend = LiveOpenAIBackend(settings)
 

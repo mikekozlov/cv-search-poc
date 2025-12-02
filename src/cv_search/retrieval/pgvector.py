@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
-from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
+from cv_search.retrieval.embedder_stub import EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
 
@@ -14,12 +14,7 @@ class PgVectorSemanticRetriever:
     def __init__(self, db: CVDatabase, settings: Settings, embedder: EmbedderProtocol | None = None):
         self.db = db
         self.settings = settings
-        if embedder:
-            self.embedder = embedder
-        elif settings.agentic_test_mode:
-            self.embedder = DeterministicEmbedder()
-        else:
-            self.embedder = LocalEmbedder()
+        self.embedder = embedder or LocalEmbedder()
 
     def _build_vs_query(self, seat: Dict[str, Any]) -> str:
         role = seat["role"].replace("_", " ")
