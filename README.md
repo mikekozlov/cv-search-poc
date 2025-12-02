@@ -97,13 +97,14 @@ The Admin page shows Postgres table counts and pgvector/FTS extension status; in
 
 ## Testing
 
+Use the dedicated `.env.test` so integration runs stay isolated from your dev data:
+
 ```powershell
-PS C:\Users\<you>\Projects\cv-search-poc> $env:DB_URL = "postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test"
-PS C:\Users\<you>\Projects\cv-search-poc> $env:RUNS_DIR = "data/test/tmp/runs"
-PS C:\Users\<you>\Projects\cv-search-poc> $env:DATA_DIR = "data/test"
-PS C:\Users\<you>\Projects\cv-search-poc> $env:GDRIVE_LOCAL_DEST_DIR = "data/test/gdrive_inbox"
-PS C:\Users\<you>\Projects\cv-search-poc> $env:OPENAI_API_KEY = "test-key"
-PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m pytest tests\integration -q
+# Start pgvector if not already running
+PS C:\Users\<you>\Projects\cv-search-poc> docker compose -f docker-compose.pg.yml up -d
+
+# Run integration suite with test env vars
+PS C:\Users\<you>\Projects\cv-search-poc> python -m dotenv -f .env.test run -- uv run pytest tests\integration -q
 ```
 
-Integration tests truncate the Postgres database between runs and rely on the pgvector extensions created by `init-db`. Provide a dedicated test database (e.g., `cvsearch_test`) so test data stays isolated.
+Integration tests truncate the Postgres database between runs and rely on the pgvector extensions created by `init-db`. The `.env.test` defaults to `cvsearch_test` so test data stays isolated from `DB_URL` in your main `.env`.
