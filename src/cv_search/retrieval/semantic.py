@@ -9,19 +9,25 @@ import numpy as np
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 from cv_search.retrieval.local_embedder import LocalEmbedder
+from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 
 
 class LocalSemanticRetriever:
     """Vector-based retrieval backed by a local FAISS index."""
 
-    def __init__(self, db: CVDatabase, settings: Settings):
+    def __init__(self, db: CVDatabase, settings: Settings, embedder: EmbedderProtocol | None = None):
         self.db = db
         self.settings = settings
-        self.local_embedder = LocalEmbedder()
+        if embedder:
+            self.local_embedder = embedder
+        elif settings.agentic_test_mode:
+            self.local_embedder = DeterministicEmbedder()
+        else:
+            self.local_embedder = LocalEmbedder()
         self.vector_db = self._load_index()
 
     def _load_index(self):
-        index_path = str(self.settings.faiss_index_path)
+        index_path = str(self.settings.active_faiss_index_path)
         if not os.path.exists(index_path):
             print(f"Warning: FAISS index '{index_path}' not found.")
             print("Please run the ingestion pipeline to create the index.")

@@ -10,8 +10,11 @@ from cv_search.config.settings import Settings
 from cv_search.ingestion.redis_client import RedisClient
 from cv_search.ingestion.events import FileDetectedEvent, TextExtractedEvent, EnrichmentCompleteEvent
 from cv_search.ingestion.cv_parser import CVParser
+from cv_search.ingestion.parser_stub import StubCVParser
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.db.database import CVDatabase
+from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
+from cv_search.retrieval.local_embedder import LocalEmbedder
 
 # Constants for Redis Channels/Queues
 CHANNEL_FILE_DETECTED = "ingest:file_detected"
@@ -24,25 +27,37 @@ class Watcher:
         self.settings = settings
         self.redis = redis_client
         self.inbox_dir = self.settings.gdrive_local_dest_dir
+        if self.settings.agentic_test_mode:
+            self.inbox_dir = self.settings.test_data_dir / "gdrive_inbox"
         self.db = CVDatabase(settings) # Needed to check for existing files if we want to be smart, 
                                        # but for now we'll just scan and push. 
                                        # Actually, let's reuse the logic to skip unchanged files.
 
+    def close(self):
+        if self.db:
+            self.db.close()
+            self.db = None
+
     def run(self, loop_interval: int = 10):
         click.echo(f"Watcher started. Monitoring {self.inbox_dir}...")
-        while True:
-            try:
-                self._scan_and_publish()
-                time.sleep(loop_interval)
-            except KeyboardInterrupt:
-                click.echo("Watcher stopping...")
-                break
-            except Exception as e:
-                click.secho(f"Watcher error: {e}", fg="red")
-                time.sleep(loop_interval)
+        try:
+            while True:
+                try:
+                    self._scan_and_publish()
+                    time.sleep(loop_interval)
+                except KeyboardInterrupt:
+                    click.echo("Watcher stopping...")
+                    break
+                except Exception as e:
+                    click.secho(f"Watcher error: {e}", fg="red")
+                    time.sleep(loop_interval)
+        finally:
+            self.close()
 
     def _scan_and_publish(self):
         pptx_files = list(self.inbox_dir.rglob("*.pptx"))
+        if self.settings.agentic_test_mode:
+            pptx_files += list(self.inbox_dir.rglob("*.txt"))
         if not pptx_files:
             return
 
@@ -89,10 +104,15 @@ class Watcher:
             click.echo(f"Queued file: {file_path.name}")
 
 class ExtractorWorker:
-    def __init__(self, settings: Settings, redis_client: RedisClient):
+    def __init__(self, settings: Settings, redis_client: RedisClient, parser: CVParser | None = None):
         self.settings = settings
         self.redis = redis_client
-        self.parser = CVParser()
+        if parser:
+            self.parser = parser
+        elif settings.agentic_test_mode:
+            self.parser = StubCVParser()
+        else:
+            self.parser = CVParser()
 
     def run(self):
         click.echo("Extractor Worker started. Waiting for tasks...")
@@ -147,29 +167,55 @@ class ExtractorWorker:
             })
 
 class EnricherWorker:
-    def __init__(self, settings: Settings, redis_client: RedisClient):
+    def __init__(
+            self,
+            settings: Settings,
+            redis_client: RedisClient,
+            db: CVDatabase | None = None,
+            client: OpenAIClient | None = None,
+            embedder: EmbedderProtocol | None = None,
+            parser: CVParser | None = None,
+    ):
         self.settings = settings
         self.redis = redis_client
-        self.db = CVDatabase(settings)
-        self.client = OpenAIClient(api_key=settings.openai_api_key)
-        # We need to initialize the DB schema if not done, but usually main app does it.
-        # Let's assume it's initialized.
+        self.db = db or CVDatabase(settings)
+        if embedder:
+            self.embedder = embedder
+        elif settings.agentic_test_mode:
+            self.embedder = DeterministicEmbedder()
+        else:
+            self.embedder = LocalEmbedder()
+        self.client = client or OpenAIClient(settings)
+        if parser:
+            self.parser = parser
+        elif settings.agentic_test_mode:
+            self.parser = StubCVParser()
+        else:
+            self.parser = CVParser()
+
+    def close(self):
+        if self.db:
+            self.db.close()
+            self.db = None
 
     def run(self):
         click.echo("Enricher Worker started. Waiting for tasks...")
-        while True:
-            try:
-                task_data = self.redis.pop_from_queue(QUEUE_ENRICH_TASK, timeout=5)
-                if not task_data:
-                    continue
-                
-                self._process_task(task_data)
-                
-            except KeyboardInterrupt:
-                click.echo("Enricher Worker stopping...")
-                break
-            except Exception as e:
-                click.secho(f"Enricher Worker error: {e}", fg="red")
+        try:
+            while True:
+                try:
+                    task_data = self.redis.pop_from_queue(QUEUE_ENRICH_TASK, timeout=5)
+                    if not task_data:
+                        continue
+                    
+                    self._process_task(task_data)
+                    
+                except KeyboardInterrupt:
+                    click.echo("Enricher Worker stopping...")
+                    break
+                except Exception as e:
+                    click.secho(f"Enricher Worker error: {e}", fg="red")
+        finally:
+            self.close()
 
     def _process_task(self, data: dict):
         candidate_id = data.get("candidate_id")
@@ -220,7 +266,8 @@ class EnricherWorker:
             cv_data_dict["source_category"] = source_category
             
             # Save JSON (optional, but good for debug)
-            json_output_dir = self.settings.data_dir / "ingested_cvs_json"
+            base_data_dir = self.settings.test_data_dir if self.settings.agentic_test_mode else self.settings.data_dir
+            json_output_dir = base_data_dir / "ingested_cvs_json"
             json_output_dir.mkdir(exist_ok=True)
             json_filename = f"{candidate_id}.json"
             with open(json_output_dir / json_filename, 'w', encoding='utf-8') as f:
@@ -232,7 +279,13 @@ class EnricherWorker:
             # Importing CVIngestionPipeline might be cleaner to reuse _ingest_single_cv
             
             from cv_search.ingestion.pipeline import CVIngestionPipeline
-            pipeline = CVIngestionPipeline(self.db, self.settings)
+            pipeline = CVIngestionPipeline(
+                self.db,
+                self.settings,
+                embedder=self.embedder,
+                client=self.client,
+                parser=self.parser
+            )
             
             # We need to adapt _ingest_single_cv to not return tuple but just do it?
             # It returns (candidate_id, vs_text).
@@ -253,7 +306,7 @@ class EnricherWorker:
             
             (cid, vs_text) = pipeline._ingest_single_cv(cv_data_dict)
             faiss_id = self.db.get_or_create_faiss_id(cid)
-            embedding = pipeline.local_embedder.get_embeddings([vs_text])[0]
+            embedding = pipeline.embedder.get_embeddings([vs_text])[0]
             
             # Load index, add, save
             # This is the critical section
@@ -266,7 +319,7 @@ class EnricherWorker:
             faiss.normalize_L2(embeddings_array)
             index.add_with_ids(embeddings_array, ids_array)
             
-            index_path = str(self.settings.faiss_index_path)
+            index_path = str(self.settings.active_faiss_index_path)
             faiss.write_index(index, index_path)
             
             self.db.commit()

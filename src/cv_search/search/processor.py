@@ -11,25 +11,27 @@ from cv_search.db.database import CVDatabase
 from cv_search.planner.service import Planner
 from cv_search.ranking.hybrid import HybridRanker
 from cv_search.retrieval import GatingFilter, LexicalRetriever, LocalSemanticRetriever
+from cv_search.retrieval.embedder_stub import EmbedderProtocol
 from cv_search.search.artifacts import SearchRunArtifactWriter
 from cv_search.search.justification import JustificationService
 
 
-def default_run_dir() -> str:
-    return f"runs/{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+def default_run_dir(base: str | Path | None = None) -> str:
+    base_dir = Path(base) if base else Path("runs")
+    return str(base_dir / datetime.now().strftime("%Y%m%d-%H%M%S"))
 
 
 class SearchProcessor:
     """High-level orchestrator for single-seat and multi-seat searches."""
 
-    def __init__(self, db: CVDatabase, client: OpenAIClient, settings: Settings):
+    def __init__(self, db: CVDatabase, client: OpenAIClient, settings: Settings, embedder: EmbedderProtocol | None = None):
         self.db = db
         self.client = client
         self.settings = settings
 
         self.gating_filter = GatingFilter(db)
         self.lexical_retriever = LexicalRetriever(db)
-        self.semantic_retriever = LocalSemanticRetriever(db, settings)
+        self.semantic_retriever = LocalSemanticRetriever(db, settings, embedder=embedder)
         self.hybrid_ranker = HybridRanker(db, settings)
         self.planner = Planner()
         self.artifact_writer = SearchRunArtifactWriter()
@@ -163,7 +165,7 @@ class SearchProcessor:
         crit_with_seats = self.planner.derive_project_seats(criteria, raw_text=raw_text)
         base_dict = self.planner._criteria_dict(crit_with_seats)
 
-        out_dir = run_dir or default_run_dir()
+        out_dir = run_dir or default_run_dir(self.settings.active_runs_dir)
         Path(out_dir).mkdir(parents=True, exist_ok=True)
 
         seats = base_dict["team_size"]["members"]

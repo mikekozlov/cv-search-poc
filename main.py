@@ -55,10 +55,14 @@ def env_info_cmd(ctx):
         return (s[:4] + "..." + s[-4:]) if len(s) > 8 else "***"
 
     click.echo(f"--- Loaded from Settings ---")
+    click.echo(f"AGENTIC_TEST_MODE: {settings.agentic_test_mode}")
     click.echo(f"OPENAI_API_KEY: {mask(settings.openai_api_key_str)}")
     click.echo(f"OPENAI_MODEL:   {settings.openai_model}")
     click.echo(f"SEARCH_MODE:    {settings.search_mode}")
     click.echo(f"DB_PATH:        {settings.db_path}")
+    click.echo(f"ACTIVE_DB_PATH: {settings.active_db_path}")
+    click.echo(f"FAISS_PATH:     {settings.faiss_index_path}")
+    click.echo(f"ACTIVE_FAISS:   {settings.active_faiss_index_path}")
     click.echo(f"LEXICON_DIR:    {settings.lexicon_dir}")
 
 
@@ -121,12 +125,13 @@ def ingest_mock_cmd(ctx):
     """Rebuild DB & FAISS from mock JSON."""
     settings: Settings = ctx.obj["settings"]
     db: CVDatabase = ctx.obj["db"]
+    pipeline = CVIngestionPipeline(db, settings)
     try:
-        pipeline = CVIngestionPipeline(db, settings)
         n = pipeline.run_mock_ingestion()
         click.echo(f"Ingested {n} mock CVs into {db.db_path}")
-        click.echo(f"Built FAISS index at {settings.faiss_index_path}")
+        click.echo(f"Built FAISS index at {settings.active_faiss_index_path}")
     finally:
+        pipeline.close()
         db.close()
 
 
@@ -162,7 +167,7 @@ def search_seat_cmd(ctx, criteria, topk, mode, vs_topk, run_dir, justify):
         with open(criteria, "r", encoding="utf-8") as f:
             crit = json.load(f)
 
-        out_dir = run_dir or default_run_dir()
+        out_dir = run_dir or default_run_dir(settings.active_runs_dir)
 
         processor = SearchProcessor(db, client, settings)
         payload = processor.search_for_seat(
@@ -222,7 +227,7 @@ def project_search_cmd(ctx, text, criteria, topk, run_dir, justify):
         raise click.ClickException("Provide either --criteria or --text.")
 
     try:
-        out_dir = run_dir or default_run_dir()
+        out_dir = run_dir or default_run_dir(settings.active_runs_dir)
 
         processor = SearchProcessor(db, client, settings)
 

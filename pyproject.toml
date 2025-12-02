@@ -16,6 +16,7 @@ dependencies = [
     "streamlit",
     "python-pptx",
     "redis>=5.0.0",
+    "pytest>=7.4.0",
 ]
 
 [build-system]

@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sqlite3
+import shutil
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -19,15 +20,44 @@ from cv_search.clients.openai_client import OpenAIClient
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.cv_parser import CVParser
+from cv_search.ingestion.parser_stub import StubCVParser
 from cv_search.ingestion.data_loader import load_mock_cvs
 from cv_search.lexicon.loader import load_role_lexicon
 from cv_search.retrieval.local_embedder import LocalEmbedder
+from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 
 class CVIngestionPipeline:
-    def __init__(self, db: CVDatabase, settings: Settings):
+    def __init__(
+            self,
+            db: CVDatabase,
+            settings: Settings,
+            embedder: EmbedderProtocol | None = None,
+            client: OpenAIClient | None = None,
+            parser: CVParser | None = None,
+    ):
         self.db = db
         self.settings = settings
-        self.local_embedder = LocalEmbedder()
+        if embedder:
+            self.embedder = embedder
+        elif settings.agentic_test_mode:
+            self.embedder = DeterministicEmbedder()
+        else:
+            self.embedder = LocalEmbedder()
+        self.client = client or OpenAIClient(settings)
+        if parser:
+            self.parser = parser
+        elif settings.agentic_test_mode:
+            self.parser = StubCVParser()
+        else:
+            self.parser = CVParser()
+
+    def close(self) -> None:
+        """Release DB handle held by this pipeline."""
+        try:
+            if self.db:
+                self.db.close()
+        finally:
+            self.db = None
 
     def _canon_tags(self, seq: Iterable[str]) -> List[str]:
         return self._uniq([(s or "").strip().lower() for s in (seq or [])])
@@ -147,7 +177,7 @@ class CVIngestionPipeline:
         return (candidate_id, vs_text)
 
     def load_or_create_index(self) -> faiss.IndexIDMap:
-        index_path = str(self.settings.faiss_index_path)
+        index_path = str(self.settings.active_faiss_index_path)
         if os.path.exists(index_path):
             try:
                 index = faiss.read_index(index_path)
@@ -160,7 +190,7 @@ class CVIngestionPipeline:
             return self._create_new_index()
 
     def _create_new_index(self) -> faiss.IndexIDMap:
-        dims = self.local_embedder.dims
+        dims = self.embedder.dims
         index_flat = faiss.IndexFlatIP(dims)
         index = faiss.IndexIDMap(index_flat)
         return index
@@ -178,7 +208,7 @@ class CVIngestionPipeline:
             for cv in cvs:
                 (candidate_id, vs_text) = self._ingest_single_cv(cv)
                 faiss_id = self.db.get_or_create_faiss_id(candidate_id)
-                embedding = self.local_embedder.get_embeddings([vs_text])[0]
+                embedding = self.embedder.get_embeddings([vs_text])[0]
                 embeddings_to_add.append(embedding)
                 faiss_ids_to_add.append(faiss_id)
 
@@ -188,7 +218,7 @@ class CVIngestionPipeline:
             faiss.normalize_L2(embeddings_array)
             index.add_with_ids(embeddings_array, ids_array)
 
-            index_path = str(self.settings.faiss_index_path)
+            index_path = str(self.settings.active_faiss_index_path)
             os.makedirs(os.path.dirname(index_path), exist_ok=True)
             faiss.write_index(index, index_path)
 
@@ -199,9 +229,32 @@ class CVIngestionPipeline:
             self.db.conn.rollback()
             raise
 
+    def reset_agentic_state(self) -> None:
+        """
+        Remove agentic DB/index/run artifacts so integration tests start clean.
+        Safe to call multiple times; no-op outside agentic mode.
+        """
+        if not self.settings.agentic_test_mode:
+            return
+
+        try:
+            self.db.close()
+        except Exception:
+            pass
+
+        db_path = Path(self.settings.active_db_path)
+        index_path = Path(self.settings.active_faiss_index_path)
+        runs_dir = Path(self.settings.agentic_runs_dir)
+
+        for path in [db_path, index_path]:
+            if path.exists():
+                path.unlink()
+        if runs_dir.exists():
+            shutil.rmtree(runs_dir)
+
     def run_mock_ingestion(self) -> int:
-        db_path = str(self.settings.db_path)
-        index_path = str(self.settings.faiss_index_path)
+        db_path = str(self.settings.active_db_path)
+        index_path = str(self.settings.active_faiss_index_path)
 
         if os.path.exists(db_path):
             try:
@@ -317,8 +370,9 @@ class CVIngestionPipeline:
             selected.append(file_path)
         return selected, skipped
 
-    def run_gdrive_ingestion(self, client: OpenAIClient, target_filename: str | None = None) -> Dict[str, Any]:
-        parser = CVParser()
+    def run_gdrive_ingestion(self, client: OpenAIClient | None = None, target_filename: str | None = None) -> Dict[str, Any]:
+        parser = self.parser
+        client = client or self.client
 
         try:
             roles_lex_list = load_role_lexicon(self.settings.lexicon_dir)
@@ -329,10 +383,15 @@ class CVIngestionPipeline:
             raise
 
         inbox_dir = self.settings.gdrive_local_dest_dir
-        json_output_dir = self.settings.data_dir / "ingested_cvs_json"
+        if self.settings.agentic_test_mode:
+            inbox_dir = self.settings.test_data_dir / "gdrive_inbox"
+        base_data_dir = self.settings.test_data_dir if self.settings.agentic_test_mode else self.settings.data_dir
+        json_output_dir = base_data_dir / "ingested_cvs_json"
         json_output_dir.mkdir(exist_ok=True)
 
         pptx_files = list(inbox_dir.rglob("*.pptx"))
+        if self.settings.agentic_test_mode:
+            pptx_files += list(inbox_dir.rglob("*.txt"))
 
         if target_filename:
             pptx_files = [p for p in pptx_files if p.name == target_filename]

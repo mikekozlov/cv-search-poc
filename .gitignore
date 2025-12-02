@@ -151,3 +151,5 @@ venv
 # Python cache
 __pycache__/
 *.pyc
+/tests/
+/data/test/

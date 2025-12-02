@@ -49,6 +49,24 @@ class Settings(BaseSettings):
     gdrive_source_dir: str = Field(default="CV_Inbox")
     gdrive_local_dest_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox")
 
+    agentic_test_mode: bool = Field(default=False, env="AGENTIC_TEST_MODE")
+    agentic_db_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_db" / "cvsearch.db")
+    agentic_faiss_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_faiss" / "cv_search.faiss")
+    agentic_runs_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_runs")
+    llm_stub_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "llm_stubs")
+
     @property
     def openai_api_key_str(self) -> str | None:
         return self.openai_api_key.get_secret_value() if self.openai_api_key else None
+
+    @property
+    def active_db_path(self) -> Path:
+        return self.agentic_db_path if self.agentic_test_mode else self.db_path
+
+    @property
+    def active_faiss_index_path(self) -> Path:
+        return self.agentic_faiss_path if self.agentic_test_mode else self.faiss_index_path
+
+    @property
+    def active_runs_dir(self) -> Path:
+        return self.agentic_runs_dir if self.agentic_test_mode else REPO_ROOT / "runs"

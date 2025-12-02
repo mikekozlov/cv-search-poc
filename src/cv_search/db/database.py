@@ -12,7 +12,7 @@ from cv_search.config.settings import Settings
 class CVDatabase:
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.db_path = str(settings.db_path)
+        self.db_path = str(settings.active_db_path)
         self.schema_file = str(settings.schema_file)
         self.conn = self._get_db()
 
@@ -440,3 +440,18 @@ class CVDatabase:
         ).fetchall()
         existing = {row["source_filename"]: row["last_updated"] for row in rows}
         return {name: existing.get(name) for name in unique_names}
+
+    def reset_agentic_state(self) -> None:
+        """
+        Delete the database file if running in agentic mode.
+        Safe to call multiple times; no-op outside agentic mode.
+        """
+        if not self.settings.agentic_test_mode:
+            return
+        db_file = Path(self.db_path)
+        if db_file.exists():
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            db_file.unlink()

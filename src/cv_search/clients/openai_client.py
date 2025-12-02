@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Protocol, Type
 
 from openai import AzureOpenAI, OpenAI
 
@@ -40,10 +40,19 @@ class LLMCV(BaseModel):
     tech_tags: List[str]
     unmapped_tags: str | None = None
     source_folder_role_hint: str | None = None
+class OpenAIBackendProtocol(Protocol):
+    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        ...
+
+    def get_structured_cv(self, raw_text: str, role_folder_hint: str, model: str, settings: Settings) -> Dict[str, Any]:
+        ...
+
+    def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
+        ...
 
 
-class OpenAIClient:
-    """Adapter around the OpenAI / Azure OpenAI SDKs."""
+class LiveOpenAIBackend(OpenAIBackendProtocol):
+    """Live backend that talks to OpenAI/Azure."""
 
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -198,3 +207,67 @@ class OpenAIClient:
             model=model,
             pydantic_model=LLMCV,
         )
+
+
+class StubOpenAIBackend(OpenAIBackendProtocol):
+    """Fixture-backed backend for deterministic, offline runs."""
+
+    def __init__(self, settings: Settings):
+        self.settings = settings
+        self.fixture_dir = settings.llm_stub_dir
+
+    def _fixture_path(self, name: str) -> Any:
+        return self.fixture_dir / name
+
+    def _load_fixture(self, name: str) -> Dict[str, Any]:
+        path = self._fixture_path(name)
+        if not path.exists():
+            raise FileNotFoundError(f"Stub LLM fixture missing: {path}")
+        with open(path, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+
+    def _pick_cv_fixture(self, raw_text: str, role_folder_hint: str) -> str:
+        text = f"{raw_text} {role_folder_hint}".lower()
+        if "front" in text and self._fixture_path("structured_cv_frontend.json").exists():
+            return "structured_cv_frontend.json"
+        if "back" in text and self._fixture_path("structured_cv_backend.json").exists():
+            return "structured_cv_backend.json"
+        return "structured_cv.json"
+
+    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        return self._load_fixture("structured_criteria.json")
+
+    def get_structured_cv(self, raw_text: str, role_folder_hint: str, model: str, settings: Settings) -> Dict[str, Any]:
+        fixture_name = self._pick_cv_fixture(raw_text, role_folder_hint)
+        return self._load_fixture(fixture_name)
+
+    def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
+        return self._load_fixture("candidate_justification.json")
+
+
+class OpenAIClient:
+    """Adapter around OpenAI/Azure with stub support for agentic mode."""
+
+    def __init__(self, settings: Settings, backend: OpenAIBackendProtocol | None = None):
+        self.settings = settings
+        if backend:
+            self.backend = backend
+        elif settings.agentic_test_mode or not settings.openai_api_key_str:
+            self.backend = StubOpenAIBackend(settings)
+        else:
+            self.backend = LiveOpenAIBackend(settings)
+
+    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        return self.backend.get_structured_criteria(text, model, settings)
+
+    def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
+        return self.backend.get_candidate_justification(seat_details, cv_context)
+
+    def get_structured_cv(
+            self,
+            raw_text: str,
+            role_folder_hint: str,
+            model: str,
+            settings: Settings,
+    ) -> Dict[str, Any]:
+        return self.backend.get_structured_cv(raw_text, role_folder_hint, model, settings)
