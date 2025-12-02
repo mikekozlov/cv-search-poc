@@ -1,5 +1,4 @@
 from __future__ import annotations
-import sqlite3
 from typing import Any, Dict, List, Tuple
 
 from cv_search.config.settings import Settings
@@ -67,7 +66,7 @@ class HybridRanker:
 
     def rank(self,
              seat: Dict[str, Any],
-             lexical_results: List[sqlite3.Row],
+             lexical_results: List[Dict[str, Any]],
              semantic_hits: List[Dict[str, Any]],
              mode: str,
              top_k: int
@@ -83,16 +82,27 @@ class HybridRanker:
         for order, row in enumerate(lexical_results, start=1):
             cid = row["candidate_id"]
             M = float(max(1, len(seat.get("must_have", []))))
-            coverage = float(row["must_hit_count"]) / M
-            must_idf_sum = float(row["must_idf_sum"] or 0.0)
-            nice_idf_sum = float(row["nice_idf_sum"] or 0.0)
-            domain_hit = bool(row["domain_present"])
-            lex_score_val = 2.0 * coverage + 1.0 * must_idf_sum + 0.3 * nice_idf_sum + 0.5 * (1.0 if domain_hit else 0.0)
+            coverage = float(row.get("must_hit_count", 0)) / M
+            must_idf_sum = float(row.get("must_idf_sum") or 0.0)
+            nice_idf_sum = float(row.get("nice_idf_sum") or 0.0)
+            domain_hit = bool(row.get("domain_present"))
+            fts_rank = float(row.get("fts_rank") or 0.0)
+            lex_score_val = (
+                2.0 * coverage
+                + 1.0 * must_idf_sum
+                + 0.3 * nice_idf_sum
+                + 0.5 * (1.0 if domain_hit else 0.0)
+                + 0.4 * fts_rank
+            )
             lex_map[cid] = {
-                "score_val": lex_score_val, "coverage": coverage,
-                "must_idf_sum": must_idf_sum, "nice_idf_sum": nice_idf_sum,
+                "score_val": lex_score_val,
+                "coverage": coverage,
+                "must_idf_sum": must_idf_sum,
+                "nice_idf_sum": nice_idf_sum,
                 "domain_bonus": 0.5 if domain_hit else 0.0,
-                "last_updated": row["last_updated"], "rank_order": order,
+                "fts_rank": fts_rank,
+                "last_updated": row.get("last_updated"),
+                "rank_order": order,
             }
 
         # 2. Build semantic map

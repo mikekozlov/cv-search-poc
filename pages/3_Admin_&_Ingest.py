@@ -13,7 +13,6 @@ try:
     from cv_search.config.settings import Settings
     from cv_search.db.database import CVDatabase
     from cv_search.ingestion.pipeline import CVIngestionPipeline
-    from cv_search.search import SearchProcessor
 except ImportError as e:
     st.error(f"""
     **Failed to import project modules.**
@@ -84,17 +83,15 @@ if st.button("Ingest New CVs"):
                         st.error(f"Error decoding JSON from file: {file_obj.name}")
 
             if cvs_to_ingest:
-                with st.spinner(f"Ingesting {len(cvs_to_ingest)} CV(s). "
-                                "This will re-build the FAISS index..."):
+                with st.spinner(f"Ingesting {len(cvs_to_ingest)} CV(s) into Postgres..."):
 
                     count = pipeline.run_ingestion_from_list(cvs_to_ingest)
 
-                    # Clear cached services so the next load picks up the new FAISS index.
+                    # Clear cached services so the next load picks up the refreshed DB state.
                     st.cache_resource.clear()
                     st.session_state.clear()
 
-                    st.success(f"Successfully ingested {count} CVs. "
-                               "All caches cleared.")
+                    st.success(f"Successfully ingested {count} CVs. All caches cleared.")
                     st.info("Please refresh the page or navigate to Home.")
 
         except Exception as e:
@@ -116,8 +113,7 @@ if st.button("Re-ingest All Mock CVs"):
             st.cache_resource.clear()
             st.session_state.clear()
 
-            st.success(f"Successfully ingested {count} mock CVs. "
-                       "All caches cleared.")
+            st.success(f"Successfully ingested {count} mock CVs. All caches cleared.")
             st.info("Please refresh the page or navigate to Home.")
 
     except Exception as e:
@@ -134,18 +130,19 @@ if st.button("Refresh System Status"):
     db = None
     try:
         db = CVDatabase(settings)
-        processor = SearchProcessor(db, client, settings)
-
-        faiss_count = 0
-        if processor.semantic_retriever and processor.semantic_retriever.vector_db:
-            faiss_count = processor.semantic_retriever.vector_db.ntotal
-
         tables = db.check_tables()
+        counts = db.conn.execute("SELECT COUNT(*) AS c FROM candidate").fetchone()
+        docs = db.conn.execute(
+            "SELECT COUNT(*) AS total_docs, COUNT(embedding) AS with_embeddings FROM candidate_doc"
+        ).fetchone()
+        ext = db.check_extensions()
 
-        col1, col2 = st.columns(2)
-        col1.metric("Candidates in Index (FAISS)", faiss_count)
-        col2.metric("Database Tables", len(tables))
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Candidates", counts["c"])
+        col2.metric("Docs w/ embeddings", docs["with_embeddings"])
+        col3.metric("Tables", len(tables))
         st.info(f"Tables found: {', '.join(tables)}")
+        st.caption(f"Extensions -> vector: {ext.get('vector')}, pg_trgm: {ext.get('pg_trgm')}")
 
     except Exception as e:
         st.error(f"Could not read system status. Is the DB initialized? Error: {e}")

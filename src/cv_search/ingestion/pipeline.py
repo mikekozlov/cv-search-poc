@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
-import sqlite3
 import shutil
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -13,8 +11,6 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
 import click
-import faiss
-import numpy as np
 
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.config.settings import Settings
@@ -135,15 +131,14 @@ class CVIngestionPipeline:
         )
 
         summary_text, experience_text, tags_text = self._build_candidate_doc_texts(cv, domain_rollup)
-        self.db.upsert_candidate_doc(
-            candidate_id,
-            summary_text,
-            experience_text,
-            tags_text,
-            last_updated=cv.get("last_updated", "") or "",
-            location=cv.get("location", "") or "",
-            seniority=seniority,
-        )
+        doc_payload = {
+            "summary_text": summary_text,
+            "experience_text": experience_text,
+            "tags_text": tags_text,
+            "last_updated": cv.get("last_updated", "") or "",
+            "location": cv.get("location", "") or "",
+            "seniority": seniority,
+        }
 
         vs_attributes = {
             "candidate_id": candidate_id,
@@ -174,98 +169,55 @@ class CVIngestionPipeline:
         ]
         vs_text = "\n".join(parts).strip() + "\n"
 
-        return (candidate_id, vs_text)
-
-    def load_or_create_index(self) -> faiss.IndexIDMap:
-        index_path = str(self.settings.active_faiss_index_path)
-        if os.path.exists(index_path):
-            try:
-                index = faiss.read_index(index_path)
-                if not isinstance(index, faiss.IndexIDMap):
-                    return self._create_new_index()
-                return index
-            except Exception:
-                return self._create_new_index()
-        else:
-            return self._create_new_index()
-
-    def _create_new_index(self) -> faiss.IndexIDMap:
-        dims = self.embedder.dims
-        index_flat = faiss.IndexFlatIP(dims)
-        index = faiss.IndexIDMap(index_flat)
-        return index
+        return candidate_id, vs_text, doc_payload
 
     def upsert_cvs(self, cvs: List[Dict[str, Any]]) -> int:
         if not cvs:
             return 0
 
-        index = self.load_or_create_index()
-
-        embeddings_to_add = []
-        faiss_ids_to_add = []
-
         try:
             for cv in cvs:
-                (candidate_id, vs_text) = self._ingest_single_cv(cv)
-                faiss_id = self.db.get_or_create_faiss_id(candidate_id)
+                candidate_id, vs_text, doc_payload = self._ingest_single_cv(cv)
                 embedding = self.embedder.get_embeddings([vs_text])[0]
-                embeddings_to_add.append(embedding)
-                faiss_ids_to_add.append(faiss_id)
-
-            embeddings_array = np.array(embeddings_to_add).astype('float32')
-            ids_array = np.array(faiss_ids_to_add).astype('int64')
-
-            faiss.normalize_L2(embeddings_array)
-            index.add_with_ids(embeddings_array, ids_array)
-
-            index_path = str(self.settings.active_faiss_index_path)
-            os.makedirs(os.path.dirname(index_path), exist_ok=True)
-            faiss.write_index(index, index_path)
+                self.db.upsert_candidate_doc(
+                    candidate_id=candidate_id,
+                    summary_text=doc_payload["summary_text"],
+                    experience_text=doc_payload["experience_text"],
+                    tags_text=doc_payload["tags_text"],
+                    last_updated=doc_payload["last_updated"],
+                    location=doc_payload["location"],
+                    seniority=doc_payload["seniority"],
+                    embedding=embedding,
+                )
 
             self.db.commit()
-
             return len(cvs)
         except Exception:
-            self.db.conn.rollback()
+            self.db.rollback()
             raise
 
     def reset_agentic_state(self) -> None:
         """
-        Remove agentic DB/index/run artifacts so integration tests start clean.
+        Remove agentic DB artifacts so integration tests start clean.
         Safe to call multiple times; no-op outside agentic mode.
         """
         if not self.settings.agentic_test_mode:
             return
 
         try:
+            if self.db:
+                self.db.reset_agentic_state()
+        finally:
+            runs_dir = Path(self.settings.agentic_runs_dir)
+            if runs_dir.exists():
+                shutil.rmtree(runs_dir)
+
+    def run_mock_ingestion(self) -> int:
+        self.reset_agentic_state()
+        try:
             self.db.close()
         except Exception:
             pass
-
-        db_path = Path(self.settings.active_db_path)
-        index_path = Path(self.settings.active_faiss_index_path)
-        runs_dir = Path(self.settings.agentic_runs_dir)
-
-        for path in [db_path, index_path]:
-            if path.exists():
-                path.unlink()
-        if runs_dir.exists():
-            shutil.rmtree(runs_dir)
-
-    def run_mock_ingestion(self) -> int:
-        db_path = str(self.settings.active_db_path)
-        index_path = str(self.settings.active_faiss_index_path)
-
-        if os.path.exists(db_path):
-            try:
-                self.db.close()
-            except Exception:
-                pass
-            os.remove(db_path)
-
-        if os.path.exists(index_path):
-            os.remove(index_path)
-
         self.db = CVDatabase(self.settings)
         self.db.initialize_schema()
 

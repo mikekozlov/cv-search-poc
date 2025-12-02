@@ -13,16 +13,18 @@ from cv_search.llm.logger import set_run_dir as _llm_set_run_dir, reset_run_dir 
 class JustificationService:
     """Generate LLM justifications for ranked candidates."""
 
-    def __init__(self, client: OpenAIClient, settings: Settings):
+    def __init__(self, client: OpenAIClient, settings: Settings, db: CVDatabase | None = None):
         self.client = client
         self.settings = settings
+        self.db = db
 
     def _build_cv_context(self, candidate_id: str) -> str | None:
-        database = CVDatabase(self.settings)
+        database = self.db or CVDatabase(self.settings)
         try:
             context = database.get_full_candidate_context(candidate_id)
         finally:
-            database.close()
+            if self.db is None:
+                database.close()
         if not context:
             return None
         summary = context.get("summary_text", "")

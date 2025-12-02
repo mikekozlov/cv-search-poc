@@ -35,14 +35,23 @@ class Settings(BaseSettings):
     search_w_lex: float = 1.0
     search_w_sem: float = 0.8
 
-    db_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "db" / "cvsearch.db")
+    db_url: str = Field(
+        default="postgresql://cvsearch:cvsearch@localhost:5433/cvsearch",
+        validation_alias="DB_URL",
+        description="Primary Postgres DSN used outside agentic mode.",
+    )
+    agentic_db_url: str = Field(
+        default="postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test",
+        validation_alias="AGENTIC_DB_URL",
+        description="Isolated Postgres DSN used when AGENTIC_TEST_MODE=1.",
+    )
+    db_pool_min_size: int = Field(default=1)
+    db_pool_max_size: int = Field(default=4)
+    schema_pg_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "db" / "schema_pg.sql")
+
     data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data")
     test_data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test")
     lexicon_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "lexicons")
-    schema_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "db" / "schema.sql")
-
-    faiss_index_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search.faiss")
-    faiss_doc_map_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "cv_search_docs.json")
 
     gdrive_rclone_config_path: Optional[Path] = Field(default=None)
     gdrive_remote_name: str = Field(default="gdrive")
@@ -50,8 +59,6 @@ class Settings(BaseSettings):
     gdrive_local_dest_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox")
 
     agentic_test_mode: bool = Field(default=False, validation_alias="AGENTIC_TEST_MODE")
-    agentic_db_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_db" / "cvsearch.db")
-    agentic_faiss_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_faiss" / "cv_search.faiss")
     agentic_runs_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_runs")
     llm_stub_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "llm_stubs")
 
@@ -60,12 +67,8 @@ class Settings(BaseSettings):
         return self.openai_api_key.get_secret_value() if self.openai_api_key else None
 
     @property
-    def active_db_path(self) -> Path:
-        return self.agentic_db_path if self.agentic_test_mode else self.db_path
-
-    @property
-    def active_faiss_index_path(self) -> Path:
-        return self.agentic_faiss_path if self.agentic_test_mode else self.faiss_index_path
+    def active_db_url(self) -> str:
+        return self.agentic_db_url if self.agentic_test_mode else self.db_url
 
     @property
     def active_runs_dir(self) -> Path:

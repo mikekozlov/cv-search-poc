@@ -11,12 +11,22 @@ class LexicalRetriever:
     def __init__(self, db: CVDatabase):
         self.db = db
 
+    def _build_fts_query(self, seat: Dict[str, Any]) -> str:
+        parts: List[str] = []
+        role = seat.get("role")
+        if role:
+            parts.append(str(role))
+        parts.extend(seat.get("domains") or [])
+        parts.extend(seat.get("must_have") or [])
+        parts.extend(seat.get("nice_to_have") or [])
+        return " ".join([p for p in parts if p]).strip()
+
     def search(
         self,
         gated_ids: List[str],
         seat: Dict[str, Any],
         top_k: int,
-    ) -> Tuple[List[Any], str, List[Dict[str, Any]]]:
+    ) -> Tuple[List[Any], str, Dict[str, Any]]:
         must_have = seat.get("must_have", [])
         nice_to_have = seat.get("nice_to_have", [])
         domains = seat.get("domains", [])
@@ -33,4 +43,18 @@ class LexicalRetriever:
             idf_nice=idf_nice,
             top_k=top_k,
         )
-        return ranked_rows, ranking_sql, ranking_plan
+
+        fts_sql = None
+        fts_plan: List[Dict[str, Any]] = []
+        fts_map: Dict[str, float] = {}
+        fts_query = self._build_fts_query(seat)
+        if fts_query:
+            fts_rows, fts_sql, fts_plan = self.db.fts_search(fts_query, gated_ids, top_k)
+            fts_map = {row["candidate_id"]: float(row.get("rank", 0.0) or 0.0) for row in fts_rows}
+
+        for row in ranked_rows:
+            row["fts_rank"] = fts_map.get(row["candidate_id"], 0.0)
+
+        combined_sql = ranking_sql if not fts_sql else f"{ranking_sql}\n---\n{fts_sql}"
+        combined_plan: Dict[str, Any] = {"tag_plan": ranking_plan, "fts_plan": fts_plan}
+        return ranked_rows, combined_sql, combined_plan

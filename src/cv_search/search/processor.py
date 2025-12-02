@@ -10,7 +10,7 @@ from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 from cv_search.planner.service import Planner
 from cv_search.ranking.hybrid import HybridRanker
-from cv_search.retrieval import GatingFilter, LexicalRetriever, LocalSemanticRetriever
+from cv_search.retrieval import GatingFilter, LexicalRetriever, PgVectorSemanticRetriever
 from cv_search.retrieval.embedder_stub import EmbedderProtocol
 from cv_search.search.artifacts import SearchRunArtifactWriter
 from cv_search.search.justification import JustificationService
@@ -31,11 +31,11 @@ class SearchProcessor:
 
         self.gating_filter = GatingFilter(db)
         self.lexical_retriever = LexicalRetriever(db)
-        self.semantic_retriever = LocalSemanticRetriever(db, settings, embedder=embedder)
+        self.semantic_retriever = PgVectorSemanticRetriever(db, settings, embedder=embedder)
         self.hybrid_ranker = HybridRanker(db, settings)
         self.planner = Planner()
         self.artifact_writer = SearchRunArtifactWriter()
-        self.justification_service = JustificationService(client, settings)
+        self.justification_service = JustificationService(client, settings, db=db)
 
     def _extract_seat(self, criteria: Dict[str, Any]) -> Dict[str, Any]:
         seat = criteria["team_size"]["members"][0]

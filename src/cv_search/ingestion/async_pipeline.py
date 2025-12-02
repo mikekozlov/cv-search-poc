@@ -286,49 +286,27 @@ class EnricherWorker:
                 client=self.client,
                 parser=self.parser
             )
-            
-            # We need to adapt _ingest_single_cv to not return tuple but just do it?
-            # It returns (candidate_id, vs_text).
-            # And then we need to do embedding.
-            
-            # The original upsert_cvs does:
-            # 1. _ingest_single_cv (DB upsert)
-            # 2. get_or_create_faiss_id
-            # 3. embed
-            # 4. add to index
-            # 5. write index
-            
-            # We should probably do all this here for this single CV.
-            # Locking might be an issue for FAISS index writing if multiple workers?
-            # FAISS index writing is file I/O.
-            # For this POC, let's assume single Enricher or handle locking.
-            # Or we just do it and hope for best (SQLite handles DB locks).
-            
-            (cid, vs_text) = pipeline._ingest_single_cv(cv_data_dict)
-            faiss_id = self.db.get_or_create_faiss_id(cid)
+            cid, vs_text, doc_payload = pipeline._ingest_single_cv(cv_data_dict)
             embedding = pipeline.embedder.get_embeddings([vs_text])[0]
-            
-            # Load index, add, save
-            # This is the critical section
-            index = pipeline.load_or_create_index()
-            import numpy as np
-            import faiss
-            
-            embeddings_array = np.array([embedding]).astype('float32')
-            ids_array = np.array([faiss_id]).astype('int64')
-            faiss.normalize_L2(embeddings_array)
-            index.add_with_ids(embeddings_array, ids_array)
-            
-            index_path = str(self.settings.active_faiss_index_path)
-            faiss.write_index(index, index_path)
-            
+
+            self.db.upsert_candidate_doc(
+                candidate_id=cid,
+                summary_text=doc_payload["summary_text"],
+                experience_text=doc_payload["experience_text"],
+                tags_text=doc_payload["tags_text"],
+                last_updated=doc_payload["last_updated"],
+                location=doc_payload["location"],
+                seniority=doc_payload["seniority"],
+                embedding=embedding,
+            )
+
             self.db.commit()
-            
+
             click.echo(f"-> Enriched and saved: {candidate_id}")
             
         except Exception as e:
             click.secho(f"Failed to enrich {candidate_id}: {e}", fg="red")
-            self.db.conn.rollback()
+            self.db.rollback()
             self.redis.push_to_queue(QUEUE_DLQ, {
                 "stage": "enricher",
                 "error": str(e),

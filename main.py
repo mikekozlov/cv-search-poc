@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
-import sqlite3
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
@@ -34,10 +32,21 @@ from cv_search.clients.openai_client import OpenAIClient
 
 
 @click.group()
+@click.option("--db-url", type=str, default=None, help="Override Postgres DSN for this session.")
+@click.option(
+    "--agentic-db-url",
+    type=str,
+    default=None,
+    help="Override Postgres DSN when AGENTIC_TEST_MODE=1.",
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, db_url: str | None, agentic_db_url: str | None):
     """cv-search CLI."""
     settings = Settings()
+    if db_url:
+        settings.db_url = db_url
+    if agentic_db_url:
+        settings.agentic_db_url = agentic_db_url
     client = OpenAIClient(settings)
     db = CVDatabase(settings)
     ctx.obj = {"settings": settings, "client": client, "db": db}
@@ -59,21 +68,22 @@ def env_info_cmd(ctx):
     click.echo(f"OPENAI_API_KEY: {mask(settings.openai_api_key_str)}")
     click.echo(f"OPENAI_MODEL:   {settings.openai_model}")
     click.echo(f"SEARCH_MODE:    {settings.search_mode}")
-    click.echo(f"DB_PATH:        {settings.db_path}")
-    click.echo(f"ACTIVE_DB_PATH: {settings.active_db_path}")
-    click.echo(f"FAISS_PATH:     {settings.faiss_index_path}")
-    click.echo(f"ACTIVE_FAISS:   {settings.active_faiss_index_path}")
+    click.echo(f"DB_URL:         {settings.db_url}")
+    click.echo(f"ACTIVE_DB_URL:  {settings.active_db_url}")
     click.echo(f"LEXICON_DIR:    {settings.lexicon_dir}")
+    click.echo(f"RUNS_DIR:       {settings.active_runs_dir}")
 
 
 @cli.command("init-db")
 @click.pass_context
 def init_db_cmd(ctx):
-    """Initialize (or re-initialize) the SQLite schema."""
+    """Initialize (or re-initialize) the Postgres schema."""
     db: CVDatabase = ctx.obj["db"]
     try:
         db.initialize_schema()
-        click.echo(f"Initialized database at {db.db_path}")
+        ext = db.check_extensions()
+        click.echo(f"Initialized database at {db.dsn if hasattr(db, 'dsn') else '[unknown DSN]'}")
+        click.echo(f"Extensions: vector={ext.get('vector')}, pg_trgm={ext.get('pg_trgm')}")
     finally:
         db.close()
 
@@ -81,12 +91,13 @@ def init_db_cmd(ctx):
 @cli.command("check-db")
 @click.pass_context
 def check_db_cmd(ctx):
-    """Quick DB sanity: tables + FTS availability."""
+    """Quick DB sanity: tables + extension availability."""
     db: CVDatabase = ctx.obj["db"]
     try:
         names = ", ".join(db.check_tables())
-        click.echo(f"Tables: {names}")
-        click.echo(f"FTS5: {db.check_fts()}")
+        ext = db.check_extensions()
+        click.echo(f"Tables: {names or '(none)'}")
+        click.echo(f"vector: {ext.get('vector')}, pg_trgm: {ext.get('pg_trgm')}")
     finally:
         db.close()
 
@@ -122,14 +133,13 @@ def show_lexicons_cmd(ctx):
 @cli.command("ingest-mock")
 @click.pass_context
 def ingest_mock_cmd(ctx):
-    """Rebuild DB & FAISS from mock JSON."""
+    """Rebuild Postgres with mock JSON (pgvector + FTS)."""
     settings: Settings = ctx.obj["settings"]
     db: CVDatabase = ctx.obj["db"]
     pipeline = CVIngestionPipeline(db, settings)
     try:
         n = pipeline.run_mock_ingestion()
-        click.echo(f"Ingested {n} mock CVs into {db.db_path}")
-        click.echo(f"Built FAISS index at {settings.active_faiss_index_path}")
+        click.echo(f"Ingested {n} mock CVs into {settings.active_db_url}")
     finally:
         pipeline.close()
         db.close()
@@ -424,10 +434,10 @@ def ingest_watcher_cmd(ctx):
     """Starts the file watcher (Producer)."""
     from cv_search.ingestion.async_pipeline import Watcher
     from cv_search.ingestion.redis_client import RedisClient
-    
+
     settings: Settings = ctx.obj["settings"]
     redis_client = RedisClient()
-    
+
     watcher = Watcher(settings, redis_client)
     watcher.run()
 
@@ -438,10 +448,10 @@ def ingest_extractor_cmd(ctx):
     """Starts the extractor worker (Worker A)."""
     from cv_search.ingestion.async_pipeline import ExtractorWorker
     from cv_search.ingestion.redis_client import RedisClient
-    
+
     settings: Settings = ctx.obj["settings"]
     redis_client = RedisClient()
-    
+
     worker = ExtractorWorker(settings, redis_client)
     worker.run()
 
@@ -452,10 +462,10 @@ def ingest_enricher_cmd(ctx):
     """Starts the enricher worker (Worker B)."""
     from cv_search.ingestion.async_pipeline import EnricherWorker
     from cv_search.ingestion.redis_client import RedisClient
-    
+
     settings: Settings = ctx.obj["settings"]
     redis_client = RedisClient()
-    
+
     worker = EnricherWorker(settings, redis_client)
     worker.run()
 
