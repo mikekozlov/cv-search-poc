@@ -167,6 +167,23 @@ Pages:
 
 ---
 
+## ?? Testing (Redis-backed async pipeline)
+
+This repo has a Redis-backed integration test that exercises the watcher -> extractor -> enricher flow against a real Redis queue and verifies the parsed CV lands in SQLite and FAISS.
+
+1) Start Redis locally (adjust tag/password/port as needed):
+```bash
+docker run --rm -d --name cvsearch-redis -p 6379:6379 redis:7.2.4
+```
+   - Optional: set `REDIS_URL` (default `redis://localhost:6379/15`). If you add `--requirepass`, embed it, e.g. `redis://:Temp@Pass_word1@localhost:6379/15`.
+2) Run the test:
+```bash
+uv run pytest tests/integration/test_async_agentic.py
+```
+   - The test copies `data/test/pptx_samples/backend_sample.txt` into the inbox, has the watcher publish to Redis, extractor/enricher process the task, then asserts: DLQ stays empty, a candidate row exists in SQLite, and the FAISS index was written.
+
+---
+
 ## 🧠 Retrieval modes
 
 - **Lexical**: weighted SQL over normalized tags (role/tech/domain/seniority) in SQLite.

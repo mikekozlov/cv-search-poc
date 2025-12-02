@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     gdrive_source_dir: str = Field(default="CV_Inbox")
     gdrive_local_dest_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox")
 
-    agentic_test_mode: bool = Field(default=False, env="AGENTIC_TEST_MODE")
+    agentic_test_mode: bool = Field(default=False, validation_alias="AGENTIC_TEST_MODE")
     agentic_db_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_db" / "cvsearch.db")
     agentic_faiss_path: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_faiss" / "cv_search.faiss")
     agentic_runs_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "tmp" / "agentic_runs")

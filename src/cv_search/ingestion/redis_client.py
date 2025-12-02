@@ -1,7 +1,74 @@
-import os
-import redis
 import json
+import os
+import threading
+import time
+from collections import defaultdict, deque
 from typing import Any, Callable, Optional, Sequence
+
+import redis
+
+
+class _InMemoryPubSub:
+    """Minimal pubsub stub to satisfy tests when using the in-memory backend."""
+
+    def subscribe(self, channel: str) -> None:
+        self.channel = channel
+
+    def listen(self):
+        return iter(())
+
+
+class _InMemoryRedis:
+    """Lightweight in-memory stand-in for redis-py used in tests."""
+
+    def __init__(self):
+        self._queues: dict[str, deque[str]] = defaultdict(deque)
+        self._cv = threading.Condition()
+
+    def ping(self):
+        return True
+
+    def rpush(self, name: str, value: str):
+        with self._cv:
+            self._queues[name].append(value)
+            self._cv.notify_all()
+            return len(self._queues[name])
+
+    def blpop(self, name: str, timeout: int = 0):
+        deadline = None if not timeout else time.time() + timeout
+        with self._cv:
+            while not self._queues[name]:
+                if deadline is None:
+                    self._cv.wait()
+                    continue
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    return None
+                self._cv.wait(timeout=remaining)
+            value = self._queues[name].popleft()
+            return name, value
+
+    def delete(self, *names):
+        with self._cv:
+            for queue_name in names:
+                self._queues.pop(queue_name, None)
+
+    def llen(self, name: str):
+        with self._cv:
+            return len(self._queues.get(name, ()))
+
+    def flushdb(self):
+        with self._cv:
+            self._queues.clear()
+
+    def close(self):
+        return None
+
+    def publish(self, channel: str, message: str):
+        return 0
+
+    def pubsub(self):
+        return _InMemoryPubSub()
 
 class RedisClient:
     def __init__(
@@ -60,3 +127,11 @@ class RedisClient:
         except Exception:
             # Closing failures should not block tests or shutdown paths.
             pass
+
+
+class InMemoryRedisClient(RedisClient):
+    """Drop-in RedisClient replacement backed by an in-memory queue store."""
+
+    def __init__(self):
+        self.redis_url = "memory://"
+        self.client = _InMemoryRedis()
