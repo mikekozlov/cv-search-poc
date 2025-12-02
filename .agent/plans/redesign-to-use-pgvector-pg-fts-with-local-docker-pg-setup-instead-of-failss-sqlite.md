@@ -6,14 +6,14 @@ This ExecPlan must be maintained in accordance with .agent/PLANS.md.
 
 ## Purpose / Big Picture
 
-After this change:
+After this change: 
 we should have tests and switched to pgvector/pg-fts.
 
 ## Progress
 
 - [ ] (YYYY-MM-DD hh:mmZ) Initial plan drafted.
 - [ ] Implement the change
-- [ ] Run acceptance tests
+- [ ] Run acceptance tests 
 
 ## Surprises & Discoveries
 

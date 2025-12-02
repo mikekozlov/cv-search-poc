@@ -1,11 +1,18 @@
 import os
 import redis
 import json
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Sequence
 
 class RedisClient:
-    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
-        self.redis_url = os.getenv("REDIS_URL", f"redis://{host}:{port}/{db}")
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 6379,
+        db: int = 0,
+        redis_url: str | None = None,
+    ):
+        default_url = redis_url or os.getenv("REDIS_URL", f"redis://{host}:{port}/{db}")
+        self.redis_url = default_url
         self.client = redis.from_url(self.redis_url, decode_responses=True)
 
     def publish(self, channel: str, message: dict[str, Any]):
@@ -39,3 +46,17 @@ class RedisClient:
             _, data = result
             return json.loads(data)
         return None
+
+    def clear_queues(self, names: Sequence[str]) -> None:
+        """Delete the provided Redis list keys; safe if keys are missing."""
+        if not names:
+            return
+        self.client.delete(*names)
+
+    def close(self) -> None:
+        """Close the underlying Redis connection pool."""
+        try:
+            self.client.close()
+        except Exception:
+            # Closing failures should not block tests or shutdown paths.
+            pass
