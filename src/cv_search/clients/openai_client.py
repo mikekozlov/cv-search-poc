@@ -250,10 +250,7 @@ class OpenAIClient:
 
     def __init__(self, settings: Settings, backend: OpenAIBackendProtocol | None = None):
         self.settings = settings
-        if backend:
-            self.backend = backend
-        else:
-            self.backend = LiveOpenAIBackend(settings)
+        self.backend = backend or LiveOpenAIBackend(settings)
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         return self.backend.get_structured_criteria(text, model, settings)
