@@ -176,6 +176,7 @@ This repo has a Redis-backed integration test that exercises the watcher -> extr
 docker run --rm -d --name cvsearch-redis -p 6379:6379 redis:7.2.4
 ```
    - Optional: set `REDIS_URL` (default `redis://localhost:6379/15`). If you add `--requirepass`, embed it, e.g. `redis://:Temp@Pass_word1@localhost:6379/15`.
+   - Set-Item -Path Env:REDIS_URL -Value "redis://:Temp@Pass_word1@localhost:6379/15"
 2) Run the test:
 ```bash
 uv run pytest tests/integration/test_async_agentic.py
