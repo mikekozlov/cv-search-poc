@@ -104,7 +104,7 @@ Use the dedicated `.env.test` so integration runs stay isolated from your dev da
 PS C:\Users\<you>\Projects\cv-search-poc> docker compose -f docker-compose.pg.yml up -d
 
 # Run integration suite with test env vars
-PS C:\Users\<you>\Projects\cv-search-poc> python -m dotenv -f .env.test run -- uv run pytest tests\integration -q
+PS C:\Users\<you>\Projects\cv-search-poc> uv run python -m dotenv -f .env.test run -- pytest tests\integration -q
 ```
 
 Integration tests truncate the Postgres database between runs and rely on the pgvector extensions created by `init-db`. The `.env.test` defaults to `cvsearch_test` so test data stays isolated from `DB_URL` in your main `.env`.

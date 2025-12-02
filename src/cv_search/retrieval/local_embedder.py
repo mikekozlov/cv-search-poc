@@ -1,6 +1,9 @@
 from __future__ import annotations
+import logging
 from typing import List
 from sentence_transformers import SentenceTransformer
+
+logger = logging.getLogger(__name__)
 
 class LocalEmbedder:
     """
@@ -18,10 +21,10 @@ class LocalEmbedder:
         This operation may take a moment the first time it's run
         as it downloads the model.
         """
-        print(f"Loading local embedding model: {self.MODEL_NAME}...")
+        logger.debug("Loading local embedding model: %s...", self.MODEL_NAME)
         self.model = SentenceTransformer(self.MODEL_NAME)
         self.dims = self.model.get_sentence_embedding_dimension()
-        print(f"Local embedder initialized (dims: {self.dims}).")
+        logger.debug("Local embedder initialized (dims: %s).", self.dims)
 
     def get_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
