@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import hashlib
 from pathlib import Path
 from typing import Any, Dict, List, Protocol, Type
 
@@ -29,6 +31,59 @@ _TRUTHY = {"1", "true", "yes", "on"}
 def _env_flag(name: str) -> bool:
     value = os.environ.get(name)
     return value is not None and str(value).lower() in _TRUTHY
+
+
+def _normalize_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value.lower()).strip()
+
+
+def _tokenize(text: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9_+#\.]+", text.lower()))
+
+
+def _candidate_score(canonical: str, text_lower: str, tokens: set[str]) -> int:
+    """Score how well a canonical lexicon entry matches the text/hint."""
+    c_lower = canonical.lower()
+    score = 0
+    alt = c_lower.replace("_", " ")
+    if c_lower in text_lower:
+        score += 3
+    if alt in text_lower and alt != c_lower:
+        score += 2
+    parts = re.split(r"[_\s/\-\.]+", c_lower)
+    for part in parts:
+        if len(part) < 3:
+            continue
+        if part in tokens:
+            score += 1
+    return score
+
+
+def _select_candidates(
+        lexicon: List[str],
+        text: str,
+        role_hint: str,
+        *,
+        max_candidates: int,
+        fallback: int | None = None,
+) -> List[str]:
+    combined = _normalize_text(f"{text} {role_hint}")
+    tokens = _tokenize(combined)
+    scored: List[tuple[int, str]] = []
+    for item in lexicon:
+        score = _candidate_score(item, combined, tokens)
+        if score > 0:
+            scored.append((score, item))
+    if scored:
+        scored.sort(key=lambda pair: (-pair[0], pair[1]))
+        return [item for _, item in scored[:max_candidates]]
+    limit = fallback or max_candidates
+    return list(lexicon[:limit])
+
+
+def _lexicon_fingerprint(*lexicons: List[str]) -> str:
+    payload = json.dumps([sorted(lex) for lex in lexicons], separators=(",", ":"), sort_keys=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
 class LLMCriteria(BaseModel):
@@ -202,30 +257,41 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
         expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
 
+        role_candidates = _select_candidates(role_lex_list, raw_text, role_folder_hint, max_candidates=25, fallback=25)
+        domain_candidates = _select_candidates(domain_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
+        tech_candidates = _select_candidates(tech_lex_list, raw_text, role_folder_hint, max_candidates=80, fallback=80)
+        expertise_candidates = _select_candidates(expertise_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
+        lexicon_hash = _lexicon_fingerprint(role_lex_list, tech_lex_list, domain_lex_list, expertise_lex_list)
+
         system_prompt = f"""
         You are an expert CV parser. Your task is to parse raw text from a CV slide deck
         into a structured JSON object.
 
         You are given a HINT: the normalized parent folder for this CV is '{role_folder_hint}'.
 
-        Available Role Lexicon (Canonical Keys): {json.dumps(role_lex_list, indent=2)}
-        Available Tech Lexicon (Canonical Keys): {json.dumps(tech_lex_list, indent=2)}
-        Available Domain Lexicon (Canonical Keys): {json.dumps(domain_lex_list, indent=2)}
-        Available Expertise Lexicon (Canonical Keys): {json.dumps(expertise_lex_list, indent=2)}
+        Lexicon snapshot hash: {lexicon_hash}
+        Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
+        Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
+        Tech candidates (canonical keys, truncated to most likely matches): {json.dumps(tech_candidates, indent=2)}
+        Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
 
         Strictly follow these rules:
         1.  `source_folder_role_hint`:
             * Analyze the HINT: `{role_folder_hint}`.
             * Determine if this hint represents a valid professional role.
-            * If it **is** a valid role, find the **best matching canonical key** from the Role Lexicon.
+            * If it **is** a valid role, find the **best matching canonical key** from the Role candidates.
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
-        2.  `role_tags`: Extract all relevant roles from the CV *text itself*, mapping them to the Role Lexicon keys.
-        3.  `expertise_tags`: Infer direction/expertise areas for the candidate. Map all inferred expertise to the
-            canonical keys provided in the Expertise Lexicon.
-        4.  `tech_tags`: Extract all technologies from the CV *text*, mapping them to the Tech Lexicon keys.
-        5.  `unmapped_tags`: List any tech/tools found but *not* in the lexicons as a comma-separated string.
-        6.  `experience.domain_tags` / `experience.tech_tags`: Map these to the lexicons as well.
+        2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
+        3.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates.
+        4.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates.
+        5.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
+        6.  `experience.domain_tags` / `experience.tech_tags`: Map these ONLY to the provided Domain and Tech candidates.
+
+        Additional guardrails:
+        - Only use canonical keys shown in the candidate lists. Do NOT invent or rephrase keys.
+        - If no candidate fits, leave the field empty (or null where allowed) instead of guessing.
+        - Prefer precision over recall; incorrect mappings are worse than leaving a field empty.
         """
 
         return self._get_structured_response(
