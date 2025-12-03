@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS experience (
     company TEXT,
     start TEXT,
     "end" TEXT,
+    project_description TEXT,
+    responsibilities_text TEXT,
     domain_tags_csv TEXT,
     tech_tags_csv TEXT,
     highlights TEXT
@@ -68,3 +70,16 @@ CREATE TABLE IF NOT EXISTS candidate_doc (
 
 CREATE INDEX IF NOT EXISTS idx_candidate_doc_embedding ON candidate_doc USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 CREATE INDEX IF NOT EXISTS idx_candidate_doc_tsv ON candidate_doc USING GIN (tsv_document);
+
+CREATE TABLE IF NOT EXISTS candidate_qualification (
+    candidate_id TEXT NOT NULL REFERENCES candidate(candidate_id) ON DELETE CASCADE,
+    category TEXT NOT NULL,
+    item TEXT NOT NULL,
+    weight DOUBLE PRECISION DEFAULT 1.0,
+    PRIMARY KEY (candidate_id, category, item)
+);
+
+CREATE INDEX IF NOT EXISTS idx_candidate_qualification_candidate ON candidate_qualification(candidate_id);
+
+ALTER TABLE experience ADD COLUMN IF NOT EXISTS project_description TEXT;
+ALTER TABLE experience ADD COLUMN IF NOT EXISTS responsibilities_text TEXT;

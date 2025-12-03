@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS experience (
                                           company          TEXT,
                                           start            TEXT,
                                           end              TEXT,
+                                          project_description TEXT,
+                                          responsibilities_text TEXT,
                                           domain_tags_csv  TEXT,  -- was domain_tags
                                           tech_tags_csv    TEXT,  -- was tech
                                           highlights       TEXT,
@@ -110,3 +112,17 @@ CREATE INDEX IF NOT EXISTS idx_experience_tag_key            ON experience_tag(t
 CREATE INDEX IF NOT EXISTS idx_ctag_type_key_cid ON candidate_tag(tag_type, tag_key, candidate_id);
 CREATE INDEX IF NOT EXISTS idx_ctag_cid_type ON candidate_tag(candidate_id, tag_type);
 -- --- END ADDED INDICES ---
+
+CREATE TABLE IF NOT EXISTS candidate_qualification (
+                                         candidate_id TEXT NOT NULL,
+                                         category     TEXT NOT NULL,
+                                         item         TEXT NOT NULL,
+                                         weight       REAL DEFAULT 1.0,
+                                         FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE,
+                                         UNIQUE(candidate_id, category, item)
+);
+
+CREATE INDEX IF NOT EXISTS idx_candidate_qualification_candidate ON candidate_qualification(candidate_id);
+
+ALTER TABLE experience ADD COLUMN IF NOT EXISTS project_description TEXT;
+ALTER TABLE experience ADD COLUMN IF NOT EXISTS responsibilities_text TEXT;

@@ -129,7 +129,7 @@ def register(cli: click.Group) -> None:
 
         click.echo(json.dumps(plan, indent=2, ensure_ascii=False))
 
-    @cli.command("multiseat-search")
+    @cli.command("project-search")
     @click.option(
         "--text",
         type=str,
@@ -223,3 +223,6 @@ def register(cli: click.Group) -> None:
             click.echo(json.dumps(payload, indent=2, ensure_ascii=False))
         finally:
             db.close()
+
+    # Alias expected by integration tests; reuse multiseat implementation.
+    cli.add_command(project_search_cmd, name="project-search")

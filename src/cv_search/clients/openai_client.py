@@ -103,6 +103,7 @@ class LLMCV(BaseModel):
     summary: str | None = None
     experience: List[Dict[str, Any]]
     tech_tags: List[str]
+    qualifications: Dict[str, List[str]] = Field(default_factory=dict)
     unmapped_tags: str | None = None
     source_folder_role_hint: str | None = None
 
@@ -285,8 +286,12 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
         3.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates.
         4.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates.
-        5.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
-        6.  `experience.domain_tags` / `experience.tech_tags`: Map these ONLY to the provided Domain and Tech candidates.
+        5.  `qualifications`: Build a dictionary of lists using these keys: `programming_languages`, `databases`, `devops_tools`, `tools_and_technologies`, `other`. Normalize items to lowercase text; when a value is in Tech candidates, use the canonical key.
+        6.  `experience` entries must include:
+            * `project_description`: 1-3 sentences summarizing the project/product.
+            * `responsibilities`: list of bullet strings preserving the candidate's described duties.
+            * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates.
+        7.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
 
         Additional guardrails:
         - Only use canonical keys shown in the candidate lists. Do NOT invent or rephrase keys.

@@ -134,6 +134,7 @@ class CVDatabase:
             self.conn.execute("DELETE FROM experience_tag WHERE experience_id = ANY(%s)", (exp_ids,))
         self.conn.execute("DELETE FROM experience WHERE candidate_id = %s", (candidate_id,))
         self.conn.execute("DELETE FROM candidate_tag WHERE candidate_id = %s", (candidate_id,))
+        self.conn.execute("DELETE FROM candidate_qualification WHERE candidate_id = %s", (candidate_id,))
 
     def upsert_candidate(self, cv: Dict[str, Any]) -> None:
         self.conn.execute(
@@ -187,6 +188,13 @@ class CVDatabase:
         for idx, exp in enumerate(experiences or []):
             domain_tags = domain_tags_list[idx]
             tech_tags = tech_tags_list[idx]
+            project_description = exp.get("project_description", "") or exp.get("description", "") or ""
+            responsibilities = exp.get("responsibilities") or exp.get("highlights") or []
+            if isinstance(responsibilities, str):
+                responsibilities_list = [responsibilities]
+            else:
+                responsibilities_list = [r for r in responsibilities if r]
+            responsibilities_text = "\n".join(responsibilities_list)
 
             cur = self.conn.execute(
                 """
@@ -196,11 +204,13 @@ class CVDatabase:
                     company,
                     start,
                     "end",
+                    project_description,
+                    responsibilities_text,
                     domain_tags_csv,
                     tech_tags_csv,
                     highlights
                 )
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING id
                 """,
                 (
@@ -209,6 +219,8 @@ class CVDatabase:
                     exp.get("company", ""),
                     exp.get("from", ""),
                     exp.get("to", ""),
+                    project_description,
+                    responsibilities_text,
                     ",".join(domain_tags),
                     ",".join(tech_tags),
                     "\n".join(exp.get("highlights", []) or []),
@@ -242,6 +254,31 @@ class CVDatabase:
             )
 
         return exp_ids
+
+    def insert_candidate_qualifications(self, candidate_id: str, qualifications: Dict[str, List[str]]) -> None:
+        if not qualifications:
+            return
+        rows: List[tuple[str, str, str, float]] = []
+        for category, items in (qualifications or {}).items():
+            cat = (category or "").strip().lower()
+            if not cat:
+                continue
+            for item in items or []:
+                val = (item or "").strip()
+                if not val:
+                    continue
+                rows.append((candidate_id, cat, val, 1.0))
+        if not rows:
+            return
+        self._executemany_pg(
+            """
+            INSERT INTO candidate_qualification(candidate_id, category, item, weight)
+            VALUES (%s,%s,%s,%s)
+            ON CONFLICT(candidate_id, category, item)
+            DO UPDATE SET weight = EXCLUDED.weight
+            """,
+            rows,
+        )
 
     def upsert_candidate_tags(
         self,
@@ -506,7 +543,7 @@ class CVDatabase:
         """Truncate all tables so tests start from a clean Postgres slate."""
         try:
             self.conn.execute(
-                "TRUNCATE experience_tag, experience, candidate_doc, candidate_tag, candidate RESTART IDENTITY CASCADE"
+                "TRUNCATE experience_tag, experience, candidate_doc, candidate_tag, candidate_qualification, candidate RESTART IDENTITY CASCADE"
             )
             self.commit()
         except (pg_errors.UndefinedTable, AttributeError):

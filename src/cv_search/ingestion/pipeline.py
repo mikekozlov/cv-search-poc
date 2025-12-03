@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import json
 import re
 import shutil
@@ -18,7 +19,7 @@ from cv_search.db.database import CVDatabase
 from cv_search.ingestion.data_loader import load_mock_cvs
 from cv_search.ingestion.cv_parser import CVParser
 from cv_search.lexicon.loader import load_role_lexicon
-from cv_search.retrieval.embedder_stub import EmbedderProtocol
+from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
 class CVIngestionPipeline:
@@ -32,7 +33,7 @@ class CVIngestionPipeline:
     ):
         self.db = db
         self.settings = settings
-        self.embedder = embedder or LocalEmbedder()
+        self.embedder = embedder or self._build_embedder_from_env()
         self.client = client or OpenAIClient(settings)
         self.parser = parser or CVParser()
 
@@ -60,33 +61,75 @@ class CVIngestionPipeline:
                 out.append(xl)
         return out
 
+    def _build_embedder_from_env(self) -> EmbedderProtocol:
+        flag = os.environ.get("USE_DETERMINISTIC_EMBEDDER") or os.environ.get("HF_HUB_OFFLINE")
+        if flag and str(flag).lower() in {"1", "true", "yes", "on"}:
+            return DeterministicEmbedder()
+        return LocalEmbedder()
+
     def _mk_experience_line(self, exp: Dict[str, Any]) -> str:
+        """Format a single experience block for embedding/search text."""
         title = exp.get("title", "")
         company = exp.get("company", "")
         domains = ", ".join(self._canon_tags(exp.get("domain_tags", []) or []))
         techs = ", ".join(self._canon_tags(exp.get("tech_tags", []) or []))
-        highlights = " ; ".join(exp.get("highlights", []) or [])
-        return (
-            f"{title} @ {company}"
-            f"{' | domains: ' + domains if domains else ''}"
-            f"{' | tech: ' + techs if techs else ''}"
-            f"{' | highlights: ' + highlights if highlights else ''}"
-        )
+        project_description = (exp.get("project_description") or exp.get("description") or "").strip()
+        responsibilities_raw = exp.get("responsibilities") or exp.get("highlights") or []
+        if isinstance(responsibilities_raw, str):
+            responsibilities = [responsibilities_raw]
+        else:
+            responsibilities = [r.strip() for r in responsibilities_raw if r]
+        highlights = exp.get("highlights", []) or []
 
-    def _build_candidate_doc_texts(self, cv: Dict[str, Any], domain_rollup: List[str]) -> Tuple[str, str, str]:
+        header_parts = [p for p in [title.strip(), company] if p]
+        header = " @ ".join(header_parts) if header_parts else ""
+
+        meta_bits = []
+        if domains:
+            meta_bits.append(f"domains: {domains}")
+        if techs:
+            meta_bits.append(f"tech: {techs}")
+
+        lines = []
+        if header:
+            lines.append(header)
+        if meta_bits:
+            lines.append(" | ".join(meta_bits))
+        if project_description:
+            lines.append(f"Project: {project_description}")
+        if responsibilities:
+            lines.append("Responsibilities: " + " ; ".join(responsibilities))
+        if highlights and not responsibilities:
+            # preserve legacy highlights when no responsibilities list was provided
+            lines.append("Highlights: " + " ; ".join(highlights))
+        return "\n".join([ln for ln in lines if ln]).strip()
+
+    def _select_recent_experiences(self, experiences: List[Dict[str, Any]], limit: int = 3) -> List[Dict[str, Any]]:
+        """Pick the most recent experiences (assumes input is already ordered newest-first)."""
+        if not experiences:
+            return []
+        return list(experiences[:max(0, limit)])
+
+    def _build_candidate_doc_texts(
+        self,
+        cv: Dict[str, Any],
+        domain_rollup: List[str],
+        experiences_for_text: List[Dict[str, Any]],
+        qualification_tokens: List[str],
+    ) -> Tuple[str, str, str]:
         summary_text = cv.get("summary", "") or ""
-        exp_lines = [self._mk_experience_line(e) for e in (cv.get("experience", []) or [])]
+        exp_lines = [self._mk_experience_line(e) for e in experiences_for_text]
         experience_text = " \n".join([ln for ln in exp_lines if ln])
         roles = self._canon_tags(cv.get("role_tags", []) or [])
         expertise = self._canon_tags(cv.get("expertise_tags", []) or [])
         techs = self._canon_tags(cv.get("tech_tags", []) or [])
         senior = self._canon_tags([cv.get("seniority", "")]) if cv.get("seniority") else []
         domains = self._canon_tags(domain_rollup)
-        distinct = self._uniq(roles + expertise + techs + domains + senior)
+        distinct = self._uniq(roles + expertise + techs + domains + senior + qualification_tokens)
         tags_text = " ".join(distinct)
         return summary_text, experience_text, tags_text
 
-    def _ingest_single_cv(self, cv: Dict[str, Any]) -> Tuple[str, str]:
+    def _ingest_single_cv(self, cv: Dict[str, Any]) -> Tuple[str, str, Dict[str, str]]:
         candidate_id = cv["candidate_id"]
 
         self.db.upsert_candidate(cv)
@@ -102,6 +145,18 @@ class CVIngestionPipeline:
         domain_tags_list = [self._canon_tags(exp.get("domain_tags", []) or []) for exp in experiences]
         tech_tags_list = [self._canon_tags(exp.get("tech_tags", []) or []) for exp in experiences]
         domain_rollup = self._canon_tags([tag for sublist in domain_tags_list for tag in sublist])
+        qualifications_raw = cv.get("qualifications") or {}
+        qualification_tokens: List[str] = []
+        for cat, items in qualifications_raw.items():
+            cat_clean = (cat or "").strip().lower()
+            for item in items or []:
+                item_clean = (item or "").strip().lower()
+                if item_clean:
+                    qualification_tokens.append(item_clean)
+                    if cat_clean:
+                        qualification_tokens.append(f"{cat_clean}:{item_clean}")
+
+        experiences_for_text = self._select_recent_experiences(experiences, limit=3)
 
         self.db.insert_experiences_and_tags(
             candidate_id,
@@ -109,6 +164,9 @@ class CVIngestionPipeline:
             domain_tags_list,
             tech_tags_list
         )
+
+        if qualifications_raw:
+            self.db.insert_candidate_qualifications(candidate_id, qualifications_raw)
 
         self.db.upsert_candidate_tags(
             candidate_id,
@@ -119,7 +177,12 @@ class CVIngestionPipeline:
             domain_rollup=domain_rollup,
         )
 
-        summary_text, experience_text, tags_text = self._build_candidate_doc_texts(cv, domain_rollup)
+        summary_text, experience_text, tags_text = self._build_candidate_doc_texts(
+            cv,
+            domain_rollup,
+            experiences_for_text,
+            qualification_tokens,
+        )
         doc_payload = {
             "summary_text": summary_text,
             "experience_text": experience_text,
