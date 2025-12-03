@@ -33,7 +33,7 @@ def register(cli: click.Group) -> None:
         "--prompt",
         type=str,
         required=False,
-        help="Optional prompt to guide transcription (e.g., project names or acronyms).",
+        help="The transcript is in Russian language. Provide structured text, only important notes.",
     )
     @click.pass_obj
     def transcribe_audio_cmd(ctx: CLIContext, input_path: Path, output_path: Path | None, prompt: str | None) -> None:
