@@ -1,0 +1,13 @@
+name: "Stub Backend"
+location: "Testville"
+seniority: "senior"
+role_tags:
+  - "backend_engineer"
+domain_tags:
+  - "healthtech"
+tech_tags:
+  - "dotnet"
+  - "kubernetes"
+  - "postgresql"
+  - "kafka"
+  - "python"
