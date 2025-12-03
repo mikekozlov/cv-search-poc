@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     openai_model: str = Field(default="gpt-4.1-mini")
     openai_embed_model: str = Field(default="text-embedding-3-large")
+    openai_audio_model: str = Field(default="whisper-1")
 
     search_mode: str = "hybrid"
     search_vs_topk: int = 8

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 from typing import Any, Dict, List, Protocol, Type
 
 from openai import AzureOpenAI, OpenAI
@@ -19,6 +21,14 @@ try:
     from pydantic.v1 import BaseModel, Field
 except ImportError:  # pragma: no cover
     from pydantic import BaseModel, Field
+
+
+_TRUTHY = {"1", "true", "yes", "on"}
+
+
+def _env_flag(name: str) -> bool:
+    value = os.environ.get(name)
+    return value is not None and str(value).lower() in _TRUTHY
 
 
 class LLMCriteria(BaseModel):
@@ -40,6 +50,8 @@ class LLMCV(BaseModel):
     tech_tags: List[str]
     unmapped_tags: str | None = None
     source_folder_role_hint: str | None = None
+
+
 class OpenAIBackendProtocol(Protocol):
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         ...
@@ -48,6 +60,9 @@ class OpenAIBackendProtocol(Protocol):
         ...
 
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
+        ...
+
+    def transcribe_audio(self, audio_path: Path, model: str, prompt: str | None = None) -> str:
         ...
 
 
@@ -68,6 +83,18 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             if not settings.openai_api_key_str:
                 raise ValueError("OPENAI_API_KEY is not set.")
             self.client = OpenAI(api_key=settings.openai_api_key_str)
+
+    def transcribe_audio(self, audio_path: Path, model: str, prompt: str | None = None) -> str:
+        with open(audio_path, "rb") as audio_file:
+            response = self.client.audio.transcriptions.create(
+                model=model,
+                file=audio_file,
+                prompt=prompt,
+                response_format="text",
+            )
+        if hasattr(response, "text"):
+            return response.text
+        return str(response)
 
     def _schema_json(self, model_cls: Type[BaseModel]) -> str:
         if hasattr(model_cls, "schema_json"):
@@ -244,6 +271,12 @@ class StubOpenAIBackend(OpenAIBackendProtocol):
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
         return self._load_fixture("candidate_justification.json")
 
+    def transcribe_audio(self, audio_path: Path, model: str, prompt: str | None = None) -> str:
+        fixture_path = self._fixture_path("audio_transcription.txt")
+        if fixture_path.exists():
+            return fixture_path.read_text(encoding="utf-8").strip()
+        return f"Stub transcript for {audio_path.name}"
+
 
 class OpenAIClient:
     """Adapter around OpenAI/Azure with optional stub backend for explicit tests."""
@@ -266,3 +299,8 @@ class OpenAIClient:
             settings: Settings,
     ) -> Dict[str, Any]:
         return self.backend.get_structured_cv(raw_text, role_folder_hint, model, settings)
+
+    def transcribe_audio(self, audio_path: str | Path, model: str | None = None, prompt: str | None = None) -> str:
+        path_obj = Path(audio_path)
+        model_name = model or self.settings.openai_audio_model
+        return self.backend.transcribe_audio(path_obj, model_name, prompt)

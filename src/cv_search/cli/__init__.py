@@ -6,9 +6,17 @@ from cv_search.cli.context import CLIContext, build_context
 
 
 def _register_commands(cli_group: click.Group) -> None:
-    from cv_search.cli.commands import async_ingestion, db_admin, diagnostics, ingestion, search
+    from cv_search.cli.commands import (
+        async_ingestion,
+        db_admin,
+        diagnostics,
+        ingestion,
+        presale_search,
+        search,
+        transcription,
+    )
 
-    for module in (diagnostics, db_admin, search, ingestion, async_ingestion, presale_search):
+    for module in (diagnostics, db_admin, search, ingestion, async_ingestion, presale_search, transcription):
         module.register(cli_group)
 
 
