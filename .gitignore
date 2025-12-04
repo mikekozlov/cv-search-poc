@@ -131,7 +131,6 @@ ServiceFabricBackup/
 
 # JetBrains Rider
 *.sln.iml
-.env
 .DS_Store
 
 # UV
@@ -152,3 +151,6 @@ venv
 __pycache__/
 *.pyc
 /data/test/
+
+.env
+.env.test
