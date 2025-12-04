@@ -37,8 +37,8 @@ def _f1(truth: list[str], pred: list[str]) -> float:
 
 def _maybe_write_output(settings: Settings, metrics: dict) -> None:
     """Optionally append metrics to runs/evals JSONL when WRITE_EVAL_OUTPUT=1."""
-    # if os.getenv("WRITE_EVAL_OUTPUT", "").lower() not in {"1", "true", "yes"}:
-    #     return
+    if os.getenv("WRITE_EVAL_OUTPUT", "").lower() not in {"1", "true", "yes"}:
+        return
 
     out_dir = settings.runs_dir / "evals"
     out_dir.mkdir(parents=True, exist_ok=True)
