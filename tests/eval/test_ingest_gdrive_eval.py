@@ -12,7 +12,7 @@ from cv_search.db.database import CVDatabase
 from cv_search.ingestion.cv_parser import CVParser
 from tests.integration import helpers
 
-RUN_EVAL = "true" # = os.getenv("RUN_INGEST_EVAL", "").lower() in {"1", "true", "yes"}
+RUN_EVAL = os.getenv("RUN_INGEST_EVAL", "").lower() in {"1", "true", "yes"}
 
 pytestmark = [
     pytest.mark.slow,
