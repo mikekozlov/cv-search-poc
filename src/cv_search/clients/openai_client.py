@@ -284,14 +284,14 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
-        3.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates.
-        4.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates.
-        5.  `qualifications`: Build a dictionary of lists using these keys: `programming_languages`, `databases`, `devops_tools`, `tools_and_technologies`, `other`. Normalize items to lowercase text; when a value is in Tech candidates, use the canonical key.
-        6.  `experience` entries must include:
+        3.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates.
+        4.  `domain_tags`: Use ONLY the Domain candidates. If the text mentions healthtech, digital banking, fintech, or medical products, map to `healthtech`. Do not leave this empty when domain cues exist.
+        5.  `experience`: If the text mentions any projects, responsibilities, or work history, you MUST return at least one experience entry. Each entry must include:
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
-            * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates.
-        7.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
+            * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates; do not return an empty experience list when work cues are present.
+        6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; leave empty if not clearly present.
+        8.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
 
         Additional guardrails:
         - Only use canonical keys shown in the candidate lists. Do NOT invent or rephrase keys.

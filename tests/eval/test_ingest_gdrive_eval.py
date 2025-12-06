@@ -62,9 +62,11 @@ def test_ingest_gdrive_eval_backend(monkeypatch) -> None:
     def fake_extract_text(self, file_path):
         return "\n".join(
             [
-                "Name: Stub Backend",
-                "Role: Backend Engineer",
-                "Domain: HealthTech projects",
+                "Name: Mykhailo",
+                "Role: Senior Backend Engineer (healthtech / digital banking)",
+                "Summary: 16+ years building cloud-native microservices in .NET Core with Kubernetes, Kafka, Postgres; strong observability and Python tooling.",
+                "Experience 1: Digital banking platform in healthtech; led microservices in .NET Core on Kubernetes with Kafka and Postgres; added observability.",
+                "Experience 2: BNPL payments service; event-driven with Kafka and Postgres on Kubernetes; used Python for automation.",
                 "Tech: dotnet, postgresql, kafka, kubernetes, python",
             ]
         )
