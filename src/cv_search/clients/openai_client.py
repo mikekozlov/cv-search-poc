@@ -284,7 +284,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
-        3.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates.
+        3.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates. Prioritize the core stack explicitly stated in the CV; avoid peripheral tools (CI/CD, generic cloud names, monitoring) unless they are clearly core to the work.
         4.  `domain_tags`: Use ONLY the Domain candidates. If the text mentions healthtech, digital banking, fintech, or medical products, map to `healthtech`. Do not leave this empty when domain cues exist.
         5.  `experience`: If the text mentions any projects, responsibilities, or work history, you MUST return at least one experience entry. Each entry must include:
             * `project_description`: 1-3 sentences summarizing the project/product.

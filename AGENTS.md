@@ -66,15 +66,9 @@ If you change **any code or tests**, you must run tests and ensure they pass bef
 
 ### Default test flow (PowerShell, from repo root)
 
-From the repository root (for example `PS C:\Users\<username>\Projects\cv-search-poc>`):
+From the repository root (for example `PS C:\Users\<username>\Projects\cv-search-poc>`). Assume Postgres and Redis are already running and reachable; do not start Docker containers from these instructions.
 
-1. Start Postgres with pgvector locally if it is not already running:
-
-   ```powershell
-   PS C:\Users\<username>\Projects\cv-search-poc> docker compose -f docker-compose.pg.yml up -d
-   ```
-
-2. Point settings to the isolated test database and paths:
+1. Point settings to the isolated test database and paths:
 
    ```powershell
    PS C:\Users\<username>\Projects\cv-search-poc> $env:DB_URL = "postgresql://cvsearch:cvsearch@localhost:5433/cvsearch_test"
@@ -89,3 +83,17 @@ From the repository root (for example `PS C:\Users\<username>\Projects\cv-search
    ```powershell
    PS C:\Users\<username>\Projects\cv-search-poc> uv run pytest tests\integration -q
    ```
+
+### Live ingest eval (optional, slow)
+
+The ingest-gdrive eval harness is opt-in and may call the live OpenAI API. Assume Postgres and Redis are already running and reachable via your `.env.test` values; do not start Docker containers here. To run it:
+
+```powershell
+PS C:\Users\<username>\Projects\cv-search-poc> $env:RUN_INGEST_EVAL = "1"
+PS C:\Users\<username>\Projects\cv-search-poc> $env:EVAL_USE_LIVE = "1"   # clears stubs inside the test
+PS C:\Users\<username>\Projects\cv-search-poc> uv run pytest tests\eval\test_ingest_gdrive_eval.py::test_ingest_gdrive_eval_backend -q
+```
+
+Explicitly: Docker is not required for these instructions. Point `DB_URL` at an already-running Postgres on `localhost:5433/cvsearch_test` (or your configured host) and ensure Redis in `.env.test` is reachable.
+
+The eval test is skipped unless `RUN_INGEST_EVAL` is set; always set that (and `EVAL_USE_LIVE` if you want live OpenAI) before invoking pytest so the test actually runs.
