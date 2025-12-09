@@ -8,7 +8,8 @@ from cv_search.lexicon.loader import (
     load_domain_lexicon,
     load_expertise_lexicon,
     load_role_lexicon,
-    load_tech_synonyms,
+    load_tech_lexicon,
+    load_tech_synonym_map,
 )
 
 
@@ -37,20 +38,16 @@ def register(cli: click.Group) -> None:
         """
         settings = ctx.settings
         roles = load_role_lexicon(settings.lexicon_dir)
-        techs = load_tech_synonyms(settings.lexicon_dir)   # returns List[str] in current repo
+        techs = load_tech_lexicon(settings.lexicon_dir)
+        tech_map = load_tech_synonym_map(settings.lexicon_dir)
         doms = load_domain_lexicon(settings.lexicon_dir)
         expertise = load_expertise_lexicon(settings.lexicon_dir)
 
         click.echo(f"Roles: {len(roles)} | Techs: {len(techs)} | Domains: {len(doms)} | Expertise: {len(expertise)}")
 
-        # Backward-compatible preview: handle list or dict
-        if isinstance(techs, dict):
-            # Old synonym-map shape: { "react": ["reactjs", ...], ... }
-            for k, v in list(techs.items())[:3]:
-                more = "..." if len(v) > 3 else ""
-                click.echo(f"  {k}: {', '.join(v[:3])}{more}")
-        else:
-            # Current shape is List[str]
-            sample = ", ".join(techs[:10])
-            more = "..." if len(techs) > 10 else ""
-            click.echo(f"  Sample techs: {sample}{more}")
+        sample = ", ".join(techs[:10])
+        more = "..." if len(techs) > 10 else ""
+        click.echo(f"  Sample techs: {sample}{more}")
+        for k, v in list(tech_map.items())[:3]:
+            more_syn = "..." if len(v) > 3 else ""
+            click.echo(f"  {k}: {', '.join(v[:3])}{more_syn}")
