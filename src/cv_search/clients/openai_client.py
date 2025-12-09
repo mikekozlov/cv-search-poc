@@ -201,18 +201,26 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         tech_lex_list = load_tech_synonyms(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
 
+        role_candidates = _select_candidates(role_lex_list, text, role_hint="", max_candidates=30, fallback=30)
+        domain_candidates = _select_candidates(domain_lex_list, text, role_hint="", max_candidates=25, fallback=25)
+        tech_candidates = _select_candidates(tech_lex_list, text, role_hint="", max_candidates=80, fallback=80)
+        lexicon_hash = _lexicon_fingerprint(role_lex_list, tech_lex_list, domain_lex_list)
+
         system_prompt = f"""
-        You are a TA (Talent Acquisition) expert. Your task is to parse a user's free-text project brief
-        into a structured JSON object.
+        You are a TA (Talent Acquisition) expert. Parse a user's free-text project brief into a structured JSON object that aligns with our search/ingestion lexicons.
 
-        Available Role Lexicon: {json.dumps(role_lex_list, indent=2)}
-        Available Tech Lexicon: {json.dumps(tech_lex_list, indent=2)}
-        Available Domain Lexicon: {json.dumps(domain_lex_list, indent=2)}
+        Lexicon snapshot hash: {lexicon_hash}
+        Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
+        Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
+        Tech candidates (canonical keys): {json.dumps(tech_candidates, indent=2)}
 
-        Strictly follow these rules:
-        1.  Map all found skills, roles, and domains to their *canonical* keys from the lexicons provided.
-        2.  If a `team_size` or specific roles (e.g., "2 .net devs") are mentioned, populate the `team_size.members` list.
-        3.  `tech_stack` should be a rollup of *all* technologies mentioned in the brief.
+        Strict rules:
+        - Use ONLY canonical keys from the candidate lists above. Do NOT invent new role/tech/domain keys.
+        - Populate `team_size.members` whenever a role or hiring need is implied. If no explicit count is given but a role/stack is clear, create 1 member using the best-fit role candidate.
+        - Each member must include: `role`, `seniority` (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), `domains` (subset of domain candidates), `tech_tags` (must-have/core tech), and `nice_to_have` (optional/secondary tech).
+        - `tech_stack` is the deduplicated rollup of all technologies mentioned, using the canonical tech candidates.
+        - `expert_roles` is the set of canonical roles relevant to the brief; include any roles you assigned to `team_size.members`.
+        - Prefer precision over recall. If unsure and not in candidates, leave the field empty instead of guessing.
         """
         return self._get_structured_response(
             prompt=text,
