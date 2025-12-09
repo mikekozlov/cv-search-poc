@@ -31,13 +31,15 @@ OPENAI_EMBED_MODEL="text-embedding-3-large"
 ## Install dependencies (PowerShell)
 
 ```powershell
-PS C:\Users\<you>\Projects\cv-search-poc> python -m ensurepip
-PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m pip install --upgrade pip
-# Prefer uv if available; otherwise install editable package with pip
-PS C:\Users\<you>\Projects\cv-search-poc> uv sync
-# If uv cannot reach PyPI, run:
-PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m pip install -e .
+PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m ensurepip --upgrade
+PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m pip install --upgrade pip setuptools
+$env:UV_PROJECT_ENVIRONMENT = ".venv"
+PS C:\Users\<you>\Projects\cv-search-poc> uv sync --inexact --python .\.venv\Scripts\python.exe
 ```
+Important:
+
+> **Do not run plain `uv sync` on this venv anymore**
+> or pip will be uninstalled
 
 ---
 
