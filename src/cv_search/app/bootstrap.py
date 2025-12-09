@@ -8,7 +8,7 @@ from cv_search.lexicon.loader import (
     load_domain_lexicon,
     load_expertise_lexicon,
     load_role_lexicon,
-    load_tech_synonyms,
+    load_tech_lexicon,
 )
 from cv_search.planner.service import Planner
 
@@ -20,7 +20,7 @@ def load_stateless_services() -> Dict[str, object]:
 
     lexicon_dir = settings.lexicon_dir
     role_lex: List[str] = load_role_lexicon(lexicon_dir)
-    tech_lex: List[str] = load_tech_synonyms(lexicon_dir)
+    tech_lex: List[str] = load_tech_lexicon(lexicon_dir)
     domain_lex: List[str] = load_domain_lexicon(lexicon_dir)
     expertise_lex: List[str] = load_expertise_lexicon(lexicon_dir)
 
