@@ -20,7 +20,8 @@
     "python3",
     "scikit learn",
     "scikit-learn",
-    "sklearn"
+    "sklearn",
+    "python for ai"
   ],
   "java": [
     "jakarta ee",
@@ -594,7 +595,8 @@
   "highcharts": [
     "highcharts",
     "highcharts js",
-    "highcharts-js"
+    "highcharts-js",
+    "hightcharts"
   ],
   "nodejs": [
     "node",
@@ -907,7 +909,8 @@
   "flutter": [
     "dart flutter",
     "dart-flutter",
-    "flutter"
+    "flutter",
+    "flutter web"
   ],
   "xamarin": [
     "-net maui",
@@ -1008,7 +1011,8 @@
     "postgresql",
     "postgresql db",
     "postgresql-db",
-    "psql"
+    "psql",
+    "aws postgresql"
   ],
   "mysql": [
     "my sql",
@@ -1034,7 +1038,11 @@
     "mssql",
     "sql server",
     "sql-server",
-    "sqlserver"
+    "sqlserver",
+    "ssms",
+    "sql server management studio",
+    "mssql management studio",
+    "mssms"
   ],
   "sql_stored_procedures": [
     "sql (stored procedures)",
@@ -1088,12 +1096,16 @@
     "google bigquery",
     "google bigquery sql",
     "google-bigquery",
-    "google-bigquery-sql"
+    "google-bigquery-sql",
+    "big query",
+    "gbq",
+    "gbq sql"
   ],
   "clickhouse": [
     "click house",
     "click-house",
-    "clickhouse"
+    "clickhouse",
+    "clickhouse cloud"
   ],
   "timescaledb": [
     "timescale",
@@ -1315,7 +1327,8 @@
     "databricks",
     "databricks workspace",
     "databricks-workspace",
-    "lakehouse"
+    "lakehouse",
+    "databrics"
   ],
   "delta_lake": [
     "delta lake",
@@ -1466,12 +1479,16 @@
   "etl": [
     "etl",
     "extract transform load",
-    "extract-transform-load"
+    "extract-transform-load",
+    "custom etls"
   ],
   "machine_learning": [
     "machine learning",
     "machine-learning",
-    "ml"
+    "ml",
+    "ai/ml",
+    "ai ml",
+    "ai-ml"
   ],
   "deep_learning": [
     "deep learning",
@@ -1496,7 +1513,9 @@
   ],
   "keras": [
     "keras",
-    "tf-keras"
+    "tf-keras",
+    "keras (tensorflow)",
+    "keras tensorflow"
   ],
   "xgboost": [
     "xgboost"
@@ -2097,7 +2116,8 @@
     "apache-beam-dataflow",
     "dataflow",
     "gcp dataflow",
-    "gcp-dataflow"
+    "gcp-dataflow",
+    "google data flow"
   ],
   "gcp_dataproc": [
     "dataproc",
@@ -2827,12 +2847,16 @@
     "microsoft-power-bi",
     "power bi",
     "power-bi",
-    "powerbi"
+    "powerbi",
+    "power bi platform"
   ],
   "tableau": [
     "tableau",
     "tableau desktop",
-    "tableau-desktop"
+    "tableau-desktop",
+    "tableau prep",
+    "tableau online",
+    "tableau online portal"
   ],
   "looker": [
     "google looker",
@@ -3490,7 +3514,8 @@
   "chroma": [
     "chroma",
     "chromadb",
-    "chroma db"
+    "chroma db",
+    "chroma (vector db)"
   ],
   "pgvector": [
     "pgvector",
@@ -3636,5 +3661,304 @@
     "litellm",
     "lite llm",
     "lite-llm"
+  ],
+  "1c": [
+    "1c",
+    "1c enterprise",
+    "1c:enterprise"
+  ],
+  "amplitude": [
+    "amplitude",
+    "amplitude analytics"
+  ],
+  "api": [
+    "api",
+    "apis"
+  ],
+  "authentication": [
+    "authentication",
+    "auth",
+    "auth router"
+  ],
+  "aws_eventbridge": [
+    "aws eventbridge",
+    "eventbridge",
+    "amazon eventbridge"
+  ],
+  "aws_quicksight": [
+    "aws quicksight",
+    "quicksight",
+    "amazon quicksight"
+  ],
+  "bitrix": [
+    "bitrix",
+    "bitrix24",
+    "bitrix 24"
+  ],
+  "bloc": [
+    "bloc"
+  ],
+  "business_objects": [
+    "business objects",
+    "business object bi",
+    "business object di",
+    "sap businessobjects",
+    "businessobjects"
+  ],
+  "ci_cd": [
+    "ci/cd",
+    "ci cd"
+  ],
+  "codemagic": [
+    "codemagic"
+  ],
+  "confluence": [
+    "confluence",
+    "atlassian confluence"
+  ],
+  "crm": [
+    "crm",
+    "crm systems",
+    "customer relationship management"
+  ],
+  "cucumber": [
+    "cucumber",
+    "cucumber bdd"
+  ],
+  "data_lake": [
+    "data lake",
+    "data lakes"
+  ],
+  "data_mining": [
+    "data mining"
+  ],
+  "data_modeling": [
+    "data modeling",
+    "data modelling"
+  ],
+  "data_vault": [
+    "data vault",
+    "data vault 2.0",
+    "dv2"
+  ],
+  "data_warehouse": [
+    "dwh",
+    "data warehouse",
+    "data warehousing"
+  ],
+  "digitalocean": [
+    "digitalocean",
+    "digital ocean"
+  ],
+  "encryption": [
+    "encryption",
+    "cryptography"
+  ],
+  "excel": [
+    "excel",
+    "microsoft excel",
+    "ms excel"
+  ],
+  "figma": [
+    "figma"
+  ],
+  "firebase": [
+    "firebase",
+    "firebase cloud messaging",
+    "fcm",
+    "firebase realtime database",
+    "realtime database"
+  ],
+  "app_flavors": [
+    "flavors",
+    "app flavors",
+    "build flavors"
+  ],
+  "freezed": [
+    "freezed"
+  ],
+  "getx": [
+    "getx"
+  ],
+  "google_ads": [
+    "google ads",
+    "google adwords",
+    "adwords"
+  ],
+  "google_analytics": [
+    "google analytics",
+    "ga",
+    "ga4"
+  ],
+  "looker_studio": [
+    "looker studio",
+    "google looker studio",
+    "google data studio",
+    "data studio"
+  ],
+  "google_sheets": [
+    "google sheets",
+    "g sheets",
+    "gsheets"
+  ],
+  "hotjar": [
+    "hotjar"
+  ],
+  "in_app_purchases": [
+    "in-app purchases",
+    "in app purchases"
+  ],
+  "informatica_dq": [
+    "informatica dq",
+    "informatica data quality"
+  ],
+  "informatica_powercenter": [
+    "informatica pc",
+    "informatica powercenter",
+    "informatica power center"
+  ],
+  "business_intelligence": [
+    "business intelligence",
+    "bi tools",
+    "internal bi tools"
+  ],
+  "jinja": [
+    "jinja",
+    "jinja2"
+  ],
+  "jms": [
+    "jms",
+    "java message service"
+  ],
+  "jupyter": [
+    "jupyter",
+    "jupyter notebook",
+    "jupyterlab"
+  ],
+  "kql": [
+    "kql",
+    "kusto query language"
+  ],
+  "linear": [
+    "linear"
+  ],
+  "lookml": [
+    "lookml"
+  ],
+  "mdm": [
+    "mdm",
+    "master data management"
+  ],
+  "metabase": [
+    "metabase"
+  ],
+  "mixpanel": [
+    "mixpanel"
+  ],
+  "ms_office": [
+    "ms office",
+    "microsoft office",
+    "office suite"
+  ],
+  "notion": [
+    "notion"
+  ],
+  "olap": [
+    "olap"
+  ],
+  "oltp": [
+    "oltp"
+  ],
+  "oracle_bi": [
+    "oracle bi",
+    "oracle bi publisher"
+  ],
+  "oracle_data_integrator": [
+    "oracle di",
+    "oracle data integrator"
+  ],
+  "oracle_warehouse_builder": [
+    "oracle warehouse builder",
+    "oracle dwb",
+    "oracle data warehouse builder"
+  ],
+  "paypal": [
+    "paypal"
+  ],
+  "polars": [
+    "polars"
+  ],
+  "power_query": [
+    "power query",
+    "powerquery",
+    "m language",
+    "m (power query)",
+    "m"
+  ],
+  "erp": [
+    "erp",
+    "proprietary erp"
+  ],
+  "rdbms": [
+    "rdbms",
+    "relational database"
+  ],
+  "riverpod": [
+    "riverpod"
+  ],
+  "rivery": [
+    "rivery"
+  ],
+  "rstudio": [
+    "rstudio"
+  ],
+  "sidekiq": [
+    "sidekiq"
+  ],
+  "sinatra": [
+    "sinatra"
+  ],
+  "sisense": [
+    "sisense"
+  ],
+  "sktime": [
+    "sktime"
+  ],
+  "sockets": [
+    "sockets",
+    "socket programming"
+  ],
+  "split_io": [
+    "split.io",
+    "split io",
+    "split"
+  ],
+  "streamlit": [
+    "streamlit"
+  ],
+  "stripe": [
+    "stripe",
+    "stripe api"
+  ],
+  "styled_components": [
+    "styled components",
+    "styled-components"
+  ],
+  "testrail": [
+    "testrail",
+    "test rail"
+  ],
+  "unit_testing": [
+    "unit test",
+    "unit tests",
+    "unit testing"
+  ],
+  "yandex_direct": [
+    "yandex.direct",
+    "yandex direct"
+  ],
+  "yandex_metrika": [
+    "yandex.metrika",
+    "yandex metrika"
   ]
 }
