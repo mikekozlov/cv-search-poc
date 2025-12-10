@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Iterable, Set
+from typing import List, Iterable
 
 def _norm(s: str) -> str:
     return " ".join(s.lower().strip().split())

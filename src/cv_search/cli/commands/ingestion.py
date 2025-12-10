@@ -86,7 +86,7 @@ def register(cli: click.Group) -> None:
             syncer.sync_files()
 
             click.secho(
-                f"\n? Google Drive sync completed successfully.",
+                "\n? Google Drive sync completed successfully.",
                 fg="green",
             )
             click.echo(

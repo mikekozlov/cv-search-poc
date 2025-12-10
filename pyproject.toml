@@ -20,6 +20,11 @@ dependencies = [
     "pgvector>=0.3.4",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6.0",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -37,4 +42,16 @@ include = [
     "pages/**",
     "data/**",
     ".env.example",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = [
+    "E203",
+    "E501",
 ]

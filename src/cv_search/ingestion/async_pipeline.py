@@ -4,11 +4,10 @@ import hashlib
 from pathlib import Path
 from datetime import datetime
 import click
-from typing import Optional
 
 from cv_search.config.settings import Settings
 from cv_search.ingestion.redis_client import RedisClient
-from cv_search.ingestion.events import FileDetectedEvent, TextExtractedEvent, EnrichmentCompleteEvent
+from cv_search.ingestion.events import FileDetectedEvent, TextExtractedEvent
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.cv_parser import CVParser
@@ -147,7 +146,7 @@ class ExtractorWorker:
             )
             
             self.redis.push_to_queue(QUEUE_ENRICH_TASK, event.to_dict())
-            click.echo(f"-> Text extracted. Pushed to Enrich Queue.")
+            click.echo("-> Text extracted. Pushed to Enrich Queue.")
             
         except Exception as e:
             click.secho(f"Failed to extract {file_path.name}: {e}", fg="red")

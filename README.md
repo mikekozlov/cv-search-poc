@@ -81,7 +81,7 @@ uv run python -m cv_search.cli parse-request --text "need 1 .net middle azure de
 
 
 # Single-seat search
-PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py search-seat --criteria data\test\criteria.json --topk 3 --mode hybrid --no-justify
+uv run python -m cv_search.cli search-seat --criteria data\test\criteria.json --topk 3 --mode hybrid --no-justify
 
 # Project (multi-seat) search
 PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py project-search --criteria data\test\criteria.json --topk 3 --no-justify

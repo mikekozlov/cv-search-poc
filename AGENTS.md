@@ -84,6 +84,45 @@ From the repository root (for example `PS C:\Users\<username>\Projects\cv-search
    PS C:\Users\<username>\Projects\cv-search-poc> uv run pytest tests\integration -q
    ```
 
+---
+
+## Mandatory Linting & Formatting for Any Python Change
+
+If you change **any Python code**, run Ruff before tests and before giving a final answer. Ruff configuration lives in `pyproject.toml`; linting must be clean before proceeding.
+
+### Default lint/format flow (PowerShell, from repo root)
+
+From the repository root (for example `PS C:\Users\<username>\Projects\cv-search-poc>`):
+
+1. Enable agentic test mode (same guard used for tests):
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> $env:AGENTIC_TEST_MODE = "1"
+   ```
+
+2. Format the Python sources (optional but recommended):
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> uv run --extra dev ruff format src tests
+   ```
+
+3. Run the linter and fix all reported issues:
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> uv run --extra dev ruff check src tests
+   ```
+
+   - Do not finish a task with outstanding Ruff errors.
+   - If a rule must be suppressed, use a focused `# noqa` or `pyproject.toml` ignore entry and justify it in the ExecPlan’s **Decision Log**.
+
+4. After Ruff is clean, run the integration suite as described above:
+
+   ```powershell
+   PS C:\Users\<username>\Projects\cv-search-poc> python scripts\run_agentic_suite.py
+   ```
+
+ExecPlans involving Python changes must list the Ruff format/lint steps ahead of tests in both **Concrete Steps** and **Validation and Acceptance** so that future agents follow the same order.
+
 ### Live ingest eval (optional, slow)
 
 The ingest-gdrive eval harness is opt-in and may call the live OpenAI API. Assume Postgres and Redis are already running and reachable via your `.env.test` values; do not start Docker containers here. To run it:

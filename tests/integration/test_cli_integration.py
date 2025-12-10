@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from tests.integration.helpers import REPO_ROOT, ingest_mock_state, run_cli
 

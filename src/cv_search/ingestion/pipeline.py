@@ -18,7 +18,7 @@ from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.data_loader import load_mock_cvs
 from cv_search.ingestion.cv_parser import CVParser
-from cv_search.lexicon.loader import load_role_lexicon, load_tech_synonym_map, build_tech_reverse_index
+from cv_search.lexicon.loader import load_tech_synonym_map, build_tech_reverse_index
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
