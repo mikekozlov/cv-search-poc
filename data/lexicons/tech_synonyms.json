@@ -107,6 +107,11 @@
     ".net 7",
     ".net 8",
     ".net core",
+    ".net core 1.3",
+    ".net core 2.2",
+    ".net core 5",
+    ".net core 6",
+    ".net core 8",
     ".net framework",
     ".net standard",
     ".net-5",
@@ -146,6 +151,11 @@
     "net 7",
     "net 8",
     "net core",
+    "net core 1.3",
+    "net core 2.2",
+    "net core 5",
+    "net core 6",
+    "net core 8",
     "net framework",
     "net standard",
     "net-5",
@@ -159,6 +169,46 @@
     "net6",
     "net7",
     "net8"
+  ],
+  "masstransit": [
+    "masstransit",
+    "mass transit"
+  ],
+  "hangfire": [
+    "hangfire"
+  ],
+  "mediatr": [
+    "mediatr",
+    "mediatR"
+  ],
+  "polly": [
+    "polly"
+  ],
+  "refit": [
+    "refit"
+  ],
+  "opserver": [
+    "opserver"
+  ],
+  "clean_architecture": [
+    "clean architecture",
+    "clean-architecture"
+  ],
+  "domain_driven_design": [
+    "ddd",
+    "domain driven design",
+    "domain-driven design"
+  ],
+  "solid_principles": [
+    "solid",
+    "solid principles",
+    "solid-principles"
+  ],
+  "signalr": [
+    "signalr",
+    "signalr.net",
+    "asp.net signalr",
+    "aspnet signalr"
   ],
   "javascript": [
     "ecmascript",
@@ -703,12 +753,14 @@
     "asp-net-web-api",
     "asp.net",
     "asp.net mvc",
+    "asp.net mvc 3",
     "asp.net web api",
     "asp.net-mvc",
     "asp.net-web-api",
     "aspnet",
     "aspnet forms",
     "aspnet mvc",
+    "aspnet mvc 3",
     "aspnet web api",
     "aspnet-forms",
     "aspnet-mvc",
@@ -747,7 +799,15 @@
     "aspnet-core",
     "aspnet-core-mvc",
     "aspnet-core-web-api",
-    "aspnetcore"
+    "aspnetcore",
+    "asp net core 5",
+    "asp net core 6",
+    "asp net core 7",
+    "asp net core 8",
+    "asp.net core 5",
+    "asp.net core 6",
+    "asp.net core 7",
+    "asp.net core 8"
   ],
   "ktor": [
     "ktor",
@@ -975,6 +1035,18 @@
     "sql server",
     "sql-server",
     "sqlserver"
+  ],
+  "sql_stored_procedures": [
+    "sql (stored procedures)",
+    "sql stored procedure",
+    "sql stored procedures",
+    "stored procedure",
+    "stored procedures"
+  ],
+  "ssis": [
+    "sql server integration services",
+    "sql-server integration services",
+    "ssis"
   ],
   "oracle": [
     "oracle",
@@ -1666,6 +1738,14 @@
     "aws-sqs",
     "sqs"
   ],
+  "aws_ses": [
+    "amazon ses",
+    "amazon-ses",
+    "aws ses",
+    "aws-ses",
+    "simple email service",
+    "simple-email-service"
+  ],
   "aws_api_gateway": [
     "amazon api gateway",
     "amazon-api-gateway",
@@ -1839,6 +1919,7 @@
     "app-service",
     "app-services",
     "azure app service",
+    "azure app services",
     "azure-app-service",
     "web apps",
     "web-apps"
@@ -1872,6 +1953,18 @@
     "event hubs",
     "event-hub",
     "event-hubs"
+  ],
+  "azure_monitor": [
+    "azure monitor",
+    "azure-monitor"
+  ],
+  "application_insights": [
+    "app insights",
+    "app-insights",
+    "application insights",
+    "application-insights",
+    "azure application insights",
+    "azure-application-insights"
   ],
   "azure_ad": [
     "aad",
