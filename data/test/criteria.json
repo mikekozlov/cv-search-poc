@@ -1,58 +1,50 @@
 {
   "domain": [
-    "healthtech"
+    "fintech"
   ],
   "tech_stack": [
     "dotnet",
-    "kubernetes",
     "postgresql",
-    "python",
-    "power_bi",
+    "redis",
     "kafka",
-    "react",
-    "typescript",
-    "playwright"
+    "docker",
+    "kubernetes",
+    "aws_eventbridge",
+    "github_actions",
+    "looker_studio",
+    "amplitude",
+    "etl",
+    "stripe"
   ],
   "expert_roles": [
-    "backend_engineer",
-    "frontend_engineer"
+    "backend_engineer"
   ],
-  "project_type": "greenfield",
+  "project_type": "hiring",
   "team_size": {
-    "total": 2,
+    "total": 1,
     "members": [
       {
         "role": "backend_engineer",
         "seniority": "senior",
         "domains": [
-          "healthtech"
+          "fintech"
         ],
         "tech_tags": [
           "dotnet",
-          "kubernetes",
           "postgresql",
-          "kafka"
+          "redis",
+          "kafka",
+          "docker",
+          "kubernetes",
+          "aws_eventbridge",
+          "github_actions",
+          "looker_studio",
+          "amplitude",
+          "etl"
         ],
         "nice_to_have": [
-          "python"
-        ],
-        "rationale": "Senior backend engineer skilled in .NET microservices, Kubernetes, PostgreSQL, and Kafka to build the core fintech backend."
-      },
-      {
-        "role": "frontend_engineer",
-        "seniority": "senior",
-        "domains": [
-          "healthtech"
-        ],
-        "tech_tags": [
-          "react",
-          "typescript",
-          "playwright"
-        ],
-        "nice_to_have": [
-          "power_bi"
-        ],
-        "rationale": "Senior frontend engineer experienced with React, TypeScript, and Playwright for frontend development and testing, with Power BI as a nice-to-have for analytics support."
+          "stripe"
+        ]
       }
     ]
   }
