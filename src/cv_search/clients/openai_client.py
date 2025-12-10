@@ -124,8 +124,6 @@ class LLMCV(BaseModel):
     summary: str | None = None
     experience: List[Dict[str, Any]]
     tech_tags: List[str]
-    qualifications: Dict[str, List[str]] = Field(default_factory=dict)
-    unmapped_tags: str | None = None
     source_folder_role_hint: str | None = None
 
 
@@ -327,12 +325,12 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
-        3.  `tech_tags`: Extract technologies from the CV text as raw strings 
+        3.  `tech_tags`: Extract technologies from the CV text as raw strings; do NOT use domain or expertise keys. Include the explicit tools/stack named in the CV (e.g., '.NET Core 6', '.NET Core 8', 'Kafka', 'MassTransit', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'AKS', 'Azure Functions', 'Blob Storage', 'OpenTelemetry', 'GitHub Actions'). Split multi-version/alias combos into separate items (e.g., '.NET Core 6/8' -> ['.net core 6', '.net core 8'], 'Kubernetes/AKS' -> ['kubernetes', 'aks']). Preserve versions when given. Deduplicate case-insensitively.
         4.  `domain_tags`: Use ONLY the Domain candidates. If the text mentions healthtech, digital banking, fintech, or medical products, map to `healthtech`. Do not leave this empty when domain cues exist.
         5.  `experience`: If the text mentions any projects, responsibilities, or work history, you MUST return at least one experience entry. Each entry must include:
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
-            * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates; do not return an empty experience list when work cues are present.
+            * `domain_tags`: map ONLY to the provided Domain candidates. `tech_tags`: use the explicit technologies from the CV (same rules as #3, including splitting version/alias combos); do not return an empty experience list when work cues are present.
         6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; return only the 2 most relevant items (<=2); leave empty if not clearly present.
 
         Additional guardrails:

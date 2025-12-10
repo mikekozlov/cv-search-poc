@@ -530,3 +530,4 @@ class CVIngestionPipeline:
 
     def run_ingestion_from_list(self, cvs: List[Dict[str, Any]]) -> int:
         return self.upsert_cvs(cvs)
+
