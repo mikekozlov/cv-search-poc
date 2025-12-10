@@ -331,6 +331,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
             * `domain_tags`: map ONLY to the provided Domain candidates. `tech_tags`: use the explicit technologies from the CV (same rules as #3, including splitting version/alias combos); do not return an empty experience list when work cues are present.
+            * Include every distinct project/responsibility block mentioned in the CV; do NOT drop, merge, or summarize away entries. Preserve the ordering as presented in the CV.
         6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; return only the 2 most relevant items (<=2); leave empty if not clearly present.
 
         Additional guardrails:
