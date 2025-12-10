@@ -74,7 +74,7 @@ class SearchProcessor:
         start = time.perf_counter()
 
         g0 = time.perf_counter()
-        gated_ids, gating_sql, gating_plan = self.gating_filter.filter_candidates(seat)
+        gated_ids, gating_sql = self.gating_filter.filter_candidates(seat)
         g1 = time.perf_counter()
 
         if not gated_ids:
@@ -87,7 +87,6 @@ class SearchProcessor:
                     "total_time_ms": round((g1 - start) * 1000, 2),
                 },
                 "gating_sql": gating_sql,
-                "gating_explain": gating_plan,
                 "ranking_sql": None,
                 "ranking_explain": [],
                 "vs_query": None,
@@ -128,7 +127,6 @@ class SearchProcessor:
             "fusion": fusion_dump or None,
             "results": final_results,
             "gating_sql": gating_sql,
-            "gating_explain": gating_plan,
             "ranking_sql": ranking_sql,
             "ranking_explain": ranking_plan,
         }

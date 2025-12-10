@@ -27,8 +27,7 @@ class GatingFilter:
 
     def __init__(self, db: CVDatabase):
         self.db = db
-
-    def filter_candidates(self, seat: Dict[str, Any]) -> Tuple[List[str], str, List[Dict[str, Any]]]:
+    def filter_candidates(self, seat: Dict[str, Any]) -> Tuple[List[str], str]:
         role = seat["role"]
         allowed_seniorities = tuple(_allowed_seniorities(seat["seniority"]))
         if getattr(self.db, "backend", "postgres") == "postgres":
@@ -78,7 +77,6 @@ class GatingFilter:
     SELECT candidate_id FROM gated
     """
             params = (role, *allowed_seniorities)
-        plan = self.db.explain_query_plan(sql, params)
         rows = self.db.conn.execute(sql, params).fetchall()
         ids = [r["candidate_id"] if hasattr(r, "keys") else r[0] for r in rows]
-        return ids, sql.strip(), plan
+        return ids, sql.strip()
