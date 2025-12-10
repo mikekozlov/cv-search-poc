@@ -76,6 +76,10 @@ PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py ingest-
 ## Search (CLI)
 
 ```powershell
+# parse request
+uv run python -m cv_search.cli parse-request --text "need 1 .net middle azure developer" > tmp_criteria.json
+
+
 # Single-seat search
 PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py search-seat --criteria data\test\criteria.json --topk 3 --mode hybrid --no-justify
 

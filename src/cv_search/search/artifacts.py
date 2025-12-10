@@ -24,17 +24,9 @@ class SearchRunArtifactWriter:
         gating_sql = (payload.get("gating_sql") or "").strip()
         _write_text("gating.sql.txt", f"{gating_sql}\n")
 
-        gating_plan = payload.get("gating_explain", [])
-        if gating_plan:
-            _write_json("gating.explain.json", gating_plan)
-
         ranking_sql = payload.get("ranking_sql")
         if ranking_sql:
             _write_text("ranking.sql.txt", f"{ranking_sql.strip()}\n")
-
-        ranking_plan = payload.get("ranking_explain", [])
-        if ranking_plan:
-            _write_json("ranking.explain.json", ranking_plan)
 
         vs_query = payload.get("vs_query")
         if vs_query:
