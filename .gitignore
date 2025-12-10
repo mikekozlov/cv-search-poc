@@ -140,12 +140,8 @@ venv
 .idea
 /runs/
 /src/cvsearch.egg-info/
-/data/cv_search.faiss
 /data/ingested_cvs_json/
 /data/gdrive_inbox/
-/data/gdrive_archive/
-/data/db/cvsearch.db
-
 
 # Python cache
 __pycache__/
