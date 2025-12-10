@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -71,20 +70,13 @@ class SearchProcessor:
 
         seat = self._extract_seat(criteria)
 
-        start = time.perf_counter()
-
-        g0 = time.perf_counter()
         gated_ids, gating_sql = self.gating_filter.filter_candidates(seat)
-        g1 = time.perf_counter()
 
         if not gated_ids:
             return {
                 "query_fingerprint": self._fingerprint(seat, mode),
                 "metrics": {
                     "gate_count": 0,
-                    "gate_time_ms": round((g1 - g0) * 1000, 2),
-                    "rank_time_ms": 0.0,
-                    "total_time_ms": round((g1 - start) * 1000, 2),
                 },
                 "gating_sql": gating_sql,
                 "ranking_sql": None,
@@ -97,10 +89,7 @@ class SearchProcessor:
             }
 
         lex_limit = max(top_k, vs_topk, len(gated_ids))
-        r0 = time.perf_counter()
-        lex_rows, ranking_sql, ranking_plan = self.lexical_retriever.search(gated_ids, seat, lex_limit)
-        r1 = time.perf_counter()
-        rank_time_ms = round((r1 - r0) * 1000, 2)
+        lex_rows, ranking_sql = self.lexical_retriever.search(gated_ids, seat, lex_limit)
 
         sem_raw = self.semantic_retriever.search(gated_ids, seat, vs_topk)
         sem_hits = sem_raw.get("hits", [])
@@ -112,15 +101,11 @@ class SearchProcessor:
             for item in final_results:
                 item["llm_justification"] = justifications.get(item["candidate_id"])
 
-        total = time.perf_counter() - start
         return {
             "criteria": criteria,
             "query_fingerprint": self._fingerprint(seat, mode),
             "metrics": {
                 "gate_count": len(gated_ids),
-                "gate_time_ms": round((g1 - g0) * 1000, 2),
-                "rank_time_ms": rank_time_ms,
-                "total_time_ms": round(total * 1000, 2),
             },
             "vs_query": sem_raw.get("query"),
             "vs_results": sem_raw,
@@ -128,7 +113,7 @@ class SearchProcessor:
             "results": final_results,
             "gating_sql": gating_sql,
             "ranking_sql": ranking_sql,
-            "ranking_explain": ranking_plan,
+            "ranking_explain": [],
         }
 
     def search_for_seat(

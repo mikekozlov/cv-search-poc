@@ -417,9 +417,9 @@ class CVDatabase:
         idf_must: Dict[str, float],
         idf_nice: Dict[str, float],
         top_k: int,
-    ) -> tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
+    ) -> tuple[List[Dict[str, Any]], str]:
         if not gated_ids:
-            return [], "", []
+            return [], ""
 
         sql = """
         WITH candidates AS (
@@ -445,7 +445,6 @@ class CVDatabase:
             gated_ids,
             top_k,
         )
-        plan = self.explain_query_plan(sql, params)
         rows_raw = self.conn.execute(sql, params).fetchall()
         rows: List[Dict[str, Any]] = [dict(r) for r in rows_raw]
         must_sum = sum(idf_must.get(tag, 0.0) for tag in must_have)
@@ -453,15 +452,7 @@ class CVDatabase:
         for r in rows:
             r["must_idf_sum"] = must_sum
             r["nice_idf_sum"] = nice_sum
-        return rows, sql.strip(), plan
-
-    def explain_query_plan(self, sql: str, params: Iterable[Any]) -> List[Dict[str, Any]]:
-        plan_sql = f"EXPLAIN (FORMAT JSON) {sql}"
-        cur = self.conn.execute(plan_sql, params)
-        res = cur.fetchone()
-        if not res or "QUERY PLAN" not in res:
-            return []
-        return res["QUERY PLAN"]
+        return rows, sql.strip()
 
     def get_full_candidate_context(self, candidate_id: str) -> Optional[Dict[str, Any]]:
         row = self.conn.execute(
@@ -523,7 +514,7 @@ class CVDatabase:
         query_text: str,
         gated_ids: List[str],
         top_k: int,
-    ) -> tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
+    ) -> tuple[List[Dict[str, Any]], str]:
         params: Dict[str, Any] = {"ts_query": query_text, "top_k": top_k}
         sql = """
         SELECT candidate_id,
@@ -535,9 +526,8 @@ class CVDatabase:
             sql += " AND candidate_id = ANY(%(gated)s)"
             params["gated"] = gated_ids
         sql += " ORDER BY rank DESC LIMIT %(top_k)s"
-        plan = self.explain_query_plan(sql, params)
         rows = self.conn.execute(sql, params).fetchall()
-        return [dict(row) for row in rows], sql.strip(), plan
+        return [dict(row) for row in rows], sql.strip()
 
     def reset_state(self) -> None:
         """Truncate all tables so tests start from a clean Postgres slate."""

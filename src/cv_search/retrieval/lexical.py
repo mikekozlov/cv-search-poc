@@ -26,7 +26,7 @@ class LexicalRetriever:
         gated_ids: List[str],
         seat: Dict[str, Any],
         top_k: int,
-    ) -> Tuple[List[Any], str, Dict[str, Any]]:
+    ) -> Tuple[List[Any], str]:
         must_have = seat.get("must_have", [])
         nice_to_have = seat.get("nice_to_have", [])
         domains = seat.get("domains", [])
@@ -34,7 +34,7 @@ class LexicalRetriever:
         idf_must = self.db.compute_idf(must_have, "tech")
         idf_nice = self.db.compute_idf(nice_to_have, "tech")
 
-        ranked_rows, ranking_sql, ranking_plan = self.db.rank_weighted_set(
+        ranked_rows, ranking_sql = self.db.rank_weighted_set(
             gated_ids=gated_ids,
             must_have=must_have,
             nice_to_have=nice_to_have,
@@ -44,17 +44,15 @@ class LexicalRetriever:
             top_k=top_k,
         )
 
-        fts_sql = None
-        fts_plan: List[Dict[str, Any]] = []
+        fts_sql: str | None = None
         fts_map: Dict[str, float] = {}
         fts_query = self._build_fts_query(seat)
         if fts_query:
-            fts_rows, fts_sql, fts_plan = self.db.fts_search(fts_query, gated_ids, top_k)
+            fts_rows, fts_sql = self.db.fts_search(fts_query, gated_ids, top_k)
             fts_map = {row["candidate_id"]: float(row.get("rank", 0.0) or 0.0) for row in fts_rows}
 
         for row in ranked_rows:
             row["fts_rank"] = fts_map.get(row["candidate_id"], 0.0)
 
         combined_sql = ranking_sql if not fts_sql else f"{ranking_sql}\n---\n{fts_sql}"
-        combined_plan: Dict[str, Any] = {"tag_plan": ranking_plan, "fts_plan": fts_plan}
-        return ranked_rows, combined_sql, combined_plan
+        return ranked_rows, combined_sql
