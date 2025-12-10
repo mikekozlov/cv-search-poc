@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 import re
-import hashlib
 from pathlib import Path
 from typing import Any, Dict, List, Protocol, Type
 
@@ -223,12 +222,10 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         role_candidates = _select_candidates(role_lex_list, text, role_hint="", max_candidates=30, fallback=30)
         domain_candidates = _select_candidates(domain_lex_list, text, role_hint="", max_candidates=25, fallback=25)
         tech_candidates = _select_candidates(tech_lex_list, text, role_hint="", max_candidates=80, fallback=80)
-        lexicon_hash = _lexicon_fingerprint(role_lex_list, tech_lex_list, domain_lex_list)
 
         system_prompt = f"""
         You are a TA (Talent Acquisition) expert. Parse a user's free-text project brief into a structured JSON object that aligns with our search/ingestion lexicons.
 
-        Lexicon snapshot hash: {lexicon_hash}
         Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
         Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
         Tech candidates (canonical keys): {json.dumps(tech_candidates, indent=2)}
@@ -326,7 +323,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
 
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
         3.  `tech_tags`: Extract technologies from the CV text as raw strings; do NOT use domain or expertise keys. Include the explicit tools/stack named in the CV (e.g., '.NET Core 6', '.NET Core 8', 'Kafka', 'MassTransit', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'AKS', 'Azure Functions', 'Blob Storage', 'OpenTelemetry', 'GitHub Actions'). Split multi-version/alias combos into separate items (e.g., '.NET Core 6/8' -> ['.net core 6', '.net core 8'], 'Kubernetes/AKS' -> ['kubernetes', 'aks']). Preserve versions when given. Deduplicate case-insensitively.
-        4.  `domain_tags`: Use ONLY the Domain candidates. If the text mentions healthtech, digital banking, fintech, or medical products, map to `healthtech`. Do not leave this empty when domain cues exist.
+        4.  `domain_tags`: Use ONLY the Domain candidates. Map medical/clinical/healthcare cues (e.g., patient, clinic, hospital, EMR, pharma) to `healthtech`. Map banking/fintech/payments cues (e.g., banking, loans, savings, cards, BNPL, payments, trading, KYC/AML, PSPs) to `banking` or `fintech` as appropriate (payments/BNPL/cards/KYC/AML -> `fintech`; banking/loans/savings/digital banking -> `banking`). Do not leave this empty when domain cues exist; pick the best-fit domain per experience entry 
         5.  `experience`: If the text mentions any projects, responsibilities, or work history, you MUST return at least one experience entry. Each entry must include:
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
