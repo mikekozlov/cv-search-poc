@@ -39,4 +39,11 @@ class Criteria:
     team_size: Optional[TeamSize] = None
 
     def to_json(self) -> str:
-        return json.dumps(asdict(self), ensure_ascii=False, indent=2)
+        def _prune_none(obj):
+            if isinstance(obj, dict):
+                return {k: _prune_none(v) for k, v in obj.items() if v is not None}
+            if isinstance(obj, list):
+                return [_prune_none(v) for v in obj if v is not None]
+            return obj
+
+        return json.dumps(_prune_none(asdict(self)), ensure_ascii=False, indent=2)

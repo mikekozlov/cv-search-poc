@@ -76,7 +76,13 @@ def test_parse_request_normalizes_existing_team_size():
 def test_parse_request_maps_tech_synonyms_via_reverse_index():
     payload = {
         "domain": ["FinTech"],
-        "tech_stack": ["Google Analytics", "GA4", "Custom ETLs", "Stripe API", "AWS eventbridge"],
+        "tech_stack": [
+            "Google Analytics/GA4",
+            "Custom ETLs",
+            "Stripe API",
+            "AWS eventbridge",
+            "API Design",  # should be dropped (not in lexicon)
+        ],
         "expert_roles": ["Backend_Engineer"],
         "team_size": {
             "members": [
@@ -85,7 +91,7 @@ def test_parse_request_maps_tech_synonyms_via_reverse_index():
                     "seniority": "Senior",
                     "domains": ["FinTech"],
                     "tech_tags": ["Google Analytics", "GA"],
-                    "nice_to_have": ["Stripe API", "Custom ETLs"],
+                    "nice_to_have": ["Stripe API", "Custom ETLs", "Data Vault Modeling"],
                 }
             ]
         },
@@ -102,3 +108,5 @@ def test_parse_request_maps_tech_synonyms_via_reverse_index():
     member = crit.team_size.members[0]
     assert member.tech_tags == ["google_analytics"]
     assert member.nice_to_have == ["stripe", "etl"]
+    assert "data vault modeling" not in crit.tech_stack
+    assert "api design" not in crit.tech_stack

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import List, Optional
 
 from cv_search.clients.openai_client import OpenAIClient
@@ -21,19 +22,23 @@ def _canon_tags(seq: List[str] | None) -> List[str]:
     return out
 
 
-def _map_tech_tags(seq: List[str] | None, reverse_index: dict[str, str]) -> List[str]:
-    """Normalize tech strings and map via synonym reverse index to canonical keys."""
+def _map_tech_tags(seq: List[str] | None, reverse_index: dict[str, str], tech_lexicon: set[str]) -> List[str]:
+    """Normalize tech strings, split simple combos, map via reverse index, and keep only canonical techs."""
     seen = set()
     out: List[str] = []
     for item in seq or []:
-        normalized = (item or "").strip().lower()
-        if not normalized:
+        if not item:
             continue
-        mapped = reverse_index.get(normalized, normalized)
-        if mapped in seen:
+        # split on slashes to handle combos like ".net 6/8" or "google analytics/ga4"
+        parts = [p.strip().lower() for p in re.split(r"[\\/]+", str(item)) if p.strip()]
+        if not parts:
             continue
-        seen.add(mapped)
-        out.append(mapped)
+        for part in parts:
+            mapped = reverse_index.get(part, part)
+            if mapped not in tech_lexicon or mapped in seen:
+                continue
+            seen.add(mapped)
+            out.append(mapped)
     return out
 
 
@@ -55,14 +60,14 @@ def _as_seniority_enum(value: str | None) -> Optional[SeniorityEnum]:
         return None
 
 
-def _normalize_member(payload: dict, tech_reverse: dict[str, str]) -> Optional[TeamMember]:
+def _normalize_member(payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]) -> Optional[TeamMember]:
     role = (payload.get("role") or "").strip().lower()
     if not role:
         return None
     seniority = _as_seniority_enum(payload.get("seniority"))
     domains = _canon_tags(payload.get("domains"))
-    tech_tags = _map_tech_tags(payload.get("tech_tags"), tech_reverse)
-    nice_to_have = _map_tech_tags(payload.get("nice_to_have"), tech_reverse)
+    tech_tags = _map_tech_tags(payload.get("tech_tags"), tech_reverse, tech_lexicon)
+    nice_to_have = _map_tech_tags(payload.get("nice_to_have"), tech_reverse, tech_lexicon)
     rationale = payload.get("rationale")
     return TeamMember(
         role=role,
@@ -74,11 +79,11 @@ def _normalize_member(payload: dict, tech_reverse: dict[str, str]) -> Optional[T
     )
 
 
-def _build_team_size(payload: dict, tech_reverse: dict[str, str]) -> TeamSize | None:
+def _build_team_size(payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]) -> TeamSize | None:
     raw_members: List[dict] = payload.get("members") or []
     members: List[TeamMember] = []
     for raw in raw_members:
-        normalized = _normalize_member(raw, tech_reverse)
+        normalized = _normalize_member(raw, tech_reverse, tech_lexicon)
         if normalized:
             members.append(normalized)
 
@@ -102,13 +107,15 @@ def parse_request(text: str, model: str, settings: Settings, client: OpenAIClien
     """Extract canonical search criteria using the LLM client."""
 
     data = client.get_structured_criteria(text, model=model, settings=settings)
-    tech_reverse = build_tech_reverse_index(load_tech_synonym_map(settings.lexicon_dir))
+    tech_synonyms = load_tech_synonym_map(settings.lexicon_dir)
+    tech_reverse = build_tech_reverse_index(tech_synonyms)
+    tech_lexicon = set(tech_synonyms.keys())
 
     team_payload = data.get("team_size") or {}
-    team_size = _build_team_size(team_payload, tech_reverse)
+    team_size = _build_team_size(team_payload, tech_reverse, tech_lexicon)
 
     domains = _canon_tags(data.get("domain"))
-    tech_stack = _map_tech_tags(data.get("tech_stack"), tech_reverse)
+    tech_stack = _map_tech_tags(data.get("tech_stack"), tech_reverse, tech_lexicon)
     expert_roles = _canon_tags(data.get("expert_roles"))
 
     if (team_size is None or not team_size.members) and expert_roles:
