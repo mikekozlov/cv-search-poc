@@ -333,7 +333,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
             * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates; do not return an empty experience list when work cues are present.
-        6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; leave empty if not clearly present.
+        6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; return only the 2 most relevant items (<=2); leave empty if not clearly present.
 
         Additional guardrails:
         - Only use canonical keys shown in the candidate lists. Do NOT invent or rephrase keys.
