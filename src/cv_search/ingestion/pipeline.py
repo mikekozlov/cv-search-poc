@@ -18,7 +18,7 @@ from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.data_loader import load_mock_cvs
 from cv_search.ingestion.cv_parser import CVParser
-from cv_search.lexicon.loader import load_role_lexicon
+from cv_search.lexicon.loader import load_role_lexicon, load_tech_synonym_map, build_tech_reverse_index
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
@@ -36,6 +36,9 @@ class CVIngestionPipeline:
         self.embedder = embedder or self._build_embedder_from_env()
         self.client = client or OpenAIClient(settings)
         self.parser = parser or CVParser()
+        self.tech_syn_map = load_tech_synonym_map(settings.lexicon_dir)
+        self.tech_reverse_index = build_tech_reverse_index(self.tech_syn_map)
+        self.unmapped_dir = Path(self.settings.data_dir) / "ingest_unmapped_techs"
 
     def close(self) -> None:
         """Release DB handle held by this pipeline."""
@@ -60,6 +63,36 @@ class CVIngestionPipeline:
                 seen.add(k)
                 out.append(xl)
         return out
+
+    def _map_tech_tags(self, tags: Iterable[str]) -> tuple[List[str], List[str]]:
+        mapped: List[str] = []
+        unmapped: List[str] = []
+        for raw in tags or []:
+            val = (raw or "").strip().lower()
+            if not val:
+                continue
+            canon = self.tech_reverse_index.get(val)
+            if canon:
+                if canon not in mapped:
+                    mapped.append(canon)
+            else:
+                if val not in unmapped:
+                    unmapped.append(val)
+        return mapped, unmapped
+
+    def _log_unmapped_techs(self, source_filename: str, candidate_id: str, unmapped: List[str], ingestion_ts: str) -> None:
+        if not unmapped:
+            return
+        self.unmapped_dir.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "source_filename": source_filename,
+            "candidate_id": candidate_id,
+            "ingestion_timestamp": ingestion_ts,
+            "unmapped_techs": unmapped,
+        }
+        path = self.unmapped_dir / f"{candidate_id}_unmapped_techs.json"
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2, ensure_ascii=False)
 
     def _build_embedder_from_env(self) -> EmbedderProtocol:
         flag = os.environ.get("USE_DETERMINISTIC_EMBEDDER") or os.environ.get("HF_HUB_OFFLINE")
@@ -315,6 +348,7 @@ class CVIngestionPipeline:
 
             file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
             cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
+            candidate_id = cv_data_dict["candidate_id"]
 
             file_stat = file_path.stat()
             mod_time = datetime.fromtimestamp(file_stat.st_mtime)
@@ -324,6 +358,18 @@ class CVIngestionPipeline:
             cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
             cv_data_dict["source_gdrive_path"] = source_gdrive_path_str
             cv_data_dict["source_category"] = source_category
+
+            unmapped: List[str] = []
+            tech_tags, miss_top = self._map_tech_tags(cv_data_dict.get("tech_tags", []))
+            cv_data_dict["tech_tags"] = tech_tags
+            unmapped.extend(miss_top)
+            experiences = cv_data_dict.get("experience", []) or []
+            for exp in experiences:
+                mapped_exp, miss_exp = self._map_tech_tags(exp.get("tech_tags", []))
+                exp["tech_tags"] = mapped_exp
+                unmapped.extend(miss_exp)
+            unmapped = self._uniq(unmapped)
+            self._log_unmapped_techs(file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"])
 
             json_filename = f"{cv_data_dict['candidate_id']}.json"
             json_save_path = json_output_dir / json_filename
@@ -372,14 +418,6 @@ class CVIngestionPipeline:
     def run_gdrive_ingestion(self, client: OpenAIClient | None = None, target_filename: str | None = None) -> Dict[str, Any]:
         parser = self.parser
         client = client or self.client
-
-        try:
-            roles_lex_list = load_role_lexicon(self.settings.lexicon_dir)
-            role_keys_lookup = set(roles_lex_list)
-            click.echo(f"Loaded {len(role_keys_lookup)} role keys from lexicon.")
-        except Exception as e:
-            click.secho(f"❌ FAILED to load role lexicon: {e}", fg="red")
-            raise
 
         inbox_dir = self.settings.gdrive_local_dest_dir
         base_data_dir = self.settings.data_dir
@@ -434,7 +472,6 @@ class CVIngestionPipeline:
         processed_files = []
         failed_files = []
         skipped_ambiguous = []
-        skipped_roles = defaultdict(list)
 
         max_workers = min(10, len(filtered))
 

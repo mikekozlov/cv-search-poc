@@ -246,6 +246,27 @@ class EnricherWorker:
             cv_data_dict["source_gdrive_path"] = str(file_path) # Or relative if we want
             cv_data_dict["source_category"] = source_category
             
+            from cv_search.ingestion.pipeline import CVIngestionPipeline
+            pipeline = CVIngestionPipeline(
+                self.db,
+                self.settings,
+                embedder=self.embedder,
+                client=self.client,
+                parser=self.parser
+            )
+
+            unmapped: list[str] = []
+            tech_tags, miss_top = pipeline._map_tech_tags(cv_data_dict.get("tech_tags", []))
+            cv_data_dict["tech_tags"] = tech_tags
+            unmapped.extend(miss_top)
+            experiences = cv_data_dict.get("experience", []) or []
+            for exp in experiences:
+                mapped_exp, miss_exp = pipeline._map_tech_tags(exp.get("tech_tags", []))
+                exp["tech_tags"] = mapped_exp
+                unmapped.extend(miss_exp)
+            unmapped = pipeline._uniq(unmapped)
+            pipeline._log_unmapped_techs(file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"])
+
             # Save JSON (optional, but good for debug)
             base_data_dir = self.settings.data_dir
             json_output_dir = base_data_dir / "ingested_cvs_json"
@@ -258,15 +279,6 @@ class EnricherWorker:
             # We need to use the pipeline logic for DB upsert.
             # We can duplicate the logic or import CVIngestionPipeline.
             # Importing CVIngestionPipeline might be cleaner to reuse _ingest_single_cv
-            
-            from cv_search.ingestion.pipeline import CVIngestionPipeline
-            pipeline = CVIngestionPipeline(
-                self.db,
-                self.settings,
-                embedder=self.embedder,
-                client=self.client,
-                parser=self.parser
-            )
             cid, vs_text, doc_payload = pipeline._ingest_single_cv(cv_data_dict)
             embedding = pipeline.embedder.get_embeddings([vs_text])[0]
 

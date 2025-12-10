@@ -14,7 +14,7 @@ from cv_search.lexicon.loader import (
     load_domain_lexicon,
     load_expertise_lexicon,
     load_role_lexicon,
-    load_tech_synonyms,
+    load_tech_lexicon,
 )
 from cv_search.llm.schemas import CandidateJustification
 from cv_search.llm.logger import log_chat
@@ -81,9 +81,11 @@ def _select_candidates(
     return list(lexicon[:limit])
 
 
-def _lexicon_fingerprint(*lexicons: List[str]) -> str:
-    payload = json.dumps([sorted(lex) for lex in lexicons], separators=(",", ":"), sort_keys=True)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
+def _normalize_brief_tokens(text: str) -> str:
+    """Normalize brief text to surface common aliases like .net -> dotnet, c# -> csharp."""
+    norm = text.replace(".net", " dotnet ").replace("c#", " csharp ")
+    norm = re.sub(r"\s+", " ", norm)
+    return norm.strip()
 
 
 class LLMCriteria(BaseModel):
@@ -198,7 +200,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         role_lex_list = load_role_lexicon(settings.lexicon_dir)
-        tech_lex_list = load_tech_synonyms(settings.lexicon_dir)
+        tech_lex_list = load_tech_lexicon(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
 
         role_candidates = _select_candidates(role_lex_list, text, role_hint="", max_candidates=30, fallback=30)
@@ -221,6 +223,10 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         - `tech_stack` is the deduplicated rollup of all technologies mentioned, using the canonical tech candidates.
         - `expert_roles` is the set of canonical roles relevant to the brief; include any roles you assigned to `team_size.members`.
         - Prefer precision over recall. If unsure and not in candidates, leave the field empty instead of guessing.
+        - If the brief does not mention a domain, return an empty domain list; do NOT guess a domain.
+
+        Example (single-seat brief): "need 1 dotnet middle azure developer"
+        -> role: dotnet_developer (or backend_engineer), seniority: middle, domains: [], tech_tags: [dotnet, azure], nice_to_have: [], tech_stack: [dotnet, azure]
         """
         return self._get_structured_response(
             prompt=text,
@@ -262,15 +268,12 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             settings: Settings,
     ) -> Dict[str, Any]:
         role_lex_list = load_role_lexicon(settings.lexicon_dir)
-        tech_lex_list = load_tech_synonyms(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
         expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
 
         role_candidates = _select_candidates(role_lex_list, raw_text, role_folder_hint, max_candidates=25, fallback=25)
         domain_candidates = _select_candidates(domain_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
-        tech_candidates = _select_candidates(tech_lex_list, raw_text, role_folder_hint, max_candidates=80, fallback=80)
         expertise_candidates = _select_candidates(expertise_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
-        lexicon_hash = _lexicon_fingerprint(role_lex_list, tech_lex_list, domain_lex_list, expertise_lex_list)
 
         system_prompt = f"""
         You are an expert CV parser. Your task is to parse raw text from a CV slide deck
@@ -278,10 +281,8 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
 
         You are given a HINT: the normalized parent folder for this CV is '{role_folder_hint}'.
 
-        Lexicon snapshot hash: {lexicon_hash}
         Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
         Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
-        Tech candidates (canonical keys, truncated to most likely matches): {json.dumps(tech_candidates, indent=2)}
         Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
 
         Strictly follow these rules:
@@ -292,14 +293,13 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             * If the HINT is **not** a valid role, you **MUST** set this field to `null`.
 
         2.  `role_tags`: Extract roles from the CV text and map them ONLY to the Role candidates.
-        3.  `tech_tags`: Extract technologies from the CV text and map them ONLY to the Tech candidates. Prioritize the core stack explicitly stated in the CV; avoid peripheral tools (CI/CD, generic cloud names, monitoring) unless they are clearly core to the work.
+        3.  `tech_tags`: Extract technologies from the CV text as raw strings 
         4.  `domain_tags`: Use ONLY the Domain candidates. If the text mentions healthtech, digital banking, fintech, or medical products, map to `healthtech`. Do not leave this empty when domain cues exist.
         5.  `experience`: If the text mentions any projects, responsibilities, or work history, you MUST return at least one experience entry. Each entry must include:
             * `project_description`: 1-3 sentences summarizing the project/product.
             * `responsibilities`: list of bullet strings preserving the candidate's described duties.
             * `domain_tags` / `tech_tags`: map ONLY to the provided Domain/Tech candidates; do not return an empty experience list when work cues are present.
         6.  `expertise_tags`: Infer expertise areas and map them ONLY to the Expertise candidates; leave empty if not clearly present.
-        8.  `unmapped_tags`: List any tech/tools found but *not* in the Tech candidates as a comma-separated string.
 
         Additional guardrails:
         - Only use canonical keys shown in the candidate lists. Do NOT invent or rephrase keys.
