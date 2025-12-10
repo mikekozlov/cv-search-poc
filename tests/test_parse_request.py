@@ -71,3 +71,34 @@ def test_parse_request_normalizes_existing_team_size():
     assert member.domains == ["healthtech"]
     assert member.tech_tags == ["azure", "dotnet"]
     assert member.nice_to_have == ["kafka"]
+
+
+def test_parse_request_maps_tech_synonyms_via_reverse_index():
+    payload = {
+        "domain": ["FinTech"],
+        "tech_stack": ["Google Analytics", "GA4", "Custom ETLs", "Stripe API", "AWS eventbridge"],
+        "expert_roles": ["Backend_Engineer"],
+        "team_size": {
+            "members": [
+                {
+                    "role": "Backend_Engineer",
+                    "seniority": "Senior",
+                    "domains": ["FinTech"],
+                    "tech_tags": ["Google Analytics", "GA"],
+                    "nice_to_have": ["Stripe API", "Custom ETLs"],
+                }
+            ]
+        },
+    }
+    crit = parse_request(
+        text="need fintech backend",
+        model="gpt-4.1-mini",
+        settings=Settings(),
+        client=_StubClient(payload),
+    )
+
+    assert crit.tech_stack == ["google_analytics", "etl", "stripe", "aws_eventbridge"]
+    assert crit.expert_roles == ["backend_engineer"]
+    member = crit.team_size.members[0]
+    assert member.tech_tags == ["google_analytics"]
+    assert member.nice_to_have == ["stripe", "etl"]

@@ -9,12 +9,7 @@ from typing import Any, Dict, List, Protocol, Type
 from openai import AzureOpenAI, OpenAI
 
 from cv_search.config.settings import Settings
-from cv_search.lexicon.loader import (
-    load_domain_lexicon,
-    load_expertise_lexicon,
-    load_role_lexicon,
-    load_tech_lexicon,
-)
+from cv_search.lexicon.loader import load_domain_lexicon, load_expertise_lexicon, load_role_lexicon
 from cv_search.llm.schemas import CandidateJustification
 from cv_search.llm.logger import log_chat
 
@@ -216,25 +211,40 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         role_lex_list = load_role_lexicon(settings.lexicon_dir)
-        tech_lex_list = load_tech_lexicon(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
+        expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
 
-        role_candidates = _select_candidates(role_lex_list, text, role_hint="", max_candidates=30, fallback=30)
-        domain_candidates = _select_candidates(domain_lex_list, text, role_hint="", max_candidates=25, fallback=25)
-        tech_candidates = _select_candidates(tech_lex_list, text, role_hint="", max_candidates=80, fallback=80)
+        role_candidates = _prioritize_full_lexicon(
+            role_lex_list,
+            text,
+            "",
+            max_candidates=30,
+        )
+        domain_candidates = _prioritize_full_lexicon(
+            domain_lex_list,
+            text,
+            "",
+            max_candidates=30,
+        )
+        expertise_candidates = _prioritize_full_lexicon(
+            expertise_lex_list,
+            text,
+            "",
+            max_candidates=30,
+        )
 
         system_prompt = f"""
         You are a TA (Talent Acquisition) expert. Parse a user's free-text project brief into a structured JSON object that aligns with our search/ingestion lexicons.
 
         Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
         Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
-        Tech candidates (canonical keys): {json.dumps(tech_candidates, indent=2)}
+        Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
 
         Strict rules:
-        - Use ONLY canonical keys from the candidate lists above. Do NOT invent new role/tech/domain keys.
+        - Use ONLY canonical role/domain/expertise keys from the candidate lists above. Do NOT invent new role/domain/expertise keys.
         - Populate `team_size.members` whenever a role or hiring need is implied. If no explicit count is given but a role/stack is clear, create 1 member using the best-fit role candidate.
         - Each member must include: `role`, `seniority` (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), `domains` (subset of domain candidates), `tech_tags` (must-have/core tech), and `nice_to_have` (optional/secondary tech).
-        - `tech_stack` is the deduplicated rollup of all technologies mentioned, using the canonical tech candidates.
+        - `tech_stack` is the deduplicated rollup of all technologies mentioned. List explicit technologies from the brief (do not guess or invent).
         - `expert_roles` is the set of canonical roles relevant to the brief; include any roles you assigned to `team_size.members`.
         - Prefer precision over recall. If unsure and not in candidates, leave the field empty instead of guessing.
         - If the brief does not mention a domain, return an empty domain list; do NOT guess a domain.
