@@ -81,6 +81,25 @@ def _select_candidates(
     return list(lexicon[:limit])
 
 
+def _prioritize_full_lexicon(
+        lexicon: List[str],
+        text: str,
+        role_hint: str,
+        *,
+        max_candidates: int,
+) -> List[str]:
+    """Return the full lexicon ordered by best matches first."""
+    top_matches = _select_candidates(
+        lexicon,
+        text,
+        role_hint,
+        max_candidates=max_candidates,
+        fallback=max_candidates,
+    )
+    remaining = [item for item in lexicon if item not in top_matches]
+    return top_matches + remaining
+
+
 def _normalize_brief_tokens(text: str) -> str:
     """Normalize brief text to surface common aliases like .net -> dotnet, c# -> csharp."""
     norm = text.replace(".net", " dotnet ").replace("c#", " csharp ")
@@ -271,9 +290,24 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
         expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
 
-        role_candidates = _select_candidates(role_lex_list, raw_text, role_folder_hint, max_candidates=25, fallback=25)
-        domain_candidates = _select_candidates(domain_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
-        expertise_candidates = _select_candidates(expertise_lex_list, raw_text, role_folder_hint, max_candidates=30, fallback=30)
+        role_candidates = _prioritize_full_lexicon(
+            role_lex_list,
+            raw_text,
+            role_folder_hint,
+            max_candidates=25,
+        )
+        domain_candidates = _prioritize_full_lexicon(
+            domain_lex_list,
+            raw_text,
+            role_folder_hint,
+            max_candidates=30,
+        )
+        expertise_candidates = _prioritize_full_lexicon(
+            expertise_lex_list,
+            raw_text,
+            role_folder_hint,
+            max_candidates=30,
+        )
 
         system_prompt = f"""
         You are an expert CV parser. Your task is to parse raw text from a CV slide deck
