@@ -99,40 +99,6 @@ class Planner:
             normalized.append(key)
         return normalized
 
-    def _fallback_presale_team(
-        self, crit: Criteria, raw_text: Optional[str] = None
-    ) -> Dict[str, List[str]]:
-        """Deterministic fallback presale team when LLM output is missing."""
-        techs = crit.tech_stack or []
-        ai = self._has_any(techs, self._AI_TECH_TOKENS) or self._text_has_any(
-            raw_text, self._AI_TEXT_TOKENS
-        )
-        mobile = self._has_any(techs, self._MOBILE_TECH_TOKENS) or self._text_has_any(
-            raw_text, {"ios", "android", "mobile"}
-        )
-        needs_integrations = self._text_has_any(raw_text, {"integration", "outlook", "sync", "api"})
-        needs_privacy = (
-            self._text_has_any(raw_text, {"privacy", "compliance", "gdpr", "ccpa", "security"})
-            or ai
-        )
-
-        minimum = ["business_analyst"]
-        if ai:
-            minimum.insert(0, "ai_solution_architect")
-        else:
-            minimum.append("solution_architect")
-
-        extended = ["project_manager"]
-        if needs_privacy:
-            extended.insert(0, "data_privacy_expert")
-        if needs_integrations or mobile:
-            extended.append("integration_specialist")
-
-        return {
-            "minimum_team": self._normalize_roles(minimum),
-            "extended_team": self._normalize_roles(extended),
-        }
-
     # ---------- public: presale team derivation ----------
 
     def derive_presale_team(
