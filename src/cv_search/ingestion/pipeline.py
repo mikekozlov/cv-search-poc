@@ -513,7 +513,7 @@ class CVIngestionPipeline:
             click.echo(f"\nIngesting {len(cvs_to_ingest)} processed CV(s) into database...")
             ingested_count = self.upsert_cvs(cvs_to_ingest)
             click.secho(
-                f"✅ Successfully upserted {ingested_count} new CV(s). Index is updated.",
+                f"Successfully upserted {ingested_count} new CV(s). Index is updated.",
                 fg="green",
             )
         else:
