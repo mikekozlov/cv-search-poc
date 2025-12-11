@@ -1026,7 +1026,7 @@
     "maria-db",
     "mariadb"
   ],
-  "sql_server": [
+  "mssql_server": [
     "microsoft sql",
     "microsoft sql server",
     "microsoft-sql",
@@ -1042,7 +1042,8 @@
     "ssms",
     "sql server management studio",
     "mssql management studio",
-    "mssms"
+    "mssms",
+    "mssql server"
   ],
   "sql_stored_procedures": [
     "sql (stored procedures)",
