@@ -1,10 +1,6 @@
 {
   "python": [
-    "celery",
     "cpython",
-    "django",
-    "fastapi",
-    "flask",
     "ipython",
     "numpy",
     "pandas",
@@ -31,6 +27,12 @@
     "java se",
     "java-ee",
     "java-se",
+    "java 16",
+    "java-16",
+    "java16",
+    "java 17",
+    "java-17",
+    "java17",
     "jdk",
     "jre",
     "jvm"
@@ -126,10 +128,6 @@
     ".net6",
     ".net7",
     ".net8",
-    "asp net",
-    "asp-net",
-    "asp.net",
-    "aspnet",
     "clr",
     "common language runtime",
     "common-language-runtime",
@@ -281,17 +279,12 @@
   "ruby": [
     "mri ruby",
     "mri-ruby",
-    "rails",
-    "ror",
     "ruby",
     "ruby language",
-    "ruby on rails",
-    "ruby-language",
-    "ruby-on-rails"
+    "ruby-language"
   ],
   "php": [
     "cakephp",
-    "laravel",
     "php",
     "php 7",
     "php 8",
@@ -301,7 +294,6 @@
     "php-fpm",
     "php7",
     "php8",
-    "symfony",
     "yii"
   ],
   "scala": [
@@ -319,16 +311,14 @@
     "kotlin jvm",
     "kotlin language",
     "kotlin-jvm",
-    "kotlin-language",
-    "ktor"
+    "kotlin-language"
   ],
   "swift": [
     "swift",
     "swift language",
     "swift programming",
     "swift-language",
-    "swift-programming",
-    "swiftui"
+    "swift-programming"
   ],
   "objective_c": [
     "objc",
@@ -408,7 +398,6 @@
     "reactjs-org",
     "reactjs.org",
     "reactjsorg",
-    "redux",
     "react ts",
     "react typescript"
   ],
@@ -1168,7 +1157,11 @@
     "google-bigquery-sql",
     "big query",
     "gbq",
-    "gbq sql"
+    "gbq sql",
+    "bigquery sql",
+    "bigquery-sql",
+    "gcp bigquery",
+    "gcp-bigquery"
   ],
   "clickhouse": [
     "click house",
@@ -1292,7 +1285,11 @@
     "firestore db",
     "firestore-db",
     "google firestore",
-    "google-firestore"
+    "google-firestore",
+    "firestore database",
+    "firestore-database",
+    "gcp firestore",
+    "gcp-firestore"
   ],
   "spanner": [
     "cloud spanner",
@@ -1302,7 +1299,11 @@
     "google spanner",
     "google-spanner",
     "spanner",
-    "google cloud spanner"
+    "google cloud spanner",
+    "gcp spanner",
+    "gcp-spanner",
+    "spanner database",
+    "spanner-database"
   ],
   "kafka": [
     "apache kafka",
@@ -1812,34 +1813,12 @@
     "lambda-functions",
     "aws lambdas"
   ],
-  "aws_dynamodb": [
-    "amazon dynamodb",
-    "amazon-dynamodb",
-    "aws dynamodb",
-    "aws-dynamodb",
-    "dynamodb"
-  ],
   "aws_sns": [
     "amazon sns",
     "amazon-sns",
     "aws sns",
     "aws-sns",
     "sns"
-  ],
-  "aws_sqs": [
-    "amazon sqs",
-    "amazon-sqs",
-    "aws sqs",
-    "aws-sqs",
-    "sqs"
-  ],
-  "aws_ses": [
-    "amazon ses",
-    "amazon-ses",
-    "aws ses",
-    "aws-ses",
-    "simple email service",
-    "simple-email-service"
   ],
   "aws_api_gateway": [
     "amazon api gateway",
@@ -1914,29 +1893,12 @@
     "elastic-mapreduce",
     "emr"
   ],
-  "aws_kinesis": [
-    "aws kinesis",
-    "aws-kinesis",
-    "kinesis"
-  ],
-  "aws_redshift": [
-    "aws redshift",
-    "aws-redshift",
-    "redshift"
-  ],
   "aws_cloudwatch": [
     "aws cloudwatch",
     "aws-cloudwatch",
     "cloud watch",
     "cloud-watch",
     "cloudwatch"
-  ],
-  "aws_iam": [
-    "aws iam",
-    "aws-iam",
-    "iam",
-    "identity and access management",
-    "identity-and-access-management"
   ],
   "aws_kms": [
     "aws kms",
@@ -2197,13 +2159,6 @@
     "google cloud storage",
     "gcp storage"
   ],
-  "gcp_bigquery": [
-    "bigquery",
-    "bigquery sql",
-    "bigquery-sql",
-    "gcp bigquery",
-    "gcp-bigquery"
-  ],
   "gcp_pubsub": [
     "gcp pubsub",
     "gcp-pubsub",
@@ -2235,24 +2190,6 @@
     "cloud-composer",
     "gcp composer",
     "gcp-composer"
-  ],
-  "gcp_firestore": [
-    "cloud firestore",
-    "cloud-firestore",
-    "firestore",
-    "firestore database",
-    "firestore-database",
-    "gcp firestore",
-    "gcp-firestore"
-  ],
-  "gcp_spanner": [
-    "cloud spanner",
-    "cloud-spanner",
-    "gcp spanner",
-    "gcp-spanner",
-    "spanner",
-    "spanner database",
-    "spanner-database"
   ],
   "gcp_secret_manager": [
     "gcp secret manager",
@@ -2449,12 +2386,6 @@
     "atlassian-bamboo",
     "bamboo"
   ],
-  "azure_pipelines": [
-    "azure devops pipelines",
-    "azure pipelines",
-    "azure-devops-pipelines",
-    "azure-pipelines"
-  ],
   "bitbucket_pipelines": [
     "bitbucket ci",
     "bitbucket pipelines",
@@ -2627,6 +2558,8 @@
     "access management",
     "access-management",
     "iam",
+    "aws iam",
+    "aws-iam",
     "identity & access management",
     "identity and access management",
     "identity-&-access-management",
@@ -4111,7 +4044,8 @@
   ],
   "serverless": [
     "serverless",
-    "serverless architecture"
+    "serverless architecture",
+    "aws serverless"
   ],
   "installshield": [
     "installshield",
@@ -4282,9 +4216,6 @@
   ],
   "gateway": [
     "gateway"
-  ],
-  "java_17": [
-    "java 17"
   ],
   "clusterprofiler": [
     "clusterprofiler"
@@ -4642,7 +4573,9 @@
     "radiation therapy"
   ],
   "step_functions": [
-    "step functions"
+    "step functions",
+    "aws step functions",
+    "aws step function"
   ],
   "angular_js": [
     "angular.js"
@@ -4748,9 +4681,6 @@
   ],
   "saas": [
     "saas"
-  ],
-  "aws_backup": [
-    "aws backup"
   ],
   "custom_libraries": [
     "custom libraries"
@@ -5485,7 +5415,8 @@
     "postcss"
   ],
   "cognito": [
-    "cognito"
+    "cognito",
+    "aws cognito"
   ],
   "kin_blockchain": [
     "kin blockchain"
@@ -5863,7 +5794,8 @@
     "rexx"
   ],
   "batch": [
-    "batch"
+    "batch",
+    "aws batch"
   ],
   "mamp": [
     "mamp"
@@ -6114,9 +6046,6 @@
   "uwsgi": [
     "uwsgi"
   ],
-  "aws_serverless": [
-    "aws serverless"
-  ],
   "bcs": [
     "bcs"
   ],
@@ -6247,7 +6176,8 @@
     "elma designer"
   ],
   "codepipeline": [
-    "codepipeline"
+    "codepipeline",
+    "aws codepipeline"
   ],
   "doctrine_2": [
     "doctrine 2"
@@ -6284,9 +6214,6 @@
   ],
   "quasar_framework": [
     "quasar framework"
-  ],
-  "aws_cloudfront": [
-    "aws cloudfront"
   ],
   "fiddler": [
     "fiddler"
@@ -6600,9 +6527,6 @@
   "nlog": [
     "nlog"
   ],
-  "aws_cognito": [
-    "aws cognito"
-  ],
   "wi_fi_mesh": [
     "wi-fi-mesh"
   ],
@@ -6853,7 +6777,8 @@
     "ethereum"
   ],
   "mwaa": [
-    "mwaa"
+    "mwaa",
+    "aws mwaa"
   ],
   "firebase_realtime_db": [
     "firebase realtime db"
@@ -7004,10 +6929,6 @@
   ],
   "antidote": [
     "antidote"
-  ],
-  "aws_step_functions": [
-    "aws step functions",
-    "aws step function"
   ],
   "dbeaver": [
     "dbeaver"
@@ -7613,7 +7534,13 @@
     "social media"
   ],
   "ses": [
-    "ses"
+    "ses",
+    "amazon ses",
+    "amazon-ses",
+    "aws ses",
+    "aws-ses",
+    "simple email service",
+    "simple-email-service"
   ],
   "liquibase": [
     "liquibase"
@@ -7686,9 +7613,6 @@
   ],
   "ehr": [
     "ehr"
-  ],
-  "aws_mwaa": [
-    "aws mwaa"
   ],
   "audio_players": [
     "audio players"
@@ -8351,7 +8275,8 @@
     "analysis for microsoft excel"
   ],
   "cloudfront": [
-    "cloudfront"
+    "cloudfront",
+    "aws cloudfront"
   ],
   "semantic_platform": [
     "semantic platform"
@@ -8406,9 +8331,6 @@
   ],
   "siebel_crm": [
     "siebel crm"
-  ],
-  "aws_batch": [
-    "aws batch"
   ],
   "ontology_engineering": [
     "ontology engineering"
@@ -9197,7 +9119,8 @@
     "nordic sdk"
   ],
   "backup": [
-    "backup"
+    "backup",
+    "aws backup"
   ],
   "dbunit": [
     "dbunit"
@@ -9285,9 +9208,6 @@
   ],
   "ss_is": [
     "ss is"
-  ],
-  "aws_codepipeline": [
-    "aws codepipeline"
   ],
   "mvp": [
     "mvp"
