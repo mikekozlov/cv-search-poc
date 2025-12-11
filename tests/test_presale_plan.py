@@ -1,3 +1,5 @@
+import pytest
+
 from cv_search.clients.openai_client import OpenAIClient, StubOpenAIBackend
 from cv_search.config.settings import Settings
 from cv_search.core.criteria import Criteria
@@ -30,3 +32,31 @@ def test_presale_plan_enriches_criteria_with_llm_stub():
         "integration_specialist",
         "project_manager",
     ]
+
+
+def test_presale_plan_raises_when_llm_returns_no_minimum(monkeypatch):
+    settings = Settings()
+    client = OpenAIClient(settings, backend=StubOpenAIBackend(settings))
+    planner = Planner()
+
+    criteria = Criteria(
+        domain=[],
+        tech_stack=[],
+        expert_roles=[],
+        project_type=None,
+        team_size=None,
+    )
+
+    monkeypatch.setattr(
+        client,
+        "get_presale_team_plan",
+        lambda **kwargs: {"minimum_team": [], "extended_team": []},
+    )
+
+    with pytest.raises(ValueError):
+        planner.derive_presale_team(
+            criteria,
+            raw_text="",
+            client=client,
+            settings=settings,
+        )
