@@ -161,10 +161,7 @@ class Planner:
         extended = self._normalize_roles(plan.get("extended_team"), allowed=role_lexicon)
 
         if not minimum:
-            fallback = self._fallback_presale_team(crit, raw_text=raw_text)
-            minimum = fallback.get("minimum_team", [])
-            if not extended:
-                extended = fallback.get("extended_team", [])
+            raise ValueError("Presale LLM returned no minimum_team roles; cannot proceed.")
 
         crit.minimum_team = minimum
         crit.extended_team = extended
