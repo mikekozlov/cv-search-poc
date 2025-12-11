@@ -169,7 +169,30 @@
     "net5",
     "net6",
     "net7",
-    "net8"
+    "net8",
+    ".net 4.8",
+    "net 4.8",
+    ".net core 2.1",
+    "net core 2.1",
+    ".net core 3",
+    "net core 3",
+    ".net framework 4.8",
+    "net framework 4.8",
+    ".net (c#)",
+    ".net core 3.1",
+    ".net web services",
+    "visual studio .net",
+    ".net mvc",
+    ".net framework 4.7.2",
+    ".net 4.7",
+    "microsoft.net",
+    "akka.net",
+    ".net 4.5",
+    "ado.net",
+    ".net 5.0",
+    ".net framework 4.5",
+    "diagrams.net",
+    ".net libraries"
   ],
   "masstransit": [
     "masstransit",
@@ -385,7 +408,9 @@
     "reactjs-org",
     "reactjs.org",
     "reactjsorg",
-    "redux"
+    "redux",
+    "react ts",
+    "react typescript"
   ],
   "nextjs": [
     "next js",
@@ -448,7 +473,8 @@
     "ng-1-x",
     "ng-1.x",
     "ng-1x",
-    "ng1"
+    "ng1",
+    "angular js"
   ],
   "vue": [
     "vue",
@@ -767,7 +793,24 @@
     "aspnet-forms",
     "aspnet-mvc",
     "aspnet-web-api",
-    "webforms"
+    "webforms",
+    "asp.net web forms",
+    "asp net web forms",
+    "aspnet web forms",
+    "web api",
+    "web forms",
+    "webapi",
+    "asp.net apis",
+    "asp.net identity",
+    "asp.net razor",
+    "asp.net identity core",
+    "asp.net mvc 2",
+    "asp.net webapi",
+    "asp.net mvc 4",
+    "asp.net forms",
+    "asp.net mvc 5",
+    "asp.net zero",
+    "asp.net mvc core"
   ],
   "aspnet_core": [
     "asp  net core",
@@ -809,7 +852,8 @@
     "asp.net core 5",
     "asp.net core 6",
     "asp.net core 7",
-    "asp.net core 8"
+    "asp.net core 8",
+    "asp.net core 3.1"
   ],
   "ktor": [
     "ktor",
@@ -991,7 +1035,12 @@
     "ansi-sql",
     "sql",
     "structured query language",
-    "structured-query-language"
+    "structured-query-language",
+    "sql data compare",
+    "sql script",
+    "sql developer",
+    "sql compare",
+    "sql navigator"
   ],
   "t_sql": [
     "t sql",
@@ -1019,7 +1068,9 @@
     "my-sql",
     "mysql",
     "mysql server",
-    "mysql-server"
+    "mysql-server",
+    "sql/sp (mysql)",
+    "hmysql"
   ],
   "mariadb": [
     "maria db",
@@ -1043,7 +1094,24 @@
     "sql server management studio",
     "mssql management studio",
     "mssms",
-    "mssql server"
+    "mssql server",
+    "mssql compact 3.5",
+    "sql server 2014",
+    "mssql compact 4.0",
+    "sql server 2017",
+    "mssql 2012",
+    "sql server 2008",
+    "ms sql server 2008r2",
+    "ms sql server 2012",
+    "ms sql tool",
+    "ms sql server 2014",
+    "microsoft sql 2008",
+    "mssql 2005-2019",
+    "sql management studio",
+    "ms sql server 2005",
+    "ms sql server 2008",
+    "ms sql server 2017",
+    "sql server 2016"
   ],
   "sql_stored_procedures": [
     "sql (stored procedures)",
@@ -1233,7 +1301,8 @@
     "cloud-spanner-db",
     "google spanner",
     "google-spanner",
-    "spanner"
+    "spanner",
+    "google cloud spanner"
   ],
   "kafka": [
     "apache kafka",
@@ -1694,7 +1763,9 @@
     "amazon-web-services",
     "aws",
     "aws cloud",
-    "aws-cloud"
+    "aws-cloud",
+    "aws sdk",
+    "aws security"
   ],
   "aws_ec2": [
     "amazon ec2",
@@ -1712,7 +1783,8 @@
     "aws-s3",
     "s3",
     "simple storage service",
-    "simple-storage-service"
+    "simple-storage-service",
+    "amazon s3 bucket"
   ],
   "aws_rds": [
     "amazon rds",
@@ -1721,7 +1793,9 @@
     "aws-rds",
     "rds",
     "relational database service",
-    "relational-database-service"
+    "relational-database-service",
+    "aws rds (mysql)",
+    "aws rdb"
   ],
   "aws_aurora": [
     "amazon aurora",
@@ -1735,7 +1809,8 @@
     "aws-lambda",
     "lambda",
     "lambda functions",
-    "lambda-functions"
+    "lambda-functions",
+    "aws lambdas"
   ],
   "aws_dynamodb": [
     "amazon dynamodb",
@@ -1804,7 +1879,8 @@
     "ecs fargate",
     "ecs-fargate",
     "elastic container service",
-    "elastic-container-service"
+    "elastic-container-service",
+    "aws ecs fargate"
   ],
   "aws_eks": [
     "aws eks",
@@ -1876,7 +1952,8 @@
     "route-53",
     "route53",
     "route53 dns",
-    "route53-dns"
+    "route53-dns",
+    "aws route 53"
   ],
   "aws_vpc": [
     "aws vpc",
@@ -1906,7 +1983,8 @@
     "aws-secrets-manager",
     "secrets manager",
     "secrets-manager",
-    "secretsmanager"
+    "secretsmanager",
+    "aws secret manager"
   ],
   "aws_ssm": [
     "aws ssm",
@@ -1922,7 +2000,11 @@
     "microsoft azure",
     "microsoft-azure",
     "ms azure",
-    "ms-azure"
+    "ms-azure",
+    "azure web services",
+    "azure portal",
+    "azure (database, services, ci)",
+    "azure sdk"
   ],
   "azure_aks": [
     "aks",
@@ -1949,7 +2031,10 @@
     "azure-functions",
     "functions",
     "functions as a service",
-    "functions-as-a-service"
+    "functions-as-a-service",
+    "cosmos db functions",
+    "cosmosdb functions",
+    "function apps"
   ],
   "azure_cosmos_db": [
     "azure cosmos db",
@@ -1964,7 +2049,8 @@
     "service bus",
     "service bus queue",
     "service-bus",
-    "service-bus-queue"
+    "service-bus-queue",
+    "azure service-bus"
   ],
   "azure_event_hubs": [
     "azure event hubs",
@@ -1972,11 +2058,13 @@
     "event hub",
     "event hubs",
     "event-hub",
-    "event-hubs"
+    "event-hubs",
+    "azure event hub"
   ],
   "azure_monitor": [
     "azure monitor",
-    "azure-monitor"
+    "azure-monitor",
+    "azure dashboard"
   ],
   "application_insights": [
     "app insights",
@@ -2019,7 +2107,12 @@
     "blob storage",
     "blob-storage",
     "storage account",
-    "storage-account"
+    "storage-account",
+    "queue storage",
+    "azure queue storage",
+    "table storage",
+    "azure table storage",
+    "azure blob"
   ],
   "azure_sql": [
     "azure sql",
@@ -2029,7 +2122,8 @@
     "azure-sql-database",
     "azure-sql-db",
     "sql azure",
-    "sql-azure"
+    "sql-azure",
+    "azure database"
   ],
   "azure_devops": [
     "azure devops",
@@ -2037,7 +2131,9 @@
     "azure pipelines",
     "azure-devops",
     "azure-devops-pipelines",
-    "azure-pipelines"
+    "azure-pipelines",
+    "azure devops server",
+    "azure boards"
   ],
   "azure_key_vault": [
     "azure key vault",
@@ -2051,7 +2147,8 @@
     "google cloud",
     "google cloud platform",
     "google-cloud",
-    "google-cloud-platform"
+    "google-cloud-platform",
+    "google cloud (gcp)"
   ],
   "gcp_compute_engine": [
     "compute engine",
@@ -2077,7 +2174,8 @@
     "cloud-run",
     "cloud-run-service",
     "gcp cloud run",
-    "gcp-cloud-run"
+    "gcp-cloud-run",
+    "google cloud run"
   ],
   "gcp_cloud_functions": [
     "cloud functions",
@@ -2095,7 +2193,9 @@
     "gcp-cloud-storage",
     "gcs",
     "gcs bucket",
-    "gcs-bucket"
+    "gcs-bucket",
+    "google cloud storage",
+    "gcp storage"
   ],
   "gcp_bigquery": [
     "bigquery",
@@ -2110,7 +2210,8 @@
     "google pubsub",
     "google-pubsub",
     "pub/sub",
-    "pubsub"
+    "pubsub",
+    "gcp pub/sub"
   ],
   "gcp_dataflow": [
     "apache beam dataflow",
@@ -2487,7 +2588,8 @@
     "open id connect",
     "open-id-connect",
     "openid connect",
-    "openid-connect"
+    "openid-connect",
+    "openid"
   ],
   "saml": [
     "saml",
@@ -2517,7 +2619,9 @@
     "jwt",
     "jwt token",
     "jwt-token",
-    "jwts"
+    "jwts",
+    "jwt auth",
+    "jwt authentication"
   ],
   "iam": [
     "access management",
@@ -3545,7 +3649,8 @@
     "azure cognitive search",
     "azure ai search",
     "cognitive search",
-    "azure-search"
+    "azure-search",
+    "azure search"
   ],
   "redisearch": [
     "redisearch",
@@ -3961,5 +4066,5921 @@
   "yandex_metrika": [
     "yandex.metrika",
     "yandex metrika"
+  ],
+  "nosql": [
+    "nosql",
+    "no sql",
+    "no-sql"
+  ],
+  "dbup": [
+    "dbup",
+    "db up"
+  ],
+  "autofac": [
+    "autofac"
+  ],
+  "sonarqube": [
+    "sonarqube",
+    "sonar qube"
+  ],
+  "message_brokers": [
+    "message broker",
+    "message brokers",
+    "message_brokers"
+  ],
+  "ai": [
+    "ai",
+    "artificial intelligence",
+    "ai resources",
+    "ai resource"
+  ],
+  "entity_framework": [
+    "entity framework",
+    "ef",
+    "ef core",
+    "entity framework core",
+    "efcore",
+    "entity_framework",
+    "entityframework"
+  ],
+  "microservices": [
+    "microservices",
+    "microservice",
+    "microservice architecture",
+    "microservices architecture"
+  ],
+  "serverless": [
+    "serverless",
+    "serverless architecture"
+  ],
+  "installshield": [
+    "installshield",
+    "install shield"
+  ],
+  "visual_studio": [
+    "visual studio",
+    "visual studio ide",
+    "visual_studio"
+  ],
+  "jetbrains_rider": [
+    "jetbrains rider",
+    "rider",
+    "rider ide",
+    "jetbrains_rider"
+  ],
+  "wpf": [
+    "wpf",
+    "windows presentation foundation"
+  ],
+  "winforms": [
+    "winforms",
+    "windows forms",
+    "windows forms applications"
+  ],
+  "ssrs": [
+    "ssrs",
+    "sql server reporting services",
+    "sql server reporting service"
+  ],
+  "wix_toolset": [
+    "wix",
+    "wix setup",
+    "wix installer",
+    "wix toolset",
+    "wix setup project",
+    "wix_toolset"
+  ],
+  "codebase": [
+    "codebase",
+    "code base"
+  ],
+  "google_apis": [
+    "google api",
+    "google apis",
+    "google api platform",
+    "google_apis"
+  ],
+  "elastic_email": [
+    "elastic email",
+    "elasticemail",
+    "elastic_email"
+  ],
+  "active_directory": [
+    "active directory",
+    "active directory api",
+    "windows active directory",
+    "active_directory"
+  ],
+  "smtp": [
+    "smtp",
+    "smtp server",
+    "smtp servers"
+  ],
+  "reporting_systems": [
+    "reporting system",
+    "reporting systems",
+    "internal reporting system",
+    "reporting_systems"
+  ],
+  "mobile_apps": [
+    "mobile applications",
+    "mobile apps",
+    "mobile application",
+    "mobile_apps"
+  ],
+  "ibm_dsx": [
+    "dsx",
+    "ibm dsx",
+    "data science experience",
+    "ibm_dsx"
+  ],
+  "json": [
+    "json",
+    "json format",
+    "javascript object notation"
+  ],
+  "azure_event_grid": [
+    "event grid",
+    "azure event grid",
+    "azure_event_grid"
+  ],
+  "azure_web_pubsub": [
+    "web pubsub",
+    "azure web pubsub",
+    "azure_web_pubsub"
+  ],
+  "argo_cd": [
+    "argo cd",
+    "argo-cd",
+    "argo_cd"
+  ],
+  "artifactory": [
+    "artifactory",
+    "jfrog artifactory",
+    "jfrog"
+  ],
+  "dynatrace": [
+    "dynatrace"
+  ],
+  "moq": [
+    "moq"
+  ],
+  "fluent_assertions": [
+    "fluent assertions",
+    "fluentassertions",
+    "fluent assertion",
+    "fluent_assertions"
+  ],
+  "devops": [
+    "devops",
+    "dev ops"
+  ],
+  "xero": [
+    "xero"
+  ],
+  "gis_geocad": [
+    "gis geocad"
+  ],
+  "offer_order_management_platform": [
+    "offer&order management platform"
+  ],
+  "storage": [
+    "storage"
+  ],
+  "ldb": [
+    "ldb"
+  ],
+  "wpf_mvvm": [
+    "wpf mvvm"
+  ],
+  "multimedia": [
+    "multimedia"
+  ],
+  "ant_design": [
+    "ant design"
+  ],
+  "zlib": [
+    "zlib"
+  ],
+  "moleculer": [
+    "moleculer"
+  ],
+  "concordium": [
+    "concordium"
+  ],
+  "sapoffice": [
+    "sapoffice"
+  ],
+  "ar": [
+    "ar"
+  ],
+  "phage_purification": [
+    "phage purification"
+  ],
+  "zend_1": [
+    "zend 1"
+  ],
+  "gateway": [
+    "gateway"
+  ],
+  "java_17": [
+    "java 17"
+  ],
+  "clusterprofiler": [
+    "clusterprofiler"
+  ],
+  "ai_tools": [
+    "ai tools"
+  ],
+  "phoenix_liveview": [
+    "phoenix liveview"
+  ],
+  "microsoft_power_apps": [
+    "microsoft power apps"
+  ],
+  "i5": [
+    "i5"
+  ],
+  "webform": [
+    "webform"
+  ],
+  "social_auth": [
+    "social auth"
+  ],
+  "open_source_llms": [
+    "open source llms"
+  ],
+  "oracle_financials": [
+    "oracle financials"
+  ],
+  "dapper": [
+    "dapper"
+  ],
+  "cloudtrail": [
+    "cloudtrail"
+  ],
+  "bluetooth": [
+    "bluetooth"
+  ],
+  "zx": [
+    "zx"
+  ],
+  "pylint": [
+    "pylint"
+  ],
+  "source_tree_2": [
+    "source tree 2"
+  ],
+  "atmega128": [
+    "atmega128"
+  ],
+  "apache_hudi": [
+    "apache hudi"
+  ],
+  "business_glossary": [
+    "business glossary"
+  ],
+  "voice_assistant": [
+    "voice assistant"
+  ],
+  "power_apps": [
+    "power apps"
+  ],
+  "phpmyadmin": [
+    "phpmyadmin"
+  ],
+  "ng_zorro": [
+    "ng-zorro"
+  ],
+  "reporting": [
+    "reporting"
+  ],
+  "data_catalog": [
+    "data catalog"
+  ],
+  "gnu_chain": [
+    "gnu chain"
+  ],
+  "cubeide": [
+    "cubeide"
+  ],
+  "qwt": [
+    "qwt"
+  ],
+  "rpc_logging": [
+    "rpc logging"
+  ],
+  "aif": [
+    "aif"
+  ],
+  "reports": [
+    "reports"
+  ],
+  "cucumber_js": [
+    "cucumber js"
+  ],
+  "surveys": [
+    "surveys"
+  ],
+  "putty": [
+    "putty"
+  ],
+  "carthage": [
+    "carthage"
+  ],
+  "adf": [
+    "adf"
+  ],
+  "database_testing": [
+    "database testing"
+  ],
+  "sap_netweaver_7_50": [
+    "sap netweaver 7.50"
+  ],
+  "soup": [
+    "soup"
+  ],
+  "vs_code": [
+    "vs code"
+  ],
+  "atlantis": [
+    "atlantis"
+  ],
+  "gimp": [
+    "gimp"
+  ],
+  "appcompat_library": [
+    "appcompat library"
+  ],
+  "micro_frontends_architecture": [
+    "micro frontends architecture"
+  ],
+  "salesforce_dx": [
+    "salesforce dx"
+  ],
+  "upnp": [
+    "upnp"
+  ],
+  "sap_btp": [
+    "sap btp"
+  ],
+  "webui": [
+    "webui"
+  ],
+  "bi": [
+    "bi"
+  ],
+  "android_auto": [
+    "android auto"
+  ],
+  "spark_java_microservices": [
+    "spark java microservices"
+  ],
+  "dynpro_abap": [
+    "dynpro abap"
+  ],
+  "mpeg": [
+    "mpeg"
+  ],
+  "intercompany_accounting": [
+    "intercompany accounting"
+  ],
+  "mastercard_identification_api": [
+    "mastercard identification api"
+  ],
+  "vgpml": [
+    "vgpml"
+  ],
+  "opencsv": [
+    "opencsv"
+  ],
+  "firebase_push_notifications": [
+    "firebase push notifications"
+  ],
+  "sftp": [
+    "sftp"
+  ],
+  "twitter_bootstrap_3": [
+    "twitter bootstrap 3"
+  ],
+  "wireshark": [
+    "wireshark"
+  ],
+  "ionic_native_custom_plugin": [
+    "ionic native custom plugin"
+  ],
+  "assembler": [
+    "assembler"
+  ],
+  "soa_practice": [
+    "soa practice"
+  ],
+  "cypress_tests": [
+    "cypress tests"
+  ],
+  "btp_event_mesh": [
+    "btp event mesh"
+  ],
+  "qt_creator": [
+    "qt creator"
+  ],
+  "mvi": [
+    "mvi"
+  ],
+  "windows_11": [
+    "windows 11"
+  ],
+  "oocss": [
+    "oocss"
+  ],
+  "crf": [
+    "crf"
+  ],
+  "web_services": [
+    "web services"
+  ],
+  "activiti_bpm": [
+    "activiti bpm"
+  ],
+  "h_264": [
+    "h.264"
+  ],
+  "uuelementarymanagement": [
+    "uuelementarymanagement"
+  ],
+  "powermockito": [
+    "powermockito"
+  ],
+  "freertos": [
+    "freertos"
+  ],
+  "adbc": [
+    "adbc"
+  ],
+  "winservices": [
+    "winservices"
+  ],
+  "allure": [
+    "allure"
+  ],
+  "barcode_scanning": [
+    "barcode scanning"
+  ],
+  "selenoid": [
+    "selenoid"
+  ],
+  "jdbc": [
+    "jdbc"
+  ],
+  "axis_cameras": [
+    "axis cameras"
+  ],
+  "leafletjs": [
+    "leafletjs"
+  ],
+  "networking_l2_l3": [
+    "networking (l2/l3)"
+  ],
+  "mkv": [
+    "mkv"
+  ],
+  "batch_calls": [
+    "batch calls"
+  ],
+  "visual_basic_scripting": [
+    "visual basic scripting"
+  ],
+  "aosp": [
+    "aosp"
+  ],
+  "hdp": [
+    "hdp"
+  ],
+  "rfc": [
+    "rfc"
+  ],
+  "ci_cd_pipelines": [
+    "ci/cd pipelines"
+  ],
+  "wamp": [
+    "wamp"
+  ],
+  "github_desktop": [
+    "github desktop"
+  ],
+  "open_filtration_method": [
+    "open filtration method"
+  ],
+  "chrome_extension": [
+    "chrome extension"
+  ],
+  "dio": [
+    "dio"
+  ],
+  "bobj_data_services_3_2_4_3": [
+    "bobj data services 3.2 - 4.3"
+  ],
+  "zapier": [
+    "zapier"
+  ],
+  "handlebars": [
+    "handlebars"
+  ],
+  "oracle_retail_supply_chain": [
+    "oracle retail supply chain"
+  ],
+  "sap_netweaver_7_40": [
+    "sap netweaver 7.40"
+  ],
+  "gbg": [
+    "gbg"
+  ],
+  "rsb": [
+    "rsb"
+  ],
+  "native_javascript": [
+    "native javascript"
+  ],
+  "firebase_functions": [
+    "firebase functions"
+  ],
+  "mfc": [
+    "mfc"
+  ],
+  "dataflash": [
+    "dataflash"
+  ],
+  "wms": [
+    "wms"
+  ],
+  "visual_studio_code": [
+    "visual studio code"
+  ],
+  "gtest": [
+    "gtest"
+  ],
+  "material_ui": [
+    "material ui",
+    "material-ui"
+  ],
+  "linqtoxrm": [
+    "linqtoxrm"
+  ],
+  "ibm_db2_udb_9_7": [
+    "ibm db2 udb 9.7"
+  ],
+  "vat": [
+    "vat"
+  ],
+  "draw_io": [
+    "draw.io"
+  ],
+  "mxg2000": [
+    "mxg2000"
+  ],
+  "radiation_therapy": [
+    "radiation therapy"
+  ],
+  "step_functions": [
+    "step functions"
+  ],
+  "angular_js": [
+    "angular.js"
+  ],
+  "serverless_framework": [
+    "serverless framework"
+  ],
+  "log4j": [
+    "log4j"
+  ],
+  "sdsf": [
+    "sdsf"
+  ],
+  "intrastat": [
+    "intrastat"
+  ],
+  "mapstruct": [
+    "mapstruct"
+  ],
+  "delphi_5": [
+    "delphi 5"
+  ],
+  "rpg": [
+    "rpg"
+  ],
+  "integration_tests": [
+    "integration tests"
+  ],
+  "rdkit": [
+    "rdkit"
+  ],
+  "wily_introscope": [
+    "wily introscope"
+  ],
+  "video_audio_codec": [
+    "video/audio codec"
+  ],
+  "backstage": [
+    "backstage"
+  ],
+  "terrasoft": [
+    "terrasoft"
+  ],
+  "file_and_table_storage": [
+    "file and table storage"
+  ],
+  "ndc": [
+    "ndc"
+  ],
+  "vbs": [
+    "vbs"
+  ],
+  "sap_java": [
+    "sap java"
+  ],
+  "spring_mvc": [
+    "spring mvc"
+  ],
+  "qa": [
+    "qa"
+  ],
+  "firebase_remote_notifications": [
+    "firebase remote notifications"
+  ],
+  "extjs": [
+    "extjs"
+  ],
+  "itsm_maximo": [
+    "itsm-maximo"
+  ],
+  "responsive_framework": [
+    "responsive framework"
+  ],
+  "bex_query_designer": [
+    "bex query designer"
+  ],
+  "pear": [
+    "pear"
+  ],
+  "zendesk": [
+    "zendesk"
+  ],
+  "memcache": [
+    "memcache"
+  ],
+  "oracle_soa_suite_11g": [
+    "oracle soa suite 11g"
+  ],
+  "togaf": [
+    "togaf"
+  ],
+  "ibm_os_400": [
+    "ibm os/400"
+  ],
+  "sms": [
+    "sms"
+  ],
+  "actionbarsherlock": [
+    "actionbarsherlock"
+  ],
+  "olas": [
+    "olas"
+  ],
+  "saas": [
+    "saas"
+  ],
+  "aws_backup": [
+    "aws backup"
+  ],
+  "custom_libraries": [
+    "custom libraries"
+  ],
+  "talk_js": [
+    "talk.js"
+  ],
+  "fhir": [
+    "fhir"
+  ],
+  "camunda_modeler": [
+    "camunda modeler"
+  ],
+  "sap_solution_manager_2_0": [
+    "sap solution manager 2.0"
+  ],
+  "webservices": [
+    "webservices"
+  ],
+  "google_firebase": [
+    "google firebase"
+  ],
+  "atomic_design": [
+    "atomic design"
+  ],
+  "ms_word": [
+    "ms word"
+  ],
+  "valgrind": [
+    "valgrind"
+  ],
+  "6lowpan": [
+    "6lowpan"
+  ],
+  "carplay": [
+    "carplay"
+  ],
+  "cle": [
+    "cle"
+  ],
+  "methods_transfer": [
+    "methods transfer"
+  ],
+  "recharts": [
+    "recharts"
+  ],
+  "seo_tools": [
+    "seo tools"
+  ],
+  "social_networks": [
+    "social networks"
+  ],
+  "sadl": [
+    "sadl"
+  ],
+  "symfony2": [
+    "symfony2"
+  ],
+  "torchrun": [
+    "torchrun"
+  ],
+  "xml_stream": [
+    "xml-stream"
+  ],
+  "iar_j_link_ultra": [
+    "iar j-link ultra"
+  ],
+  "midas": [
+    "midas"
+  ],
+  "extreme_programming": [
+    "extreme programming"
+  ],
+  "stm32": [
+    "stm32"
+  ],
+  "ecmascript_6": [
+    "ecmascript 6"
+  ],
+  "qxdm": [
+    "qxdm"
+  ],
+  "retrofit": [
+    "retrofit"
+  ],
+  "react_virtualized": [
+    "react-virtualized"
+  ],
+  "wda": [
+    "wda"
+  ],
+  "cloud_flow": [
+    "cloud flow"
+  ],
+  "axon_framework": [
+    "axon framework"
+  ],
+  "qualcomm": [
+    "qualcomm"
+  ],
+  "identity_framework": [
+    "identity framework"
+  ],
+  "mentoring": [
+    "mentoring"
+  ],
+  "graylog": [
+    "graylog"
+  ],
+  "mapkit": [
+    "mapkit"
+  ],
+  "rdp": [
+    "rdp"
+  ],
+  "identity": [
+    "identity"
+  ],
+  "gwt": [
+    "gwt"
+  ],
+  "microsoft_clarity": [
+    "microsoft clarity"
+  ],
+  "secure_storage": [
+    "secure storage"
+  ],
+  "freshdesk": [
+    "freshdesk"
+  ],
+  "zustand": [
+    "zustand"
+  ],
+  "identity_server": [
+    "identityserver4",
+    "identityserver",
+    "identity server"
+  ],
+  "vuex": [
+    "vuex"
+  ],
+  "sterility_testing": [
+    "sterility testing"
+  ],
+  "ipfs": [
+    "ipfs"
+  ],
+  "aot_compilation": [
+    "aot compilation"
+  ],
+  "metio_api": [
+    "metio api"
+  ],
+  "alexa_apl": [
+    "alexa apl"
+  ],
+  "cart_api": [
+    "cart api"
+  ],
+  "interstitial_ads": [
+    "interstitial ads"
+  ],
+  "mantis": [
+    "mantis"
+  ],
+  "prpc": [
+    "prpc"
+  ],
+  "livewire": [
+    "livewire"
+  ],
+  "moodle": [
+    "moodle"
+  ],
+  "rtp": [
+    "rtp"
+  ],
+  "data_integration": [
+    "data integration"
+  ],
+  "laravel_8_0": [
+    "laravel 8.0"
+  ],
+  "microsoft_excel_2010": [
+    "microsoft excel 2010"
+  ],
+  "aws_codedeploy": [
+    "aws codedeploy"
+  ],
+  "protocol_review": [
+    "protocol review"
+  ],
+  "ivy": [
+    "ivy"
+  ],
+  "openai_gpt4": [
+    "openai gpt4"
+  ],
+  "xrm_toolbox": [
+    "xrm toolbox"
+  ],
+  "sap_hana": [
+    "sap hana"
+  ],
+  "ui_testing": [
+    "ui testing"
+  ],
+  "nswag": [
+    "nswag"
+  ],
+  "gnn": [
+    "gnn"
+  ],
+  "entra": [
+    "entra"
+  ],
+  "swd": [
+    "swd"
+  ],
+  "spring_data_jpa": [
+    "spring data jpa"
+  ],
+  "ksh": [
+    "ksh"
+  ],
+  "tdd": [
+    "tdd"
+  ],
+  "camunda_bpm": [
+    "camunda bpm"
+  ],
+  "firebase_cloud_functions": [
+    "firebase cloud functions"
+  ],
+  "system_architecture": [
+    "system architecture"
+  ],
+  "qemu": [
+    "qemu"
+  ],
+  "amazon_music": [
+    "amazon music"
+  ],
+  "php_6": [
+    "php 6"
+  ],
+  "pagerslidingtabstrip_library": [
+    "pagerslidingtabstrip library"
+  ],
+  "java_5": [
+    "java 5"
+  ],
+  "firebase_messaging": [
+    "firebase messaging"
+  ],
+  "linkedin": [
+    "linkedin"
+  ],
+  "report_builder_3": [
+    "report builder 3"
+  ],
+  "monitoring": [
+    "monitoring"
+  ],
+  "webflow_interactions": [
+    "webflow interactions"
+  ],
+  "beyond_compare": [
+    "beyond compare"
+  ],
+  "vmware_vsphere": [
+    "vmware vsphere"
+  ],
+  "pika": [
+    "pika"
+  ],
+  "google_play_services": [
+    "google play services"
+  ],
+  "spring_aop": [
+    "spring aop"
+  ],
+  "geolocation_apis": [
+    "geolocation apis"
+  ],
+  "protractor": [
+    "protractor"
+  ],
+  "innodb": [
+    "innodb"
+  ],
+  "fair_data": [
+    "fair data"
+  ],
+  "teams_planner": [
+    "teams planner"
+  ],
+  "gameanalytics": [
+    "gameanalytics"
+  ],
+  "smart_forms": [
+    "smart-forms"
+  ],
+  "iar": [
+    "iar"
+  ],
+  "nrf52840_dongle": [
+    "nrf52840 dongle"
+  ],
+  "sap_gateway_2_0": [
+    "sap gateway 2.0"
+  ],
+  "cvs": [
+    "cvs"
+  ],
+  "nopcommerce": [
+    "nopcommerce"
+  ],
+  "fidler": [
+    "fidler"
+  ],
+  "koin": [
+    "koin"
+  ],
+  "sap_bw_3_0_sap_nw_7_0_ehp1": [
+    "sap bw 3.0 - sap nw 7.0 ehp1"
+  ],
+  "curl": [
+    "curl"
+  ],
+  "nakisa": [
+    "nakisa"
+  ],
+  "agile": [
+    "agile"
+  ],
+  "hosting_and_virtualization_platforms": [
+    "hosting and virtualization platforms"
+  ],
+  "z_wave": [
+    "z-wave"
+  ],
+  "vaadin": [
+    "vaadin"
+  ],
+  "anzoagraph_db": [
+    "anzoagraph db"
+  ],
+  "liquid": [
+    "liquid"
+  ],
+  "apigee": [
+    "apigee"
+  ],
+  "ibm_rational_telelogic": [
+    "ibm rational telelogic"
+  ],
+  "asp_mvc": [
+    "asp mvc"
+  ],
+  "nbomber": [
+    "nbomber"
+  ],
+  "js_es5": [
+    "js es5"
+  ],
+  "openfi": [
+    "openfi"
+  ],
+  "visual_c": [
+    "visual c++"
+  ],
+  "protobuf": [
+    "protobuf"
+  ],
+  "alerts": [
+    "alerts"
+  ],
+  "scrum": [
+    "scrum"
+  ],
+  "gax": [
+    "gax"
+  ],
+  "db": [
+    "db"
+  ],
+  "storage_accounts": [
+    "storage accounts"
+  ],
+  "amcharts": [
+    "amcharts"
+  ],
+  "gl": [
+    "gl"
+  ],
+  "realm": [
+    "realm"
+  ],
+  "bpm": [
+    "bpm"
+  ],
+  "com_dcom": [
+    "com/dcom"
+  ],
+  "data_science_pipelines": [
+    "data science pipelines"
+  ],
+  "apache_thrift": [
+    "apache thrift"
+  ],
+  "icop_vsx_6119": [
+    "icop vsx-6119"
+  ],
+  "embedded_firmware": [
+    "embedded firmware"
+  ],
+  "third_party_libraries": [
+    "third-party libraries"
+  ],
+  "amundsen": [
+    "amundsen"
+  ],
+  "ble": [
+    "ble"
+  ],
+  "devsecops": [
+    "devsecops"
+  ],
+  "arduino": [
+    "arduino"
+  ],
+  "microsoft_analysis_services": [
+    "microsoft analysis services"
+  ],
+  "spring_data": [
+    "spring data"
+  ],
+  "highchart": [
+    "highchart"
+  ],
+  "sap_hana_studio_modelling": [
+    "sap hana studio - modelling"
+  ],
+  "perfview": [
+    "perfview"
+  ],
+  "firebaseauth": [
+    "firebaseauth"
+  ],
+  "wized": [
+    "wized"
+  ],
+  "adsense": [
+    "adsense"
+  ],
+  "google_pay": [
+    "google pay"
+  ],
+  "proxyquire": [
+    "proxyquire"
+  ],
+  "json_api": [
+    "json api"
+  ],
+  "scipy": [
+    "scipy"
+  ],
+  "platform_channels": [
+    "platform channels"
+  ],
+  "snagit": [
+    "snagit"
+  ],
+  "gui_controls": [
+    "gui controls"
+  ],
+  "adk": [
+    "adk"
+  ],
+  "google_maps": [
+    "google maps api",
+    "google maps"
+  ],
+  "kubespray": [
+    "kubespray"
+  ],
+  "heroku": [
+    "heroku"
+  ],
+  "commercetools": [
+    "commercetools"
+  ],
+  "flume": [
+    "flume"
+  ],
+  "metadata_driven_services": [
+    "metadata-driven services"
+  ],
+  "leaflet_js": [
+    "leaflet.js"
+  ],
+  "rapidapi": [
+    "rapidapi"
+  ],
+  "profanity_filter": [
+    "profanity filter"
+  ],
+  "atl": [
+    "atl"
+  ],
+  "cryptopp": [
+    "cryptopp"
+  ],
+  "communications_protocols": [
+    "communications protocols"
+  ],
+  "oracle_11": [
+    "oracle 11"
+  ],
+  "adaptive_streaming": [
+    "adaptive streaming"
+  ],
+  "cst": [
+    "cst"
+  ],
+  "user_interface": [
+    "user interface"
+  ],
+  "cloudsql": [
+    "cloudsql"
+  ],
+  "scientific_writing": [
+    "scientific writing"
+  ],
+  "apache_poi": [
+    "apache poi"
+  ],
+  "hamcrest": [
+    "hamcrest"
+  ],
+  "push_notifications": [
+    "push notifications"
+  ],
+  "xquery": [
+    "xquery"
+  ],
+  "bw_workbench": [
+    "bw workbench"
+  ],
+  "win10": [
+    "win10"
+  ],
+  "eclipse_adt": [
+    "eclipse adt"
+  ],
+  "framer": [
+    "framer"
+  ],
+  "insight_platforms": [
+    "insight platforms"
+  ],
+  "object_oriented_design": [
+    "object oriented design"
+  ],
+  "turbo_rails": [
+    "turbo rails"
+  ],
+  "argocd": [
+    "argocd"
+  ],
+  "dopplerometry": [
+    "dopplerometry"
+  ],
+  "media_foundation": [
+    "media foundation"
+  ],
+  "arksys": [
+    "arksys"
+  ],
+  "coreos": [
+    "coreos"
+  ],
+  "sap_solution_manager": [
+    "sap solution manager"
+  ],
+  "laboratory_journal_maintenance": [
+    "laboratory journal maintenance"
+  ],
+  "kdevelop": [
+    "kdevelop"
+  ],
+  "database_tests": [
+    "database tests"
+  ],
+  "null_safety": [
+    "null safety"
+  ],
+  "rest_apis": [
+    "rest apis"
+  ],
+  "mvc": [
+    "mvc"
+  ],
+  "guice": [
+    "guice"
+  ],
+  "product_api": [
+    "product api"
+  ],
+  "versionone": [
+    "versionone"
+  ],
+  "glassfish": [
+    "glassfish"
+  ],
+  "sla": [
+    "sla"
+  ],
+  "owasp": [
+    "owasp"
+  ],
+  "firebase_remote_config": [
+    "firebase remote config"
+  ],
+  "uniorg_udina_commerce_2_0": [
+    "uniorg udina commerce 2.0"
+  ],
+  "bff": [
+    "bff"
+  ],
+  "lal_test": [
+    "lal test"
+  ],
+  "aldon_lmi": [
+    "aldon lmi"
+  ],
+  "bluetooth_modules": [
+    "bluetooth modules"
+  ],
+  "scm": [
+    "scm"
+  ],
+  "enzyme": [
+    "enzyme"
+  ],
+  "bigcommerce_api": [
+    "bigcommerce api"
+  ],
+  "telegram_apis": [
+    "telegram apis"
+  ],
+  "powerpoint": [
+    "powerpoint"
+  ],
+  "nan": [
+    "nan"
+  ],
+  "clle": [
+    "clle"
+  ],
+  "twitter_sdk": [
+    "twitter sdk"
+  ],
+  "fluent_api_validation": [
+    "fluent api validation"
+  ],
+  "rxswift": [
+    "rxswift"
+  ],
+  "rxdart": [
+    "rxdart"
+  ],
+  "spp": [
+    "spp"
+  ],
+  "segment": [
+    "segment"
+  ],
+  "grunt": [
+    "grunt"
+  ],
+  "ms_teams": [
+    "ms teams"
+  ],
+  "spring_integration": [
+    "spring integration"
+  ],
+  "closed_membrane_filtration": [
+    "closed membrane filtration"
+  ],
+  "jasper_reports": [
+    "jasper reports"
+  ],
+  "issue_reporting_library": [
+    "issue reporting library"
+  ],
+  "ms_visual_studio": [
+    "ms visual studio"
+  ],
+  "vector_embeddings": [
+    "vector embeddings"
+  ],
+  "spring_cloud": [
+    "spring cloud"
+  ],
+  "sap_basis_4_6c_sap_netweaver_7_5": [
+    "sap basis 4.6c – sap netweaver 7.5"
+  ],
+  "trawelwits_api": [
+    "trawelwits api"
+  ],
+  "sap_netweaver_ep": [
+    "sap netweaver ep"
+  ],
+  "plotly": [
+    "plotly"
+  ],
+  "spring_web_flux": [
+    "spring web flux"
+  ],
+  "ada": [
+    "ada"
+  ],
+  "qualtrics": [
+    "qualtrics"
+  ],
+  "solidgate_api": [
+    "solidgate api"
+  ],
+  "postcss": [
+    "postcss"
+  ],
+  "cognito": [
+    "cognito"
+  ],
+  "kin_blockchain": [
+    "kin blockchain"
+  ],
+  "hubspot_api": [
+    "hubspot api"
+  ],
+  "landed_cost_allocation": [
+    "landed cost allocation"
+  ],
+  "office_365": [
+    "office 365"
+  ],
+  "aws_aurora_postgresql": [
+    "aws aurora postgresql"
+  ],
+  "des": [
+    "des"
+  ],
+  "javaee": [
+    "javaee"
+  ],
+  "microsoft_word": [
+    "microsoft word"
+  ],
+  "ctrader": [
+    "ctrader"
+  ],
+  "api_testing_graphql": [
+    "api testing (graphql)"
+  ],
+  "pytorch_profiler": [
+    "pytorch profiler"
+  ],
+  "aldon_cms": [
+    "aldon cms"
+  ],
+  "dataverse": [
+    "dataverse"
+  ],
+  "vitamio_bundle": [
+    "vitamio bundle"
+  ],
+  "react_final_form": [
+    "react final form"
+  ],
+  "storekit": [
+    "storekit"
+  ],
+  "elasticsearch_apm": [
+    "elasticsearch apm"
+  ],
+  "aix_5l": [
+    "aix 5l"
+  ],
+  "devexpress": [
+    "devexpress"
+  ],
+  "pdf_forms": [
+    "pdf-forms"
+  ],
+  "digital_linkworks": [
+    "digital linkworks"
+  ],
+  "cloud9": [
+    "cloud9"
+  ],
+  "apns": [
+    "apns"
+  ],
+  "vm_scale_sets": [
+    "vm scale sets"
+  ],
+  "core_services": [
+    "core services"
+  ],
+  "rpg_iv": [
+    "rpg iv"
+  ],
+  "glacier": [
+    "glacier"
+  ],
+  "essbase": [
+    "essbase"
+  ],
+  "cl": [
+    "cl"
+  ],
+  "nsg": [
+    "nsg"
+  ],
+  "aurora_db": [
+    "aurora db"
+  ],
+  "appcenter": [
+    "appcenter"
+  ],
+  "google_navigation_services": [
+    "google navigation services"
+  ],
+  "restful_services": [
+    "restful services"
+  ],
+  "imagemagick": [
+    "imagemagick"
+  ],
+  "ejb3": [
+    "ejb3"
+  ],
+  "async": [
+    "async"
+  ],
+  "semantic_modeling": [
+    "semantic modeling"
+  ],
+  "ms_powerpoint": [
+    "ms powerpoint"
+  ],
+  "git_github": [
+    "git (github)"
+  ],
+  "espresso": [
+    "espresso"
+  ],
+  "pic18": [
+    "pic18"
+  ],
+  "lauterbach": [
+    "lauterbach"
+  ],
+  "acceptance_testing": [
+    "acceptance testing"
+  ],
+  "regular_expressions": [
+    "regular expressions"
+  ],
+  "device_filesystem": [
+    "device filesystem"
+  ],
+  "onvif": [
+    "onvif"
+  ],
+  "oracle_endeca": [
+    "oracle endeca"
+  ],
+  "mangopay": [
+    "mangopay"
+  ],
+  "ldac": [
+    "ldac"
+  ],
+  "sox": [
+    "sox"
+  ],
+  "wcf": [
+    "wcf"
+  ],
+  "datastage": [
+    "datastage"
+  ],
+  "gstreamer": [
+    "gstreamer"
+  ],
+  "localstorage": [
+    "localstorage"
+  ],
+  "asyncio": [
+    "asyncio"
+  ],
+  "usb": [
+    "usb"
+  ],
+  "oracle_retail_analytic": [
+    "oracle retail analytic"
+  ],
+  "crashlytics": [
+    "crashlytics"
+  ],
+  "jslint": [
+    "jslint"
+  ],
+  "ibm_filenet": [
+    "ibm filenet"
+  ],
+  "opengrok": [
+    "opengrok"
+  ],
+  "tpl": [
+    "tpl"
+  ],
+  "i2c": [
+    "i2c"
+  ],
+  "microsoft_dataverse": [
+    "microsoft dataverse"
+  ],
+  "ebay_api": [
+    "ebay api"
+  ],
+  "gtmetrix": [
+    "gtmetrix"
+  ],
+  "i18next": [
+    "i18next"
+  ],
+  "s4hana": [
+    "s4hana"
+  ],
+  "vba": [
+    "vba"
+  ],
+  "hyperion_planning": [
+    "hyperion planning"
+  ],
+  "document_ai": [
+    "document.ai"
+  ],
+  "configfs": [
+    "configfs"
+  ],
+  "vb_scripts": [
+    "vb scripts"
+  ],
+  "business_objects_3_1": [
+    "business objects 3.1"
+  ],
+  "ebtax": [
+    "ebtax"
+  ],
+  "pivotaltracker": [
+    "pivotaltracker"
+  ],
+  "pcf_controls": [
+    "pcf controls"
+  ],
+  "bdc": [
+    "bdc"
+  ],
+  "google_console_apis": [
+    "google console apis"
+  ],
+  "iaas": [
+    "iaas"
+  ],
+  "serial_port_interface": [
+    "serial port interface"
+  ],
+  "weasyprint": [
+    "weasyprint"
+  ],
+  "icecat": [
+    "icecat"
+  ],
+  "qualcomm_aptx": [
+    "qualcomm aptx"
+  ],
+  "enterprise_data_glossary": [
+    "enterprise data glossary"
+  ],
+  "livy": [
+    "livy"
+  ],
+  "brm": [
+    "brm"
+  ],
+  "instagram": [
+    "instagram"
+  ],
+  "vb": [
+    "vb"
+  ],
+  "sms_tools": [
+    "sms tools"
+  ],
+  "e2e_and_unit_tests": [
+    "e2e and unit tests"
+  ],
+  "mule": [
+    "mule"
+  ],
+  "rdbms_db": [
+    "rdbms / db"
+  ],
+  "camtasia": [
+    "camtasia"
+  ],
+  "elbon": [
+    "elbon"
+  ],
+  "fbi": [
+    "fbi"
+  ],
+  "oracle_service_bus_11g": [
+    "oracle service bus 11g"
+  ],
+  "video_streaming": [
+    "video streaming"
+  ],
+  "idocs": [
+    "idocs"
+  ],
+  "linux_yocto": [
+    "linux (yocto)"
+  ],
+  "rpc": [
+    "rpc"
+  ],
+  "ivr": [
+    "ivr"
+  ],
+  "multithreading": [
+    "multithreading"
+  ],
+  "typeorm": [
+    "typeorm"
+  ],
+  "slack": [
+    "slack"
+  ],
+  "cms": [
+    "cms"
+  ],
+  "cqrs": [
+    "cqrs"
+  ],
+  "ttml": [
+    "ttml"
+  ],
+  "leaflet": [
+    "leaflet"
+  ],
+  "lumen": [
+    "lumen"
+  ],
+  "hammer_js": [
+    "hammer.js"
+  ],
+  "nx": [
+    "nx"
+  ],
+  "openapi_annotations_for_java": [
+    "openapi annotations for java"
+  ],
+  "smacss": [
+    "smacss"
+  ],
+  "qlik_sense": [
+    "qlik sense"
+  ],
+  "spring_webmvc": [
+    "spring webmvc"
+  ],
+  "phpunit": [
+    "phpunit"
+  ],
+  "windows_server_2008": [
+    "windows server 2008"
+  ],
+  "temporal_io": [
+    "temporal io"
+  ],
+  "mapbox": [
+    "mapbox"
+  ],
+  "emea_localizations": [
+    "emea localizations"
+  ],
+  "clinical_research": [
+    "clinical research"
+  ],
+  "jenkins_pipeline": [
+    "jenkins pipeline"
+  ],
+  "rexx": [
+    "rexx"
+  ],
+  "batch": [
+    "batch"
+  ],
+  "mamp": [
+    "mamp"
+  ],
+  "mikrotik": [
+    "mikrotik"
+  ],
+  "browserstack": [
+    "browserstack"
+  ],
+  "contacts_import": [
+    "contacts import"
+  ],
+  "s_4hana_1610": [
+    "s/4hana 1610"
+  ],
+  "data_jpa": [
+    "data jpa"
+  ],
+  "infopath": [
+    "infopath"
+  ],
+  "ag_grid": [
+    "ag-grid"
+  ],
+  "xdebug": [
+    "xdebug"
+  ],
+  "kanban": [
+    "kanban"
+  ],
+  "user_verify": [
+    "user verify"
+  ],
+  "equation": [
+    "equation"
+  ],
+  "atlassian_stack": [
+    "atlassian stack"
+  ],
+  "gson": [
+    "gson"
+  ],
+  "oracle_fusion_cloud": [
+    "oracle fusion cloud"
+  ],
+  "sessionstorage": [
+    "sessionstorage"
+  ],
+  "kubemq": [
+    "kubemq"
+  ],
+  "pdfjet": [
+    "pdfjet"
+  ],
+  "ddic": [
+    "ddic"
+  ],
+  "web_application": [
+    "web application"
+  ],
+  "lsmw": [
+    "lsmw"
+  ],
+  "data_visualization": [
+    "data visualization"
+  ],
+  "provider": [
+    "provider"
+  ],
+  "sap_router": [
+    "sap router"
+  ],
+  "json_serializable": [
+    "json_serializable"
+  ],
+  "tts": [
+    "tts"
+  ],
+  "antivirus": [
+    "antivirus"
+  ],
+  "qcc51xx": [
+    "qcc51xx"
+  ],
+  "sap_hybris": [
+    "sap hybris"
+  ],
+  "arm9_atmel": [
+    "arm9 (atmel)"
+  ],
+  "pdf_reports": [
+    "pdf reports"
+  ],
+  "jquery_mobile": [
+    "jquery mobile"
+  ],
+  "po": [
+    "po"
+  ],
+  "audio_video_encoding": [
+    "audio video encoding"
+  ],
+  "tcp_ip_socket": [
+    "tcp/ip socket"
+  ],
+  "stylus": [
+    "stylus"
+  ],
+  "fiori_3_0": [
+    "fiori 3.0"
+  ],
+  "self_hosted_runners": [
+    "self-hosted runners"
+  ],
+  "data_governance": [
+    "data governance"
+  ],
+  "casperjs": [
+    "casperjs"
+  ],
+  "emfile_efs": [
+    "emfile efs"
+  ],
+  "microsoft_365": [
+    "microsoft 365"
+  ],
+  "angularjs_1_x": [
+    "angularjs 1.x"
+  ],
+  "mnesia": [
+    "mnesia"
+  ],
+  "emma": [
+    "emma"
+  ],
+  "image_processing": [
+    "image processing"
+  ],
+  "mri_siemens_1_5t": [
+    "mri siemens 1.5t"
+  ],
+  "voice_codec": [
+    "voice codec"
+  ],
+  "opm": [
+    "opm"
+  ],
+  "sm": [
+    "sm"
+  ],
+  "flows": [
+    "flows"
+  ],
+  "jca_jce": [
+    "jca/jce"
+  ],
+  "win32api": [
+    "win32api"
+  ],
+  "afaria_7": [
+    "afaria 7"
+  ],
+  "gherkin": [
+    "gherkin"
+  ],
+  "solidgate": [
+    "solidgate"
+  ],
+  "android_studio": [
+    "android studio"
+  ],
+  "ssas": [
+    "ssas"
+  ],
+  "oban": [
+    "oban"
+  ],
+  "pagerduty": [
+    "pagerduty"
+  ],
+  "sybase_sql_anywhere": [
+    "sybase sql anywhere"
+  ],
+  "ajax": [
+    "ajax"
+  ],
+  "oracle_server": [
+    "oracle server"
+  ],
+  "analytics_services": [
+    "analytics (services)"
+  ],
+  "om": [
+    "om"
+  ],
+  "codedui": [
+    "codedui"
+  ],
+  "walmart_api": [
+    "walmart api"
+  ],
+  "google_bots": [
+    "google bots"
+  ],
+  "gitops": [
+    "gitops"
+  ],
+  "oracle_adf": [
+    "oracle adf"
+  ],
+  "knockoutjs": [
+    "knockoutjs"
+  ],
+  "waterfall": [
+    "waterfall"
+  ],
+  "projects_accounting": [
+    "projects accounting"
+  ],
+  "flickr": [
+    "flickr"
+  ],
+  "genai": [
+    "genai"
+  ],
+  "teletype": [
+    "teletype"
+  ],
+  "make_integromat": [
+    "make (integromat)"
+  ],
+  "sap_bo": [
+    "sap bo"
+  ],
+  "payment_system": [
+    "payment system"
+  ],
+  "sierra_wireless_open_at": [
+    "sierra wireless open at"
+  ],
+  "hubspot": [
+    "hubspot"
+  ],
+  "google_vision": [
+    "google vision"
+  ],
+  "uwsgi": [
+    "uwsgi"
+  ],
+  "aws_serverless": [
+    "aws serverless"
+  ],
+  "bcs": [
+    "bcs"
+  ],
+  "etom_architecture": [
+    "etom architecture"
+  ],
+  "sorbnet": [
+    "sorbnet"
+  ],
+  "toxicological_risk_assessment": [
+    "toxicological risk assessment"
+  ],
+  "clusterization": [
+    "clusterization"
+  ],
+  "javalin": [
+    "javalin"
+  ],
+  "soap": [
+    "soap"
+  ],
+  "mockito": [
+    "mockito"
+  ],
+  "fakeiteasy": [
+    "fakeiteasy"
+  ],
+  "dapper_orm": [
+    "dapper orm"
+  ],
+  "heidelpay_api": [
+    "heidelpay api"
+  ],
+  "spreadsheets_for_laboratory_automation": [
+    "spreadsheets for laboratory automation"
+  ],
+  "idef5": [
+    "idef5"
+  ],
+  "fullcontact_api": [
+    "fullcontact api"
+  ],
+  "ms_access": [
+    "ms access"
+  ],
+  "iar_embedded_workbench": [
+    "iar embedded workbench"
+  ],
+  "e2gen": [
+    "e2gen"
+  ],
+  "lamp": [
+    "lamp"
+  ],
+  "adobe_creative_suite": [
+    "adobe creative suite"
+  ],
+  "citus": [
+    "citus"
+  ],
+  "mysql_workbench": [
+    "mysql workbench"
+  ],
+  "vue_js_2": [
+    "vue.js 2"
+  ],
+  "java_reflection_api": [
+    "java reflection api"
+  ],
+  "solo": [
+    "solo"
+  ],
+  "telerik": [
+    "telerik"
+  ],
+  "eclipse": [
+    "eclipse"
+  ],
+  "pxp": [
+    "pxp"
+  ],
+  "aiosmtplib": [
+    "aiosmtplib"
+  ],
+  "mvc_razor_pages": [
+    "mvc (razor pages)"
+  ],
+  "canva": [
+    "canva"
+  ],
+  "xmlbeans": [
+    "xmlbeans"
+  ],
+  "sepa": [
+    "sepa"
+  ],
+  "srest": [
+    "srest"
+  ],
+  "mri": [
+    "mri"
+  ],
+  "karma_tests": [
+    "karma tests"
+  ],
+  "jsdom": [
+    "jsdom"
+  ],
+  "java_14": [
+    "java 14"
+  ],
+  "klarna": [
+    "klarna"
+  ],
+  "notistack": [
+    "notistack"
+  ],
+  "opengl": [
+    "opengl"
+  ],
+  "loopback": [
+    "loopback"
+  ],
+  "oracle_e_business_suite_11i": [
+    "oracle e-business suite 11i"
+  ],
+  "elma_designer": [
+    "elma designer"
+  ],
+  "codepipeline": [
+    "codepipeline"
+  ],
+  "doctrine_2": [
+    "doctrine 2"
+  ],
+  "pa": [
+    "pa"
+  ],
+  "com": [
+    "com"
+  ],
+  "polyacrylamide_gel_electrophoresis": [
+    "polyacrylamide gel electrophoresis"
+  ],
+  "kondor": [
+    "kondor+"
+  ],
+  "hana_xs": [
+    "hana xs"
+  ],
+  "sourcesafe": [
+    "sourcesafe"
+  ],
+  "c_c": [
+    "c/c++"
+  ],
+  "cross_platform_compiler": [
+    "cross-platform compiler"
+  ],
+  "square": [
+    "square"
+  ],
+  "twitter_auth": [
+    "twitter auth"
+  ],
+  "quasar_framework": [
+    "quasar framework"
+  ],
+  "aws_cloudfront": [
+    "aws cloudfront"
+  ],
+  "fiddler": [
+    "fiddler"
+  ],
+  "zend": [
+    "zend"
+  ],
+  "process_assessment_frameworks": [
+    "process assessment frameworks"
+  ],
+  "spring_jdbc": [
+    "spring jdbc"
+  ],
+  "okhttp": [
+    "okhttp"
+  ],
+  "ms_sharepoint": [
+    "ms sharepoint"
+  ],
+  "jackson": [
+    "jackson"
+  ],
+  "protocol_approval": [
+    "protocol approval"
+  ],
+  "ormlite": [
+    "ormlite"
+  ],
+  "elm": [
+    "elm"
+  ],
+  "angular_universal": [
+    "angular universal"
+  ],
+  "otto": [
+    "otto"
+  ],
+  "nrf52": [
+    "nrf52"
+  ],
+  "phage_titration": [
+    "phage titration"
+  ],
+  "msal": [
+    "msal"
+  ],
+  "ct_toshiba_16_slice": [
+    "ct toshiba 16-slice"
+  ],
+  "xml": [
+    "xml"
+  ],
+  "interprocess_communication": [
+    "interprocess communication"
+  ],
+  "autoprefixer": [
+    "autoprefixer"
+  ],
+  "rtcp": [
+    "rtcp"
+  ],
+  "reportportal": [
+    "reportportal"
+  ],
+  "auto_route": [
+    "auto route"
+  ],
+  "fastlane": [
+    "fastlane"
+  ],
+  "sharegate": [
+    "sharegate"
+  ],
+  "subtitles": [
+    "subtitles"
+  ],
+  "plantuml": [
+    "plantuml"
+  ],
+  "servicestack": [
+    "servicestack"
+  ],
+  "arm_jtag": [
+    "arm-jtag"
+  ],
+  "gprs": [
+    "gprs"
+  ],
+  "router": [
+    "router"
+  ],
+  "pug": [
+    "pug"
+  ],
+  "drm": [
+    "drm"
+  ],
+  "prospector": [
+    "prospector"
+  ],
+  "quartz": [
+    "quartz"
+  ],
+  "bert": [
+    "bert"
+  ],
+  "dhtmlx": [
+    "dhtmlx"
+  ],
+  "cloud_messaging": [
+    "cloud messaging"
+  ],
+  "volley": [
+    "volley"
+  ],
+  "servicebus": [
+    "servicebus"
+  ],
+  "storekit2": [
+    "storekit2"
+  ],
+  "rxjs": [
+    "rxjs"
+  ],
+  "cd_ci": [
+    "cd/ci"
+  ],
+  "java_servlet_api": [
+    "java servlet api"
+  ],
+  "sun_solaris": [
+    "sun solaris"
+  ],
+  "fix_protocol": [
+    "fix protocol"
+  ],
+  "lucene": [
+    "lucene"
+  ],
+  "laboratory_glassware_preparation": [
+    "laboratory glassware preparation"
+  ],
+  "alembic": [
+    "alembic"
+  ],
+  "google_ad_manager": [
+    "google ad manager"
+  ],
+  "sap_bpc_5_1_10": [
+    "sap bpc 5.1 - 10"
+  ],
+  "linux_2_6": [
+    "linux 2.6"
+  ],
+  "genesys_outbound": [
+    "genesys outbound"
+  ],
+  "angular_7": [
+    "angular 7"
+  ],
+  "data_architecture": [
+    "data architecture"
+  ],
+  "data_foundation": [
+    "data foundation"
+  ],
+  "sharepoint": [
+    "sharepoint"
+  ],
+  "icefaces": [
+    "icefaces"
+  ],
+  "assembler_hlasm": [
+    "assembler (hlasm)"
+  ],
+  "puma": [
+    "puma"
+  ],
+  "bopf": [
+    "bopf"
+  ],
+  "webex": [
+    "webex"
+  ],
+  "office_360": [
+    "office 360"
+  ],
+  "near": [
+    "near"
+  ],
+  "gsm_modems": [
+    "gsm-modems"
+  ],
+  "ultrasound": [
+    "ultrasound"
+  ],
+  "amazon_ec2_container_service": [
+    "amazon ec2 container service"
+  ],
+  "rtts": [
+    "rtts"
+  ],
+  "sqlalchemy": [
+    "sqlalchemy"
+  ],
+  "aws_codebuild": [
+    "aws codebuild"
+  ],
+  "xpath": [
+    "xpath"
+  ],
+  "3des": [
+    "3des"
+  ],
+  "webstorm": [
+    "webstorm"
+  ],
+  "photoshop": [
+    "photoshop"
+  ],
+  "tinymce": [
+    "tinymce"
+  ],
+  "ppm_6_0": [
+    "ppm 6.0"
+  ],
+  "bugsnag": [
+    "bugsnag"
+  ],
+  "sqflite": [
+    "sqflite"
+  ],
+  "vuetify": [
+    "vuetify"
+  ],
+  "cayley": [
+    "cayley"
+  ],
+  "assertj": [
+    "assertj"
+  ],
+  "3d": [
+    "3d"
+  ],
+  "tcp": [
+    "tcp"
+  ],
+  "nagios": [
+    "nagios"
+  ],
+  "suse_linux_enterprise_11": [
+    "suse linux enterprise 11"
+  ],
+  "bem": [
+    "bem"
+  ],
+  "google_workspace": [
+    "google workspace"
+  ],
+  "logic_apps": [
+    "logic apps"
+  ],
+  "z_wave_modules": [
+    "z-wave modules"
+  ],
+  "oracle_10_1_11_2": [
+    "oracle 10.1 - 11.2"
+  ],
+  "jooq": [
+    "jooq"
+  ],
+  "angular_5": [
+    "angular 5"
+  ],
+  "zeplin": [
+    "zeplin"
+  ],
+  "firebug": [
+    "firebug"
+  ],
+  "coordinator": [
+    "coordinator"
+  ],
+  "angular_material": [
+    "angular material"
+  ],
+  "bluesnap": [
+    "bluesnap"
+  ],
+  "messaging_queue": [
+    "messaging queue"
+  ],
+  "modelio": [
+    "modelio"
+  ],
+  "google_web_toolkit": [
+    "google web toolkit"
+  ],
+  "databases_postgresql": [
+    "databases: postgresql"
+  ],
+  "agrocd": [
+    "agrocd"
+  ],
+  "mq": [
+    "mq"
+  ],
+  "sharepoint_2013": [
+    "sharepoint 2013"
+  ],
+  "nlog": [
+    "nlog"
+  ],
+  "aws_cognito": [
+    "aws cognito"
+  ],
+  "wi_fi_mesh": [
+    "wi-fi-mesh"
+  ],
+  "gulp": [
+    "gulp"
+  ],
+  "jdbctemplate": [
+    "jdbctemplate"
+  ],
+  "gdpr": [
+    "gdpr"
+  ],
+  "selective_media": [
+    "selective media"
+  ],
+  "vpn": [
+    "vpn"
+  ],
+  "http": [
+    "http"
+  ],
+  "bw": [
+    "bw"
+  ],
+  "algorithms": [
+    "algorithms"
+  ],
+  "ar_transactions": [
+    "ar transactions"
+  ],
+  "paypal_api": [
+    "paypal api"
+  ],
+  "abap": [
+    "abap"
+  ],
+  "misys": [
+    "misys"
+  ],
+  "rest_api_httpclient_flurl": [
+    "rest api (httpclient, flurl)"
+  ],
+  "mode": [
+    "mode"
+  ],
+  "rx": [
+    "rx"
+  ],
+  "release_planning": [
+    "release planning"
+  ],
+  "turbopack": [
+    "turbopack"
+  ],
+  "linq": [
+    "linq"
+  ],
+  "jboss_application_server": [
+    "jboss application server"
+  ],
+  "keil_uvision": [
+    "keil uvision"
+  ],
+  "mockk": [
+    "mockk"
+  ],
+  "amazon_mws_api": [
+    "amazon mws api"
+  ],
+  "analytical_warehouse": [
+    "analytical warehouse"
+  ],
+  "mcr": [
+    "mcr"
+  ],
+  "material_ui_ux": [
+    "material ui/ux"
+  ],
+  "cockroachdb": [
+    "cockroachdb"
+  ],
+  "adc": [
+    "adc"
+  ],
+  "azure_service_fabric": [
+    "azure service fabric"
+  ],
+  "llm": [
+    "llm"
+  ],
+  "oracle_financials_cloud": [
+    "oracle financials cloud"
+  ],
+  "kml": [
+    "kml"
+  ],
+  "storybook": [
+    "storybook"
+  ],
+  "opsgenie": [
+    "opsgenie"
+  ],
+  "data_stewardship": [
+    "data stewardship"
+  ],
+  "metric_collection_tool": [
+    "metric collection tool"
+  ],
+  "powermock": [
+    "powermock"
+  ],
+  "meteor": [
+    "meteor"
+  ],
+  "samsung_smart_tv": [
+    "samsung smart tv"
+  ],
+  "odi": [
+    "odi"
+  ],
+  "swiper": [
+    "swiper"
+  ],
+  "collab": [
+    "collab"
+  ],
+  "payment_gateway_systems": [
+    "payment gateway systems"
+  ],
+  "revenuecat": [
+    "revenuecat"
+  ],
+  "coa_conversion": [
+    "coa conversion"
+  ],
+  "mockit": [
+    "mockit"
+  ],
+  "repo": [
+    "repo"
+  ],
+  "project_planning": [
+    "project planning"
+  ],
+  "nvidia_ngc": [
+    "nvidia ngc"
+  ],
+  "nvidia_cuda": [
+    "nvidia cuda"
+  ],
+  "enhancement_framework": [
+    "enhancement framework"
+  ],
+  "forms": [
+    "forms"
+  ],
+  "devextreme": [
+    "devextreme"
+  ],
+  "personio": [
+    "personio"
+  ],
+  "e_learning_platform": [
+    "e-learning platform"
+  ],
+  "security_testing": [
+    "security testing"
+  ],
+  "kinetis_sdk": [
+    "kinetis sdk"
+  ],
+  "cisco_jabber": [
+    "cisco jabber"
+  ],
+  "sharepoint_2016": [
+    "sharepoint 2016"
+  ],
+  "deb": [
+    "deb"
+  ],
+  "apache_akka": [
+    "apache akka"
+  ],
+  "appium": [
+    "appium"
+  ],
+  "aldon_lme": [
+    "aldon lme"
+  ],
+  "iseries": [
+    "iseries"
+  ],
+  "user_exits": [
+    "user-exits"
+  ],
+  "oracle_gl_r11": [
+    "oracle gl r11"
+  ],
+  "gpts": [
+    "gpts"
+  ],
+  "business_intelligence_tools": [
+    "business intelligence tools"
+  ],
+  "isolates": [
+    "isolates"
+  ],
+  "ndk": [
+    "ndk"
+  ],
+  "kohana": [
+    "kohana"
+  ],
+  "rag": [
+    "rag"
+  ],
+  "cryptokit": [
+    "cryptokit"
+  ],
+  "biometrics": [
+    "biometrics"
+  ],
+  "oracle_financials_r12": [
+    "oracle financials r12"
+  ],
+  "quality_assurance": [
+    "quality assurance"
+  ],
+  "axios": [
+    "axios"
+  ],
+  "blade": [
+    "blade"
+  ],
+  "sap_hana_sps11": [
+    "sap hana sps11"
+  ],
+  "lombok": [
+    "lombok"
+  ],
+  "sap_hr": [
+    "sap hr"
+  ],
+  "mobx": [
+    "mobx"
+  ],
+  "ethereum": [
+    "ethereum"
+  ],
+  "mwaa": [
+    "mwaa"
+  ],
+  "firebase_realtime_db": [
+    "firebase realtime db"
+  ],
+  "moment_js": [
+    "moment.js"
+  ],
+  "nrf52_beacon": [
+    "nrf52 beacon"
+  ],
+  "outlook": [
+    "outlook"
+  ],
+  "architecture_diagram_design": [
+    "architecture diagram design"
+  ],
+  "lcd": [
+    "lcd"
+  ],
+  "ccpm": [
+    "ccpm"
+  ],
+  "reselect": [
+    "reselect"
+  ],
+  "gw": [
+    "gw"
+  ],
+  "fastreport": [
+    "fastreport"
+  ],
+  "sap_bw": [
+    "sap bw"
+  ],
+  "twitter_api": [
+    "twitter api"
+  ],
+  "rxjava": [
+    "rxjava"
+  ],
+  "dashboard_development": [
+    "dashboard development"
+  ],
+  "prompt_engineering": [
+    "prompt engineering"
+  ],
+  "dicom": [
+    "dicom"
+  ],
+  "telegraf": [
+    "telegraf"
+  ],
+  "l3": [
+    "l3"
+  ],
+  "simondata": [
+    "simondata"
+  ],
+  "aws_msk": [
+    "aws msk"
+  ],
+  "joi": [
+    "joi"
+  ],
+  "reofit": [
+    "reofit"
+  ],
+  "seaborn": [
+    "seaborn"
+  ],
+  "unicode": [
+    "unicode"
+  ],
+  "azure_data_factory": [
+    "azure data factory"
+  ],
+  "transport_layer": [
+    "transport layer"
+  ],
+  "hotwire": [
+    "hotwire"
+  ],
+  "istanbul": [
+    "istanbul"
+  ],
+  "aim": [
+    "aim"
+  ],
+  "database_architecture": [
+    "database architecture"
+  ],
+  "aop": [
+    "aop"
+  ],
+  "adt": [
+    "adt"
+  ],
+  "desktop_applications": [
+    "desktop applications"
+  ],
+  "xmind": [
+    "xmind"
+  ],
+  "apache_cassandra": [
+    "apache cassandra"
+  ],
+  "sap_abap": [
+    "sap abap"
+  ],
+  "implementation_methodology": [
+    "implementation methodology"
+  ],
+  "webview": [
+    "webview"
+  ],
+  "state_machine": [
+    "state machine"
+  ],
+  "clockify": [
+    "clockify"
+  ],
+  "spss": [
+    "spss"
+  ],
+  "mks": [
+    "mks"
+  ],
+  "java_7": [
+    "java 7"
+  ],
+  "aws_aurora_mysql": [
+    "aws aurora mysql"
+  ],
+  "razor_pages": [
+    "razor pages"
+  ],
+  "strimzi_kafka_operator": [
+    "strimzi kafka operator"
+  ],
+  "sqlscript": [
+    "sqlscript"
+  ],
+  "sap_ecc": [
+    "sap ecc"
+  ],
+  "extent_reports": [
+    "extent reports"
+  ],
+  "antidote": [
+    "antidote"
+  ],
+  "aws_step_functions": [
+    "aws step functions",
+    "aws step function"
+  ],
+  "dbeaver": [
+    "dbeaver"
+  ],
+  "metro_modernui": [
+    "metro (modernui)"
+  ],
+  "geojson": [
+    "geojson"
+  ],
+  "apollo_federation": [
+    "apollo federation"
+  ],
+  "apache_log4j_2": [
+    "apache log4j 2"
+  ],
+  "zephyr": [
+    "zephyr"
+  ],
+  "datastore": [
+    "datastore"
+  ],
+  "bitrise": [
+    "bitrise"
+  ],
+  "selinux": [
+    "selinux"
+  ],
+  "restapi": [
+    "restapi"
+  ],
+  "avr_jtagice_mkii": [
+    "avr jtagice mkii"
+  ],
+  "asp": [
+    "asp"
+  ],
+  "api_test_systems": [
+    "api test systems"
+  ],
+  "web_api": [
+    "web.api"
+  ],
+  "subnets": [
+    "subnets"
+  ],
+  "construct_3": [
+    "construct 3"
+  ],
+  "aws_amplify": [
+    "aws amplify"
+  ],
+  "nativemodules_for_ble": [
+    "nativemodules for ble"
+  ],
+  "django_channels": [
+    "django channels"
+  ],
+  "regulatory_monitoring": [
+    "regulatory monitoring"
+  ],
+  "twilio": [
+    "twilio"
+  ],
+  "snapkit": [
+    "snapkit"
+  ],
+  "monday_com": [
+    "monday.com"
+  ],
+  "business_central": [
+    "business central"
+  ],
+  "viper": [
+    "viper"
+  ],
+  "ibm_bpm_designer": [
+    "ibm bpm designer"
+  ],
+  "blazor": [
+    "blazor"
+  ],
+  "build_scripts": [
+    "build scripts"
+  ],
+  "https": [
+    "https"
+  ],
+  "api_documentation_testing": [
+    "api documentation & testing"
+  ],
+  "bioinformatics_analysis": [
+    "bioinformatics analysis"
+  ],
+  "thingsboard": [
+    "thingsboard"
+  ],
+  "s_4hana_2021": [
+    "s/4hana 2021"
+  ],
+  "sops": [
+    "sops"
+  ],
+  "sap_bw_7_3": [
+    "sap bw 7.3"
+  ],
+  "fasterxml_jackson": [
+    "fasterxml/jackson"
+  ],
+  "rap": [
+    "rap"
+  ],
+  "win7_10": [
+    "win7/10"
+  ],
+  "amazon_elasticache": [
+    "amazon elasticache"
+  ],
+  "tfs": [
+    "tfs"
+  ],
+  "intellij_idea": [
+    "intellij idea"
+  ],
+  "filezilla": [
+    "filezilla"
+  ],
+  "sabre": [
+    "sabre"
+  ],
+  "can_bus": [
+    "can bus"
+  ],
+  "serilog": [
+    "serilog"
+  ],
+  "dynamics_crm": [
+    "dynamics crm"
+  ],
+  "direct_connect": [
+    "direct connect"
+  ],
+  "fi_co": [
+    "fi-co"
+  ],
+  "avfoundation": [
+    "avfoundation"
+  ],
+  "retrofit_2": [
+    "retrofit 2"
+  ],
+  "oebs_11i": [
+    "oebs 11i"
+  ],
+  "ct_mri_diagnostics": [
+    "ct/mri diagnostics"
+  ],
+  "gsap": [
+    "gsap"
+  ],
+  "swt": [
+    "swt"
+  ],
+  "etmf": [
+    "etmf"
+  ],
+  "firebase_analytics": [
+    "firebase analytics"
+  ],
+  "oracle_sql": [
+    "oracle sql"
+  ],
+  "arm7_str710": [
+    "arm7 (str710)"
+  ],
+  "semantic_web": [
+    "semantic web"
+  ],
+  "ct_toshiba_128_slice": [
+    "ct toshiba 128-slice"
+  ],
+  "git_bitbucket": [
+    "git (bitbucket)"
+  ],
+  "arm": [
+    "arm"
+  ],
+  "fluentassertion": [
+    "fluentassertion"
+  ],
+  "linux_device_driver": [
+    "linux device driver"
+  ],
+  "data_quality": [
+    "data quality"
+  ],
+  "assembler_x86": [
+    "assembler (x86)"
+  ],
+  "dmn": [
+    "dmn"
+  ],
+  "biocompatibility_testing": [
+    "biocompatibility testing"
+  ],
+  "oracle_solaris": [
+    "oracle solaris"
+  ],
+  "ci": [
+    "ci"
+  ],
+  "dunning": [
+    "dunning"
+  ],
+  "dagger_2": [
+    "dagger 2"
+  ],
+  "biological_risk_assessment": [
+    "biological risk assessment"
+  ],
+  "pointnet": [
+    "pointnet"
+  ],
+  "php_5": [
+    "php 5"
+  ],
+  "oracle_applications": [
+    "oracle applications"
+  ],
+  "citrus_framework": [
+    "citrus framework"
+  ],
+  "adobe_illustrator": [
+    "adobe illustrator"
+  ],
+  "cics": [
+    "cics"
+  ],
+  "medusajs": [
+    "medusajs"
+  ],
+  "salesforce": [
+    "salesforce"
+  ],
+  "wave_modules_zensys": [
+    "wave modules (zensys)"
+  ],
+  "google_docs": [
+    "google docs"
+  ],
+  "end_to_end_e2e_testing": [
+    "end-to-end (e2e) testing"
+  ],
+  "coronarography": [
+    "coronarography"
+  ],
+  "as_400_operator": [
+    "as/400 operator"
+  ],
+  "biophysical_profiling": [
+    "biophysical profiling"
+  ],
+  "ca": [
+    "ca"
+  ],
+  "winapi": [
+    "winapi"
+  ],
+  "antimicrobial_activity_assays": [
+    "antimicrobial activity assays"
+  ],
+  "esdoc": [
+    "esdoc"
+  ],
+  "itil": [
+    "itil"
+  ],
+  "java_8": [
+    "java 8"
+  ],
+  "npr": [
+    "npr"
+  ],
+  "redhat_linux": [
+    "redhat linux"
+  ],
+  "test_driven_development": [
+    "test-driven development"
+  ],
+  "ratchet": [
+    "ratchet"
+  ],
+  "sequelize": [
+    "sequelize"
+  ],
+  "testflight": [
+    "testflight"
+  ],
+  "prenatal_diagnostics": [
+    "prenatal diagnostics"
+  ],
+  "vnet": [
+    "vnet"
+  ],
+  "uro_genie_device_software": [
+    "uro-genie device software"
+  ],
+  "webdav": [
+    "webdav"
+  ],
+  "android_jni": [
+    "android jni"
+  ],
+  "camunda_bpm_engine": [
+    "camunda bpm engine"
+  ],
+  "oracle_xe": [
+    "oracle xe"
+  ],
+  "windows_10": [
+    "windows 10"
+  ],
+  "as400": [
+    "as400"
+  ],
+  "amazon_aws": [
+    "amazon aws"
+  ],
+  "as_400": [
+    "as/400"
+  ],
+  "api_documentation": [
+    "api documentation"
+  ],
+  "odata": [
+    "odata"
+  ],
+  "spi": [
+    "spi"
+  ],
+  "video_players": [
+    "video players"
+  ],
+  "tips": [
+    "tips"
+  ],
+  "event_sourcing": [
+    "event sourcing"
+  ],
+  "openapi_annotations": [
+    "openapi annotations"
+  ],
+  "autofixture": [
+    "autofixture"
+  ],
+  "oracle_11g": [
+    "oracle 11g"
+  ],
+  "microsoft_powerpoint": [
+    "microsoft powerpoint"
+  ],
+  "devtool": [
+    "devtool"
+  ],
+  "cloud": [
+    "cloud"
+  ],
+  "google_zxing": [
+    "google zxing"
+  ],
+  "sap_hcm": [
+    "sap hcm"
+  ],
+  "thanos": [
+    "thanos"
+  ],
+  "custom_development": [
+    "custom development"
+  ],
+  "qt5": [
+    "qt5"
+  ],
+  "fb_auth": [
+    "fb auth"
+  ],
+  "karma": [
+    "karma"
+  ],
+  "smartview": [
+    "smartview"
+  ],
+  "rup": [
+    "rup"
+  ],
+  "ble_4": [
+    "ble 4"
+  ],
+  "rpg_free_form": [
+    "rpg free form"
+  ],
+  "neteller": [
+    "neteller"
+  ],
+  "redmine": [
+    "redmine"
+  ],
+  "rightscale": [
+    "rightscale"
+  ],
+  "vsto": [
+    "vsto"
+  ],
+  "business_objects_enterprise_3_1_4_2": [
+    "business objects enterprise 3.1 - 4.2"
+  ],
+  "win7": [
+    "win7"
+  ],
+  "mm": [
+    "mm"
+  ],
+  "flyway": [
+    "flyway"
+  ],
+  "ct": [
+    "ct"
+  ],
+  "twilio_segment": [
+    "twilio segment"
+  ],
+  "microsoft_dynamics_365": [
+    "microsoft dynamics 365"
+  ],
+  "haml": [
+    "haml"
+  ],
+  "cvi": [
+    "cvi"
+  ],
+  "hr": [
+    "hr"
+  ],
+  "data_compliance": [
+    "data compliance"
+  ],
+  "ruff": [
+    "ruff"
+  ],
+  "spring_1_3": [
+    "spring 1.3"
+  ],
+  "azure_virtual_machines": [
+    "azure virtual machines"
+  ],
+  "linux_ubuntu": [
+    "linux ubuntu"
+  ],
+  "agarose_gel_electrophoresis": [
+    "agarose gel electrophoresis"
+  ],
+  "spa": [
+    "spa"
+  ],
+  "smm": [
+    "smm"
+  ],
+  "room": [
+    "room"
+  ],
+  "apache_jena": [
+    "apache jena"
+  ],
+  "phantomjs": [
+    "phantomjs"
+  ],
+  "integromat": [
+    "integromat"
+  ],
+  "db2": [
+    "db2"
+  ],
+  "ejb": [
+    "ejb"
+  ],
+  "activereports": [
+    "activereports"
+  ],
+  "facebook": [
+    "facebook"
+  ],
+  "deepchem": [
+    "deepchem"
+  ],
+  "inv": [
+    "inv"
+  ],
+  "murex": [
+    "murex"
+  ],
+  "subscriptions": [
+    "subscriptions"
+  ],
+  "aem_components": [
+    "aem components"
+  ],
+  "swing": [
+    "swing"
+  ],
+  "sdlc": [
+    "sdlc"
+  ],
+  "sketch": [
+    "sketch"
+  ],
+  "metadata_management": [
+    "metadata management"
+  ],
+  "firebase_a_b_tests": [
+    "firebase a/b tests"
+  ],
+  "bi_dashboard": [
+    "bi dashboard"
+  ],
+  "bobj_data_services_4_2": [
+    "bobj data services 4.2"
+  ],
+  "btp": [
+    "btp"
+  ],
+  "ingress": [
+    "ingress"
+  ],
+  "odoo": [
+    "odoo"
+  ],
+  "ui5": [
+    "ui5"
+  ],
+  "vagrant": [
+    "vagrant"
+  ],
+  "content_stack_cms": [
+    "content stack cms"
+  ],
+  "smp": [
+    "smp"
+  ],
+  "ssms_2012": [
+    "ssms 2012"
+  ],
+  "packaging": [
+    "packaging"
+  ],
+  "torch_lightning": [
+    "torch lightning"
+  ],
+  "java_15": [
+    "java 15"
+  ],
+  "bots_api": [
+    "bots api"
+  ],
+  "pwa": [
+    "pwa"
+  ],
+  "swagger_2": [
+    "swagger 2"
+  ],
+  "markdown": [
+    "markdown"
+  ],
+  "loom": [
+    "loom"
+  ],
+  "aura": [
+    "aura"
+  ],
+  "psycopg2": [
+    "psycopg2"
+  ],
+  "csso": [
+    "csso"
+  ],
+  "camel": [
+    "camel"
+  ],
+  "mrt": [
+    "mrt"
+  ],
+  "oaia": [
+    "oaia"
+  ],
+  "microsoft_windows": [
+    "microsoft windows"
+  ],
+  "automation_tools": [
+    "automation tools"
+  ],
+  "mustache": [
+    "mustache"
+  ],
+  "social_media": [
+    "social media"
+  ],
+  "ses": [
+    "ses"
+  ],
+  "liquibase": [
+    "liquibase"
+  ],
+  "fda": [
+    "fda"
+  ],
+  "tpl_dataflow": [
+    "tpl dataflow"
+  ],
+  "magwell_video_capture_sdk": [
+    "magwell video capture sdk"
+  ],
+  "twig": [
+    "twig"
+  ],
+  "internal_systems": [
+    "internal systems"
+  ],
+  "linux_kernel_2_6": [
+    "linux kernel 2.6"
+  ],
+  "flowable": [
+    "flowable"
+  ],
+  "sap_pi": [
+    "sap pi"
+  ],
+  "instagram_api": [
+    "instagram api"
+  ],
+  "apple_pay": [
+    "apple pay"
+  ],
+  "customs_clearance": [
+    "customs clearance"
+  ],
+  "agile_metrics": [
+    "agile metrics"
+  ],
+  "cocoapods": [
+    "cocoapods"
+  ],
+  "sonar": [
+    "sonar"
+  ],
+  "sop_development": [
+    "sop development"
+  ],
+  "ispf": [
+    "ispf"
+  ],
+  "discord": [
+    "discord"
+  ],
+  "webrick": [
+    "webrick"
+  ],
+  "ionic_deploy": [
+    "ionic deploy"
+  ],
+  "codeception": [
+    "codeception"
+  ],
+  "adyen": [
+    "adyen"
+  ],
+  "tokio_utils": [
+    "tokio-utils"
+  ],
+  "ehr": [
+    "ehr"
+  ],
+  "aws_mwaa": [
+    "aws mwaa"
+  ],
+  "audio_players": [
+    "audio players"
+  ],
+  "v8": [
+    "v8"
+  ],
+  "jersey": [
+    "jersey"
+  ],
+  "archunit": [
+    "archunit"
+  ],
+  "json_rpc_2_0": [
+    "json-rpc 2.0"
+  ],
+  "c_core": [
+    "c# core"
+  ],
+  "github_flows": [
+    "github flows"
+  ],
+  "akana": [
+    "akana"
+  ],
+  "gcts": [
+    "gcts"
+  ],
+  "bsp": [
+    "bsp"
+  ],
+  "semantic_ui": [
+    "semantic-ui"
+  ],
+  "spock": [
+    "spock"
+  ],
+  "face_recognition": [
+    "face recognition"
+  ],
+  "hadoop_mr": [
+    "hadoop mr"
+  ],
+  "flash": [
+    "flash"
+  ],
+  "hudson": [
+    "hudson"
+  ],
+  "integration_testing": [
+    "integration testing"
+  ],
+  "workflow_foundation": [
+    "workflow foundation"
+  ],
+  "autoroute": [
+    "autoroute"
+  ],
+  "azure_cdn": [
+    "azure cdn"
+  ],
+  "sac": [
+    "sac"
+  ],
+  "oracle_soa_suite": [
+    "oracle soa suite"
+  ],
+  "yaml": [
+    "yaml"
+  ],
+  "vps": [
+    "vps"
+  ],
+  "thread_networking": [
+    "thread networking"
+  ],
+  "threadx": [
+    "threadx"
+  ],
+  "azurerm": [
+    "azurerm"
+  ],
+  "gcp_messaging": [
+    "google cloud messaging"
+  ],
+  "directshow": [
+    "directshow"
+  ],
+  "unity": [
+    "unity"
+  ],
+  "lxc": [
+    "lxc"
+  ],
+  "abaplint": [
+    "abaplint"
+  ],
+  "ce": [
+    "ce"
+  ],
+  "ess_mss": [
+    "ess/mss"
+  ],
+  "wcf_duplex": [
+    "wcf duplex"
+  ],
+  "illustrator": [
+    "illustrator"
+  ],
+  "oracle_erp": [
+    "oracle erp"
+  ],
+  "spring_security": [
+    "spring security"
+  ],
+  "io_homecontrol": [
+    "io-homecontrol"
+  ],
+  "flexcube": [
+    "flexcube"
+  ],
+  "listmonk": [
+    "listmonk"
+  ],
+  "tun_tap": [
+    "tun/tap"
+  ],
+  "sap_netweaver_bi_6_40_7_5": [
+    "sap netweaver bi 6.40 - 7.5"
+  ],
+  "rpgle": [
+    "rpgle"
+  ],
+  "email": [
+    "email"
+  ],
+  "filerun": [
+    "filerun"
+  ],
+  "sap_netweaver_7_51": [
+    "sap netweaver 7.51"
+  ],
+  "spring_core": [
+    "spring core"
+  ],
+  "website_hosting": [
+    "website hosting"
+  ],
+  "sip": [
+    "sip"
+  ],
+  "cherwell": [
+    "cherwell"
+  ],
+  "react_query": [
+    "react query"
+  ],
+  "itsm": [
+    "itsm"
+  ],
+  "amazon_maps": [
+    "amazon maps"
+  ],
+  "coffeescript": [
+    "coffeescript"
+  ],
+  "mailgun": [
+    "mailgun"
+  ],
+  "tortoisegit": [
+    "tortoisegit"
+  ],
+  "sap_business_objects": [
+    "sap business objects"
+  ],
+  "lighttpd": [
+    "lighttpd"
+  ],
+  "solana": [
+    "solana"
+  ],
+  "scc": [
+    "scc"
+  ],
+  "dnd": [
+    "dnd"
+  ],
+  "netbeans": [
+    "netbeans"
+  ],
+  "chm": [
+    "chm"
+  ],
+  "billing_platform": [
+    "billing platform"
+  ],
+  "internal_programs": [
+    "internal programs"
+  ],
+  "udp": [
+    "udp"
+  ],
+  "ribs": [
+    "ribs"
+  ],
+  "ulink": [
+    "ulink"
+  ],
+  "vue_js_3": [
+    "vue.js 3"
+  ],
+  "unicorn": [
+    "unicorn"
+  ],
+  "system_i": [
+    "system i"
+  ],
+  "bods": [
+    "bods"
+  ],
+  "masonry": [
+    "masonry"
+  ],
+  "zoom": [
+    "zoom"
+  ],
+  "ninject": [
+    "ninject"
+  ],
+  "sicf": [
+    "sicf"
+  ],
+  "matplotlib": [
+    "matplotlib"
+  ],
+  "vasm": [
+    "vasm"
+  ],
+  "coredata": [
+    "coredata"
+  ],
+  "local_storage": [
+    "local storage"
+  ],
+  "cqs": [
+    "cqs"
+  ],
+  "model_driven_apps": [
+    "model-driven apps"
+  ],
+  "maxdb_7_7": [
+    "maxdb 7.7"
+  ],
+  "printing_library": [
+    "printing library"
+  ],
+  "cars": [
+    "cars"
+  ],
+  "openstreetmap_api": [
+    "openstreetmap api"
+  ],
+  "sourcetree": [
+    "sourcetree"
+  ],
+  "openmq": [
+    "openmq"
+  ],
+  "aatp": [
+    "aatp"
+  ],
+  "l2": [
+    "l2"
+  ],
+  "dataclasses": [
+    "dataclasses"
+  ],
+  "prompting": [
+    "prompting"
+  ],
+  "alexa_voice_service": [
+    "alexa voice service"
+  ],
+  "rs_232": [
+    "rs-232"
+  ],
+  "security_risk_management": [
+    "security risk management"
+  ],
+  "ioomega_lifeline_sdk": [
+    "ioomega lifeline sdk"
+  ],
+  "google_auth": [
+    "google auth"
+  ],
+  "spock_framework": [
+    "spock framework"
+  ],
+  "prever": [
+    "prever"
+  ],
+  "thymeleaf": [
+    "thymeleaf"
+  ],
+  "oracle_financials_r11i": [
+    "oracle financials r11i"
+  ],
+  "jsf": [
+    "jsf"
+  ],
+  "sqoop": [
+    "sqoop"
+  ],
+  "mac": [
+    "mac"
+  ],
+  "load_impact": [
+    "load impact"
+  ],
+  "rpg_iii": [
+    "rpg iii"
+  ],
+  "assembler_arm_stm32": [
+    "assembler (arm stm32)"
+  ],
+  "msmq": [
+    "msmq"
+  ],
+  "nexus": [
+    "nexus"
+  ],
+  "voice_detection": [
+    "voice detection"
+  ],
+  "kreya": [
+    "kreya"
+  ],
+  "smarty": [
+    "smarty"
+  ],
+  "elasticache": [
+    "elasticache"
+  ],
+  "fiori_elements": [
+    "fiori elements"
+  ],
+  "pm2": [
+    "pm2"
+  ],
+  "cloudinary": [
+    "cloudinary"
+  ],
+  "sap_hana_platform_edition_2_0": [
+    "sap hana platform edition 2.0"
+  ],
+  "lint": [
+    "lint"
+  ],
+  "androidannotations": [
+    "androidannotations"
+  ],
+  "c_cli": [
+    "c++ cli"
+  ],
+  "security_cards": [
+    "security cards"
+  ],
+  "genesys_cloud": [
+    "genesys cloud"
+  ],
+  "microsoft_dynamics_365_common_data_service": [
+    "microsoft dynamics 365 common data service"
+  ],
+  "supabase_auth": [
+    "supabase auth"
+  ],
+  "data_governance_framework": [
+    "data governance framework"
+  ],
+  "barcodes": [
+    "barcodes"
+  ],
+  "fpm": [
+    "fpm"
+  ],
+  "ble_mesh": [
+    "ble-mesh"
+  ],
+  "nextcloud": [
+    "nextcloud"
+  ],
+  "video_tutorials": [
+    "video tutorials"
+  ],
+  "uml": [
+    "uml"
+  ],
+  "gis": [
+    "gis"
+  ],
+  "icbs": [
+    "icbs"
+  ],
+  "weweb": [
+    "weweb"
+  ],
+  "sap_data_services_4_2": [
+    "sap data services 4.2"
+  ],
+  "nuget": [
+    "nuget"
+  ],
+  "ffmpeg": [
+    "ffmpeg"
+  ],
+  "device_drivers": [
+    "device drivers"
+  ],
+  "aac": [
+    "aac"
+  ],
+  "sap_query": [
+    "sap query"
+  ],
+  "positional_roles": [
+    "positional roles"
+  ],
+  "afnetworking": [
+    "afnetworking"
+  ],
+  "hana": [
+    "hana"
+  ],
+  "transmeta_embedded": [
+    "transmeta embedded"
+  ],
+  "glide": [
+    "glide"
+  ],
+  "assembler_arm": [
+    "assembler (arm)"
+  ],
+  "endeca_information_discovery": [
+    "endeca information discovery"
+  ],
+  "limma": [
+    "limma"
+  ],
+  "data_matrix": [
+    "data-matrix"
+  ],
+  "firebase_function": [
+    "firebase function"
+  ],
+  "mailchimp": [
+    "mailchimp"
+  ],
+  "solaris": [
+    "solaris"
+  ],
+  "shacl": [
+    "shacl"
+  ],
+  "tflite": [
+    "tflite"
+  ],
+  "capybara": [
+    "capybara"
+  ],
+  "lambdatest": [
+    "lambdatest"
+  ],
+  "jetpack_components": [
+    "jetpack components"
+  ],
+  "desktop": [
+    "desktop"
+  ],
+  "chrome_runtime": [
+    "chrome runtime"
+  ],
+  "wml": [
+    "wml"
+  ],
+  "memcached": [
+    "memcached"
+  ],
+  "bitrix_cms": [
+    "bitrix cms"
+  ],
+  "hevc": [
+    "hevc"
+  ],
+  "icf": [
+    "icf"
+  ],
+  "bot_api": [
+    "bot api"
+  ],
+  "black_duck": [
+    "black duck"
+  ],
+  "hosting": [
+    "hosting"
+  ],
+  "tox": [
+    "tox"
+  ],
+  "tolgee_api": [
+    "tolgee api"
+  ],
+  "activex": [
+    "activex"
+  ],
+  "l7": [
+    "l7"
+  ],
+  "app_microservice": [
+    "app microservice"
+  ],
+  "hls": [
+    "hls"
+  ],
+  "tfrecords": [
+    "tfrecords"
+  ],
+  "3d_4d_imaging": [
+    "3d/4d imaging"
+  ],
+  "video_processing": [
+    "video processing"
+  ],
+  "genesys_gia": [
+    "genesys gia"
+  ],
+  "collibra": [
+    "collibra"
+  ],
+  "universal_image_loader": [
+    "universal image loader"
+  ],
+  "airtable": [
+    "airtable"
+  ],
+  "cisco": [
+    "cisco"
+  ],
+  "casper_ibm_bpm_system": [
+    "casper ibm bpm system"
+  ],
+  "s_4hana_cloud": [
+    "s/4hana cloud"
+  ],
+  "pusher_js": [
+    "pusher.js"
+  ],
+  "darkredis": [
+    "darkredis"
+  ],
+  "k_tp": [
+    "k+tp"
+  ],
+  "oracle_bpm_suite_11g": [
+    "oracle bpm suite 11g"
+  ],
+  "bing_search": [
+    "bing search"
+  ],
+  "cds": [
+    "cds"
+  ],
+  "luxon": [
+    "luxon"
+  ],
+  "jplayer": [
+    "jplayer"
+  ],
+  "bioconductor_packages": [
+    "bioconductor packages"
+  ],
+  "xml_xpath": [
+    "xml/xpath"
+  ],
+  "soa": [
+    "soa"
+  ],
+  "camera": [
+    "camera"
+  ],
+  "legacy_system_integration": [
+    "legacy system integration"
+  ],
+  "x_ray_equipment": [
+    "x-ray equipment"
+  ],
+  "react_admin": [
+    "react admin"
+  ],
+  "analytical_data_warehouse": [
+    "analytical data warehouse"
+  ],
+  "rad_studio": [
+    "rad studio"
+  ],
+  "supabase": [
+    "supabase"
+  ],
+  "ms_crm": [
+    "ms crm"
+  ],
+  "classic_asp": [
+    "classic asp"
+  ],
+  "slab": [
+    "slab"
+  ],
+  "unityengine": [
+    "unityengine"
+  ],
+  "diffusion_probabilistic_models": [
+    "diffusion probabilistic models"
+  ],
+  "sap_solution_manager_7_2": [
+    "sap solution manager 7.2"
+  ],
+  "cron_jobs": [
+    "cron jobs"
+  ],
+  "apache_free_marker": [
+    "apache free marker"
+  ],
+  "supl": [
+    "supl"
+  ],
+  "amdp": [
+    "amdp"
+  ],
+  "puppeteer": [
+    "puppeteer"
+  ],
+  "nunit_reports": [
+    "nunit reports"
+  ],
+  "business_objects_4_1": [
+    "business objects 4.1"
+  ],
+  "tcp_and_unix_sockets": [
+    "tcp and unix sockets"
+  ],
+  "vscode": [
+    "vscode"
+  ],
+  "ipso": [
+    "ipso"
+  ],
+  "ms_middleware": [
+    "ms middleware"
+  ],
+  "analysis_for_microsoft_excel": [
+    "analysis for microsoft excel"
+  ],
+  "cloudfront": [
+    "cloudfront"
+  ],
+  "semantic_platform": [
+    "semantic platform"
+  ],
+  "hana_sdi": [
+    "hana sdi"
+  ],
+  "sparkleformation": [
+    "sparkleformation"
+  ],
+  "gdb": [
+    "gdb"
+  ],
+  "safe": [
+    "safe"
+  ],
+  "chrome_devtools": [
+    "chrome devtools"
+  ],
+  "oligo": [
+    "oligo"
+  ],
+  "ibm_watson_machine_learning": [
+    "ibm watson machine learning"
+  ],
+  "aws_sdn": [
+    "aws sdn"
+  ],
+  "internal_tools": [
+    "internal tools"
+  ],
+  "tvos": [
+    "tvos"
+  ],
+  "rdf": [
+    "rdf"
+  ],
+  "diagnostic_imaging": [
+    "diagnostic imaging"
+  ],
+  "badgerdb": [
+    "badgerdb"
+  ],
+  "fa": [
+    "fa"
+  ],
+  "slim_4_framework": [
+    "slim 4 framework"
+  ],
+  "oop": [
+    "oop"
+  ],
+  "siebel_crm": [
+    "siebel crm"
+  ],
+  "aws_batch": [
+    "aws batch"
+  ],
+  "ontology_engineering": [
+    "ontology engineering"
+  ],
+  "pgadmin": [
+    "pgadmin"
+  ],
+  "usg": [
+    "usg"
+  ],
+  "rtk_query": [
+    "rtk query"
+  ],
+  "specflow": [
+    "specflow"
+  ],
+  "mri_siemens_3_0t": [
+    "mri siemens 3.0t"
+  ],
+  "youtube_android_player_api": [
+    "youtube android player api"
+  ],
+  "softgarden": [
+    "softgarden"
+  ],
+  "madcap_flare": [
+    "madcap flare"
+  ],
+  "networking": [
+    "networking"
+  ],
+  "server_api": [
+    "server api"
+  ],
+  "scratch": [
+    "scratch"
+  ],
+  "gagreport": [
+    "gagreport"
+  ],
+  "dac": [
+    "dac"
+  ],
+  "fluent_ffmpeg": [
+    "fluent-ffmpeg"
+  ],
+  "visionkit": [
+    "visionkit"
+  ],
+  "castle": [
+    "castle"
+  ],
+  "fiori_2_0": [
+    "fiori 2.0"
+  ],
+  "biochemical_identification": [
+    "biochemical identification"
+  ],
+  "dagger": [
+    "dagger"
+  ],
+  "usb_device_drivers": [
+    "usb device drivers"
+  ],
+  "sap_ao_2_3": [
+    "sap ao 2.3"
+  ],
+  "kvm": [
+    "kvm"
+  ],
+  "sap_netweaver_7_55": [
+    "sap netweaver 7.55"
+  ],
+  "prezi": [
+    "prezi"
+  ],
+  "affy": [
+    "affy"
+  ],
+  "stardog": [
+    "stardog"
+  ],
+  "adobe_cq_aem": [
+    "adobe cq (aem)"
+  ],
+  "elastic_beanstalk": [
+    "elastic beanstalk"
+  ],
+  "literature_review": [
+    "literature review"
+  ],
+  "rally": [
+    "rally"
+  ],
+  "jcl": [
+    "jcl"
+  ],
+  "wde": [
+    "wde"
+  ],
+  "gisagro": [
+    "gisagro"
+  ],
+  "google_tag_manager": [
+    "google tag manager"
+  ],
+  "xsl": [
+    "xsl"
+  ],
+  "datagrip": [
+    "datagrip"
+  ],
+  "lodash": [
+    "lodash"
+  ],
+  "colyseus": [
+    "colyseus"
+  ],
+  "as_400_administrator": [
+    "as/400 administrator"
+  ],
+  "cloudfoundry": [
+    "cloudfoundry"
+  ],
+  "coroutines": [
+    "coroutines"
+  ],
+  "hl7": [
+    "hl7"
+  ],
+  "typer": [
+    "typer"
+  ],
+  "angular_10": [
+    "angular 10+"
+  ],
+  "canvas_apps": [
+    "canvas apps"
+  ],
+  "sum_dmo": [
+    "sum dmo"
+  ],
+  "activecampaign": [
+    "activecampaign"
+  ],
+  "oracle_applications_r11": [
+    "oracle applications r11"
+  ],
+  "cubit": [
+    "cubit"
+  ],
+  "cosmos": [
+    "cosmos"
+  ],
+  "nmake": [
+    "nmake"
+  ],
+  "jvm_internals": [
+    "jvm internals"
+  ],
+  "zabbix": [
+    "zabbix"
+  ],
+  "dropbox": [
+    "dropbox"
+  ],
+  "local_pss": [
+    "local pss"
+  ],
+  "jmc": [
+    "jmc"
+  ],
+  "dds": [
+    "dds"
+  ],
+  "octeon_sdk": [
+    "octeon sdk"
+  ],
+  "fixit": [
+    "fixit"
+  ],
+  "cobol": [
+    "cobol"
+  ],
+  "samu": [
+    "samu"
+  ],
+  "cloud_connector": [
+    "cloud connector"
+  ],
+  "relational_dbs": [
+    "relational dbs"
+  ],
+  "chrome_dev_tools": [
+    "chrome dev tools"
+  ],
+  "power_automate": [
+    "power automate"
+  ],
+  "react_flow": [
+    "react flow"
+  ],
+  "soa_suite": [
+    "soa suite"
+  ],
+  "javase": [
+    "javase"
+  ],
+  "fluent_validation": [
+    "fluent validation"
+  ],
+  "prettier": [
+    "prettier"
+  ],
+  "openssl": [
+    "openssl"
+  ],
+  "mirth": [
+    "mirth"
+  ],
+  "report_preparation": [
+    "report preparation"
+  ],
+  "leaderboard": [
+    "leaderboard"
+  ],
+  "jboss_wildfly": [
+    "jboss wildfly"
+  ],
+  "braintree": [
+    "braintree"
+  ],
+  "sprint_planning": [
+    "sprint planning"
+  ],
+  "isf": [
+    "isf"
+  ],
+  "polymerase_chain_reaction_pcr": [
+    "polymerase chain reaction (pcr)"
+  ],
+  "cv": [
+    "cv"
+  ],
+  "lerna_js": [
+    "lerna.js"
+  ],
+  "paas": [
+    "paas"
+  ],
+  "hyperion_fm": [
+    "hyperion fm"
+  ],
+  "sap_netweaver": [
+    "sap netweaver"
+  ],
+  "a_gps": [
+    "a-gps"
+  ],
+  "n8n": [
+    "n8n"
+  ],
+  "primeng": [
+    "primeng"
+  ],
+  "vxworks": [
+    "vxworks"
+  ],
+  "json_rpc": [
+    "json-rpc"
+  ],
+  "highcharts_js": [
+    "highcharts.js"
+  ],
+  "toplink": [
+    "toplink"
+  ],
+  "gaap": [
+    "gaap"
+  ],
+  "react_hook_form": [
+    "react hook form"
+  ],
+  "voip": [
+    "voip"
+  ],
+  "browserify": [
+    "browserify"
+  ],
+  "opensl_es": [
+    "opensl es"
+  ],
+  "vmware": [
+    "vmware"
+  ],
+  "ms_dynamics": [
+    "ms dynamics"
+  ],
+  "html_css": [
+    "html/css"
+  ],
+  "bullmq": [
+    "bullmq"
+  ],
+  "lysogeny_testing": [
+    "lysogeny testing"
+  ],
+  "lambdas": [
+    "lambdas"
+  ],
+  "dx11": [
+    "dx11"
+  ],
+  "aac_decoder": [
+    "aac decoder"
+  ],
+  "sap_nakisa": [
+    "sap nakisa"
+  ],
+  "stomp": [
+    "stomp"
+  ],
+  "boto3": [
+    "boto3"
+  ],
+  "labcenter": [
+    "labcenter"
+  ],
+  "3ds": [
+    "3ds"
+  ],
+  "wso2": [
+    "wso2"
+  ],
+  "citrix_systems": [
+    "citrix systems"
+  ],
+  "appium_windriver": [
+    "appium windriver"
+  ],
+  "ms_business_intelligence": [
+    "ms business intelligence"
+  ],
+  "rabbit": [
+    "rabbit"
+  ],
+  "multi_lob_collaboration_platforms": [
+    "multi-lob collaboration platforms"
+  ],
+  "pro_cobol": [
+    "pro*cobol"
+  ],
+  "windows_server_2012": [
+    "windows server 2012"
+  ],
+  "firebase_crashlytics": [
+    "firebase crashlytics"
+  ],
+  "eslint": [
+    "eslint"
+  ],
+  "oracle_e_business_suite_r12": [
+    "oracle e-business suite r12"
+  ],
+  "semantic_search": [
+    "semantic search"
+  ],
+  "apache_lucene": [
+    "apache lucene"
+  ],
+  "sap_hana_database": [
+    "sap hana database"
+  ],
+  "adobe_photoshop": [
+    "adobe photoshop"
+  ],
+  "sails_js": [
+    "sails.js"
+  ],
+  "c_treeace_db": [
+    "c-treeace db"
+  ],
+  "jca_jce_extensions": [
+    "jca/jce extensions"
+  ],
+  "dns": [
+    "dns"
+  ],
+  "selenide": [
+    "selenide"
+  ],
+  "milter": [
+    "milter"
+  ],
+  "oracledb": [
+    "oracledb"
+  ],
+  "combine": [
+    "combine"
+  ],
+  "api_gw": [
+    "api gw"
+  ],
+  "mobile_vlc_kit": [
+    "mobile vlc kit"
+  ],
+  "microbiological_purity_testing": [
+    "microbiological purity testing"
+  ],
+  "veeam": [
+    "veeam"
+  ],
+  "laravel_5_8": [
+    "laravel 5.8"
+  ],
+  "im": [
+    "im"
+  ],
+  "kernel_modules": [
+    "kernel modules"
+  ],
+  "finsweet_attributes": [
+    "finsweet attributes"
+  ],
+  "deployment_documentation": [
+    "deployment documentation"
+  ],
+  "visual_studio_2010": [
+    "visual studio 2010"
+  ],
+  "admin_api": [
+    "admin api"
+  ],
+  "responsive_ui": [
+    "responsive ui"
+  ],
+  "aws_dms": [
+    "aws dms"
+  ],
+  "espressif_sdk": [
+    "espressif sdk"
+  ],
+  "amqp": [
+    "amqp"
+  ],
+  "vaex": [
+    "vaex"
+  ],
+  "relational_databases": [
+    "relational databases"
+  ],
+  "g_cloud_storage": [
+    "g-cloud storage"
+  ],
+  "sharepoint_migration_tool": [
+    "sharepoint migration tool"
+  ],
+  "virtual_machines": [
+    "virtual machines"
+  ],
+  "particle_testing": [
+    "particle testing"
+  ],
+  "pipedrive": [
+    "pipedrive"
+  ],
+  "npsharp_framework": [
+    "npsharp framework"
+  ],
+  "sap_hana_studio": [
+    "sap hana studio"
+  ],
+  "crystal_reports": [
+    "crystal reports"
+  ],
+  "capacitator_js": [
+    "capacitator.js"
+  ],
+  "kernel_memory_profiler": [
+    "kernel memory profiler"
+  ],
+  "vtk": [
+    "vtk"
+  ],
+  "linked_data": [
+    "linked data"
+  ],
+  "photon": [
+    "photon"
+  ],
+  "win_scp": [
+    "win scp"
+  ],
+  "s_4hana_1709": [
+    "s/4hana 1709"
+  ],
+  "blockchain": [
+    "blockchain"
+  ],
+  "kops": [
+    "kops"
+  ],
+  "gps_module": [
+    "gps module"
+  ],
+  "bitbucket_pipeline": [
+    "bitbucket pipeline"
+  ],
+  "delphi": [
+    "delphi"
+  ],
+  "just_audio": [
+    "just_audio"
+  ],
+  "tslint": [
+    "tslint"
+  ],
+  "jax_ws": [
+    "jax-ws"
+  ],
+  "java_11": [
+    "java 11"
+  ],
+  "windows_services": [
+    "windows services"
+  ],
+  "retrieval": [
+    "retrieval"
+  ],
+  "avro": [
+    "avro"
+  ],
+  "poco": [
+    "poco"
+  ],
+  "knockout_js": [
+    "knockout js"
+  ],
+  "clearquest": [
+    "clearquest"
+  ],
+  "dialogflow": [
+    "dialogflow"
+  ],
+  "sap_bw_7_0": [
+    "sap bw 7.0"
+  ],
+  "telegram": [
+    "telegram"
+  ],
+  "sup_2_3": [
+    "sup 2.3"
+  ],
+  "pipelines_setup": [
+    "pipelines setup"
+  ],
+  "balsamiq": [
+    "balsamiq"
+  ],
+  "amazon_alexa_skills_kit": [
+    "amazon alexa skills kit"
+  ],
+  "u_boot": [
+    "u-boot"
+  ],
+  "hilt": [
+    "hilt"
+  ],
+  "mjpeg": [
+    "mjpeg"
+  ],
+  "hetzner": [
+    "hetzner"
+  ],
+  "gtm": [
+    "gtm"
+  ],
+  "aws_well_architected_framework": [
+    "aws well-architected framework"
+  ],
+  "jstl": [
+    "jstl"
+  ],
+  "wi_fi": [
+    "wi-fi"
+  ],
+  "tcp_ip_v4": [
+    "tcp/ip v4"
+  ],
+  "alpine_js": [
+    "alpine js"
+  ],
+  "pyramid": [
+    "pyramid"
+  ],
+  "adobe_premiere_pro": [
+    "adobe premiere pro"
+  ],
+  "windows_embedded": [
+    "windows embedded"
+  ],
+  "wiremock": [
+    "wiremock"
+  ],
+  "planning_and_rostering": [
+    "planning and rostering"
+  ],
+  "web_dynpro_abap": [
+    "web dynpro abap"
+  ],
+  "power_bi_dataflow": [
+    "power bi dataflow"
+  ],
+  "coda": [
+    "coda"
+  ],
+  "next": [
+    "next"
+  ],
+  "uniorg_udina_commerce_1_0": [
+    "uniorg udina commerce 1.0"
+  ],
+  "cloud_bigtable": [
+    "cloud bigtable"
+  ],
+  "prometheus_operator": [
+    "prometheus operator"
+  ],
+  "playfab": [
+    "playfab"
+  ],
+  "nvda": [
+    "nvda"
+  ],
+  "spring_webflux": [
+    "spring webflux"
+  ],
+  "firebase_service": [
+    "firebase service"
+  ],
+  "bcp": [
+    "bcp"
+  ],
+  "gcc": [
+    "gcc"
+  ],
+  "angular_2": [
+    "angular 2"
+  ],
+  "saucelabs": [
+    "saucelabs"
+  ],
+  "tcp_ip_v6": [
+    "tcp/ip v6"
+  ],
+  "win_10": [
+    "win 10"
+  ],
+  "terminal": [
+    "terminal"
+  ],
+  "ms_visual_studio_2005_2019": [
+    "ms visual studio 2005-2019"
+  ],
+  "statemachine": [
+    "statemachine"
+  ],
+  "request": [
+    "request"
+  ],
+  "banner_ads": [
+    "banner ads"
+  ],
+  "quasar": [
+    "quasar"
+  ],
+  "brf": [
+    "brf+"
+  ],
+  "i18n": [
+    "i18n"
+  ],
+  "firebase_firestore": [
+    "firebase firestore"
+  ],
+  "ecospend": [
+    "ecospend"
+  ],
+  "profiler": [
+    "profiler"
+  ],
+  "creatio": [
+    "creatio"
+  ],
+  "js_es6": [
+    "js es6"
+  ],
+  "transport_system": [
+    "transport system"
+  ],
+  "visio": [
+    "visio"
+  ],
+  "ssl_certificates": [
+    "ssl certificates"
+  ],
+  "widewine": [
+    "widewine"
+  ],
+  "stylecop": [
+    "stylecop"
+  ],
+  "php_4": [
+    "php 4"
+  ],
+  "win32": [
+    "win32"
+  ],
+  "web_browsers": [
+    "web browsers"
+  ],
+  "resteasy": [
+    "resteasy"
+  ],
+  "chatgpt": [
+    "chatgpt"
+  ],
+  "business_process_automation": [
+    "business process automation"
+  ],
+  "enterprise_data_management": [
+    "enterprise data management"
+  ],
+  "zeromq": [
+    "zeromq"
+  ],
+  "in_house_orchestration_tool": [
+    "in-house orchestration tool"
+  ],
+  "kotlin_multiplatform_mobile_kmm": [
+    "kotlin multiplatform mobile (kmm)"
+  ],
+  "play_store": [
+    "play store"
+  ],
+  "bpmn": [
+    "bpmn"
+  ],
+  "nvidia_nsight": [
+    "nvidia nsight"
+  ],
+  "telegram_api": [
+    "telegram api"
+  ],
+  "copilot": [
+    "copilot"
+  ],
+  "facebook_api": [
+    "facebook api"
+  ],
+  "iar_j_link": [
+    "iar j-link"
+  ],
+  "mkdocs": [
+    "mkdocs"
+  ],
+  "wsl": [
+    "wsl"
+  ],
+  "communication_protocols": [
+    "communication protocols"
+  ],
+  "android_2_2_2_3": [
+    "android 2.2/2.3"
+  ],
+  "texttospeech_engine": [
+    "texttospeech engine"
+  ],
+  "automapper": [
+    "automapper"
+  ],
+  "ngxs": [
+    "ngxs"
+  ],
+  "nordic_sdk": [
+    "nordic sdk"
+  ],
+  "backup": [
+    "backup"
+  ],
+  "dbunit": [
+    "dbunit"
+  ],
+  "raspberry_pi": [
+    "raspberry pi"
+  ],
+  "responsive_design": [
+    "responsive design"
+  ],
+  "hana_procedures": [
+    "hana procedures"
+  ],
+  "knx": [
+    "knx"
+  ],
+  "oauth": [
+    "oauth"
+  ],
+  "pega": [
+    "pega"
+  ],
+  "ipx": [
+    "ipx"
+  ],
+  "aes_encryption": [
+    "aes encryption"
+  ],
+  "drools": [
+    "drools"
+  ],
+  "jacoco": [
+    "jacoco"
+  ],
+  "oracle_e_business_suite_r11i": [
+    "oracle e-business suite r11i"
+  ],
+  "quilt": [
+    "quilt"
+  ],
+  "foundation": [
+    "foundation"
+  ],
+  "badi": [
+    "badi"
+  ],
+  "dpm": [
+    "dpm"
+  ],
+  "react_beautiful_dnd": [
+    "react beautiful dnd"
+  ],
+  "oebs_r11i": [
+    "oebs r11i"
+  ],
+  "gearman": [
+    "gearman"
+  ],
+  "mvvm": [
+    "mvvm"
+  ],
+  "october_cms": [
+    "october cms"
+  ],
+  "web": [
+    "web"
+  ],
+  "visual_basic": [
+    "visual basic"
+  ],
+  "dgraph": [
+    "dgraph"
+  ],
+  "jpa": [
+    "jpa"
+  ],
+  "automl": [
+    "automl"
+  ],
+  "mjml": [
+    "mjml"
+  ],
+  "axon": [
+    "axon"
+  ],
+  "ss_is": [
+    "ss is"
+  ],
+  "aws_codepipeline": [
+    "aws codepipeline"
+  ],
+  "mvp": [
+    "mvp"
+  ],
+  "teradata": [
+    "teradata"
+  ],
+  "ssh": [
+    "ssh"
+  ],
+  "repo_vsts": [
+    "repo: vsts"
+  ],
+  "seo": [
+    "seo"
+  ],
+  "ngx_charts": [
+    "ngx-charts"
+  ],
+  "api_testing": [
+    "api testing"
+  ],
+  "google_authentication": [
+    "google authentication"
+  ],
+  "unix": [
+    "unix"
+  ],
+  "nhibernate": [
+    "nhibernate"
+  ],
+  "ads": [
+    "ads"
+  ],
+  "frs": [
+    "frs"
+  ],
+  "google_slides": [
+    "google slides"
+  ],
+  "analytics": [
+    "analytics"
+  ],
+  "networkx": [
+    "networkx"
+  ],
+  "icm": [
+    "icm"
+  ],
+  "windows_media_foundation": [
+    "windows media foundation"
+  ],
+  "lean_order_api": [
+    "lean order api"
+  ],
+  "xsa": [
+    "xsa"
+  ],
+  "mdg": [
+    "mdg"
+  ],
+  "sap_data_services_3_2": [
+    "sap data services 3.2"
+  ],
+  "websphere_application_server_nd": [
+    "websphere application server nd"
+  ],
+  "data_analytics_platforms": [
+    "data analytics platforms"
+  ],
+  "visual_studio_12": [
+    "visual studio 12"
+  ],
+  "pl_sql_developer": [
+    "pl/sql developer"
+  ],
+  "pocketbase": [
+    "pocketbase"
+  ],
+  "duckdb": [
+    "duckdb"
+  ],
+  "socketrocket": [
+    "socketrocket"
+  ],
+  "can": [
+    "can"
+  ],
+  "sap": [
+    "sap"
+  ],
+  "msa_patterns": [
+    "msa patterns"
+  ],
+  "consolidation": [
+    "consolidation"
+  ],
+  "common_data_service": [
+    "common data service"
+  ],
+  "lucidchart": [
+    "lucidchart"
+  ],
+  "hibernate_5": [
+    "hibernate 5"
+  ],
+  "boost": [
+    "boost"
+  ],
+  "metrc_api": [
+    "metrc api"
+  ],
+  "sybase": [
+    "sybase"
+  ],
+  "groovy": [
+    "groovy"
+  ],
+  "gitflow": [
+    "gitflow"
+  ],
+  "planetscale": [
+    "planetscale"
+  ],
+  "message_queue": [
+    "message queue"
+  ],
+  "data_analytics": [
+    "data analytics"
+  ],
+  "osb": [
+    "osb"
+  ],
+  "msp_fet430uif": [
+    "msp-fet430uif"
+  ],
+  "jira_xray": [
+    "jira (xray)"
+  ],
+  "tcp_ip": [
+    "tcp/ip"
+  ],
+  "automation_and_billing_tools": [
+    "automation and billing tools"
+  ],
+  "silverlight": [
+    "silverlight"
+  ],
+  "java_21": [
+    "java 21"
+  ],
+  "mtm": [
+    "mtm"
+  ],
+  "openlayers": [
+    "openlayers"
+  ],
+  "ipv6": [
+    "ipv6"
+  ],
+  "robert": [
+    "robert"
+  ],
+  "django_rest": [
+    "django rest"
+  ],
+  "jsp": [
+    "jsp"
+  ],
+  "sitecore": [
+    "sitecore"
+  ],
+  "vsts": [
+    "vsts"
+  ],
+  "fb": [
+    "fb"
+  ],
+  "prisma": [
+    "prisma"
+  ],
+  "llms": [
+    "llms"
+  ],
+  "octopus": [
+    "octopus"
+  ],
+  "pi_po": [
+    "pi/po"
+  ],
+  "toad": [
+    "toad"
+  ],
+  "gorm": [
+    "gorm"
+  ],
+  "netx": [
+    "netx"
+  ],
+  "design_patterns": [
+    "design patterns"
+  ],
+  "movavi": [
+    "movavi"
+  ],
+  "liferay": [
+    "liferay"
+  ],
+  "evaluation": [
+    "evaluation"
+  ],
+  "magento_2": [
+    "magento 2"
+  ],
+  "intershop_enfinity": [
+    "intershop enfinity"
+  ],
+  "amazon_advertisement_api": [
+    "amazon advertisement api"
+  ],
+  "intellij": [
+    "intellij"
+  ],
+  "struts": [
+    "struts"
+  ],
+  "typedb": [
+    "typedb"
+  ],
+  "alamofire": [
+    "alamofire"
+  ],
+  "oracle_atg": [
+    "oracle atg"
+  ],
+  "event_mesh": [
+    "event mesh"
+  ],
+  "desktop_apps": [
+    "desktop apps"
+  ],
+  "sap_gts": [
+    "sap gts"
+  ],
+  "thunderbird": [
+    "thunderbird"
+  ],
+  "metatrader": [
+    "metatrader"
+  ],
+  "miro": [
+    "miro"
+  ],
+  "tick_stack": [
+    "tick stack"
+  ],
+  "clist": [
+    "clist"
+  ],
+  "composite_gadget": [
+    "composite gadget"
+  ],
+  "canon_ct": [
+    "canon ct"
+  ],
+  "genesys_framework_tools": [
+    "genesys framework tools"
+  ],
+  "ftp": [
+    "ftp"
+  ],
+  "ble_5": [
+    "ble 5"
+  ],
+  "qml": [
+    "qml"
+  ],
+  "hana_olap": [
+    "hana olap"
+  ],
+  "steampunk": [
+    "steampunk"
+  ],
+  "sap_erp_ecc_6_0": [
+    "sap erp ecc 6.0",
+    "sap erp - ecc 6.0"
+  ],
+  "servicenow": [
+    "servicenow"
+  ],
+  "sles": [
+    "sles"
+  ],
+  "mobile_testing": [
+    "mobile testing"
+  ],
+  "nrf_connect_sdk": [
+    "nrf connect sdk"
+  ],
+  "mobile": [
+    "mobile"
+  ],
+  "scalable_data_solutions": [
+    "scalable data solutions"
+  ],
+  "tradingview": [
+    "tradingview"
+  ],
+  "durable_functions": [
+    "durable functions"
+  ],
+  "rtsp": [
+    "rtsp"
+  ],
+  "spotify": [
+    "spotify"
+  ],
+  "project_reactor": [
+    "project reactor"
+  ],
+  "angular_15": [
+    "angular 15+"
+  ],
+  "easymock": [
+    "easymock"
+  ],
+  "sass_scss": [
+    "sass/scss"
+  ],
+  "passport_js": [
+    "passport.js"
+  ],
+  "libuv": [
+    "libuv"
+  ],
+  "xhtml": [
+    "xhtml"
+  ],
+  "cheerio": [
+    "cheerio"
+  ],
+  "gdlib": [
+    "gdlib"
+  ],
+  "merchandising_management_systems": [
+    "merchandising management systems"
+  ],
+  "camunda_7": [
+    "camunda 7"
+  ],
+  "after_effects": [
+    "after effects"
+  ],
+  "sdom": [
+    "sdom"
+  ],
+  "archicad": [
+    "archicad"
+  ],
+  "mui": [
+    "mui"
+  ],
+  "ios_sdk": [
+    "ios sdk"
+  ],
+  "testcontainers": [
+    "testcontainers"
+  ],
+  "rtc": [
+    "rtc"
+  ],
+  "airwatch": [
+    "airwatch"
+  ],
+  "esp_idf": [
+    "esp-idf"
+  ],
+  "servlets": [
+    "servlets"
+  ],
+  "dash": [
+    "dash"
+  ],
+  "axure_rp": [
+    "axure rp"
+  ],
+  "rest_json_api": [
+    "rest json api"
+  ],
+  "b2c": [
+    "b2c"
+  ],
+  "zazmic": [
+    "zazmic"
+  ],
+  "rest_hooks": [
+    "rest hooks"
+  ],
+  "open_ai_gpt": [
+    "open ai gpt"
+  ],
+  "clean_core": [
+    "clean core"
+  ],
+  "nrfxlib": [
+    "nrfxlib"
+  ],
+  "sinon": [
+    "sinon"
+  ],
+  "echarts": [
+    "echarts"
+  ],
+  "eva_platform": [
+    "eva platform"
+  ],
+  "stacked": [
+    "stacked"
+  ],
+  "asynchronous_programming": [
+    "asynchronous programming"
+  ],
+  "dmn_tables": [
+    "dmn tables"
+  ],
+  "ms_365": [
+    "ms 365"
+  ],
+  "information_architecture": [
+    "information architecture"
+  ],
+  "xslt": [
+    "xslt"
+  ],
+  "bobj_data_integrator": [
+    "bobj data integrator"
+  ],
+  "firebird": [
+    "firebird"
+  ],
+  "mqseries": [
+    "mqseries"
+  ],
+  "dx9": [
+    "dx9"
+  ],
+  "data_analysis": [
+    "data analysis"
+  ],
+  "csra681xx": [
+    "csra681xx"
+  ],
+  "sound_recording_and_editing": [
+    "sound recording and editing"
+  ],
+  "atlassia": [
+    "atlassia"
+  ],
+  "abap_oo": [
+    "abap oo"
+  ],
+  "microsoft_dts": [
+    "microsoft dts"
+  ],
+  "redbooth": [
+    "redbooth"
+  ],
+  "appstore": [
+    "appstore"
+  ],
+  "sybase_sql": [
+    "sybase sql"
+  ],
+  "sample_streaking": [
+    "sample streaking"
+  ],
+  "screen_painter": [
+    "screen painter"
+  ],
+  "facebook_sdk": [
+    "facebook sdk"
+  ],
+  "tsql": [
+    "tsql"
+  ],
+  "rs_485": [
+    "rs-485"
+  ],
+  "tso": [
+    "tso"
+  ],
+  "android_ui": [
+    "android ui"
+  ],
+  "firebase_notifications": [
+    "firebase notifications"
+  ],
+  "choco": [
+    "choco"
+  ],
+  "bjam": [
+    "bjam"
+  ],
+  "tca": [
+    "tca"
+  ],
+  "unit_tests": [
+    "unit-tests"
+  ],
+  "flame": [
+    "flame"
+  ],
+  "information_model": [
+    "information model"
+  ],
+  "budget_estimation": [
+    "budget estimation"
+  ],
+  "sap_hana_sps12": [
+    "sap hana sps12"
+  ],
+  "nav": [
+    "nav"
+  ],
+  "starlims": [
+    "starlims"
+  ],
+  "ms_unit_tests": [
+    "ms unit-tests"
+  ],
+  "sap_hana_2_0": [
+    "sap hana 2.0"
+  ],
+  "oebs_r12": [
+    "oebs r12"
+  ],
+  "razor": [
+    "razor"
+  ],
+  "zigbee": [
+    "zigbee"
+  ],
+  "winform": [
+    "winform"
+  ],
+  "bapi": [
+    "bapi"
+  ],
+  "chromium_embedded": [
+    "chromium embedded"
+  ],
+  "java_microservices": [
+    "java microservices"
+  ],
+  "pycharm": [
+    "pycharm"
+  ],
+  "spm": [
+    "spm"
+  ],
+  "otbi": [
+    "otbi"
+  ],
+  "consumer_analytics_tools": [
+    "consumer analytics tools"
+  ],
+  "ap": [
+    "ap"
+  ],
+  "virtualization": [
+    "virtualization"
+  ],
+  "labvantage": [
+    "labvantage"
+  ],
+  "material_design": [
+    "material design"
+  ],
+  "gsm": [
+    "gsm"
+  ],
+  "react_mui": [
+    "react mui"
+  ],
+  "dynamic_links": [
+    "dynamic links"
+  ],
+  "documentdb": [
+    "documentdb"
+  ],
+  "jade": [
+    "jade"
+  ],
+  "amazon_alexa": [
+    "amazon alexa"
+  ],
+  "yocto": [
+    "yocto"
+  ],
+  "camera2_api": [
+    "camera2 api"
+  ],
+  "adobe_cq": [
+    "adobe cq"
+  ],
+  "visual_studio_6_0": [
+    "visual studio 6.0"
+  ],
+  "oracle_service_bus": [
+    "oracle service bus"
+  ],
+  "uikit": [
+    "uikit"
+  ],
+  "gps": [
+    "gps"
+  ],
+  "webflow": [
+    "webflow"
+  ],
+  "ngrx": [
+    "ngrx"
+  ],
+  "blue_green_deployment": [
+    "blue/green deployment"
+  ],
+  "automated_e2e_tests": [
+    "automated e2e tests"
+  ],
+  "ibm_bpm": [
+    "ibm bpm"
+  ],
+  "firebase_authentication": [
+    "firebase authentication"
+  ],
+  "lwip": [
+    "lwip"
+  ],
+  "edata": [
+    "edata"
+  ],
+  "eclipselink": [
+    "eclipselink"
+  ],
+  "zeppelin": [
+    "zeppelin"
+  ],
+  "firebase_app_distribution": [
+    "firebase app distribution"
+  ],
+  "build_runner": [
+    "build_runner"
+  ],
+  "hp_ux": [
+    "hp-ux"
+  ],
+  "materialize": [
+    "materialize"
+  ],
+  "kong": [
+    "kong"
+  ],
+  "live555": [
+    "live555"
+  ],
+  "internal_developer_portal_idp": [
+    "internal developer portal (idp)"
+  ],
+  "firebase_storage": [
+    "firebase storage"
+  ],
+  "third_party_integrations": [
+    "third-party integrations"
+  ],
+  "jupiter": [
+    "jupiter"
+  ],
+  "conference_presentations": [
+    "conference presentations"
+  ],
+  "uservoice": [
+    "uservoice"
+  ],
+  "webhooks": [
+    "webhooks"
+  ],
+  "rational_clearcase": [
+    "rational clearcase"
+  ],
+  "data_management": [
+    "data management"
+  ],
+  "ssr": [
+    "ssr"
   ]
 }
