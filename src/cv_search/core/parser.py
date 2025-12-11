@@ -6,16 +6,23 @@ from typing import List, Optional
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.config.settings import Settings
 from cv_search.core.criteria import Criteria, SeniorityEnum, TeamMember, TeamSize
-from cv_search.lexicon.loader import build_tech_reverse_index, load_tech_synonym_map
+from cv_search.lexicon.loader import (
+    build_tech_reverse_index,
+    load_domain_lexicon,
+    load_role_lexicon,
+    load_tech_synonym_map,
+)
 
 
-def _canon_tags(seq: List[str] | None) -> List[str]:
-    """Lowercase and deduplicate while preserving input order."""
+def _canon_tags(seq: List[str] | None, allowed: set[str] | None = None) -> List[str]:
+    """Lowercase and deduplicate while preserving input order; optionally filter to allowed set."""
     seen = set()
     out: List[str] = []
     for item in seq or []:
         normalized = (item or "").strip().lower()
         if not normalized or normalized in seen:
+            continue
+        if allowed is not None and normalized not in allowed:
             continue
         seen.add(normalized)
         out.append(normalized)
@@ -69,13 +76,17 @@ def _as_seniority_enum(value: str | None) -> Optional[SeniorityEnum]:
 
 
 def _normalize_member(
-    payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]
+    payload: dict,
+    tech_reverse: dict[str, str],
+    tech_lexicon: set[str],
+    role_lexicon: set[str] | None = None,
+    domain_lexicon: set[str] | None = None,
 ) -> Optional[TeamMember]:
     role = (payload.get("role") or "").strip().lower()
-    if not role:
+    if not role or (role_lexicon is not None and role not in role_lexicon):
         return None
     seniority = _as_seniority_enum(payload.get("seniority"))
-    domains = _canon_tags(payload.get("domains"))
+    domains = _canon_tags(payload.get("domains"), allowed=domain_lexicon)
     tech_tags = _map_tech_tags(payload.get("tech_tags"), tech_reverse, tech_lexicon)
     nice_to_have = _map_tech_tags(payload.get("nice_to_have"), tech_reverse, tech_lexicon)
     rationale = payload.get("rationale")
@@ -90,12 +101,22 @@ def _normalize_member(
 
 
 def _build_team_size(
-    payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]
+    payload: dict,
+    tech_reverse: dict[str, str],
+    tech_lexicon: set[str],
+    role_lexicon: set[str] | None = None,
+    domain_lexicon: set[str] | None = None,
 ) -> TeamSize | None:
     raw_members: List[dict] = payload.get("members") or []
     members: List[TeamMember] = []
     for raw in raw_members:
-        normalized = _normalize_member(raw, tech_reverse, tech_lexicon)
+        normalized = _normalize_member(
+            raw,
+            tech_reverse,
+            tech_lexicon,
+            role_lexicon=role_lexicon,
+            domain_lexicon=domain_lexicon,
+        )
         if normalized:
             members.append(normalized)
 
@@ -118,17 +139,36 @@ def _build_team_size(
 def parse_request(text: str, model: str, settings: Settings, client: OpenAIClient) -> Criteria:
     """Extract canonical search criteria using the LLM client."""
 
-    data = client.get_structured_criteria(text, model=model, settings=settings)
+    role_lexicon = set(load_role_lexicon(settings.lexicon_dir))
+    domain_lexicon = set(load_domain_lexicon(settings.lexicon_dir))
     tech_synonyms = load_tech_synonym_map(settings.lexicon_dir)
     tech_reverse = build_tech_reverse_index(tech_synonyms)
     tech_lexicon = set(tech_synonyms.keys())
 
-    team_payload = data.get("team_size") or {}
-    team_size = _build_team_size(team_payload, tech_reverse, tech_lexicon)
+    presale_payload: dict = {}
+    criteria_payload: dict
+    if hasattr(client, "get_structured_brief"):
+        payload = client.get_structured_brief(text, model=model, settings=settings)
+        presale_payload = payload.get("presale_team") or {}
+        criteria_payload = payload.get("criteria", payload)
+    else:
+        criteria_payload = client.get_structured_criteria(text, model=model, settings=settings)
 
-    domains = _canon_tags(data.get("domain"))
-    tech_stack = _map_tech_tags(data.get("tech_stack"), tech_reverse, tech_lexicon)
-    expert_roles = _canon_tags(data.get("expert_roles"))
+    team_payload = criteria_payload.get("team_size") or {}
+    team_size = _build_team_size(
+        team_payload,
+        tech_reverse,
+        tech_lexicon,
+        role_lexicon=role_lexicon,
+        domain_lexicon=domain_lexicon,
+    )
+
+    domains = _canon_tags(criteria_payload.get("domain"), allowed=domain_lexicon)
+    tech_stack = _map_tech_tags(criteria_payload.get("tech_stack"), tech_reverse, tech_lexicon)
+    expert_roles = _canon_tags(criteria_payload.get("expert_roles"), allowed=role_lexicon)
+
+    minimum_team = _canon_tags(presale_payload.get("minimum_team"), allowed=role_lexicon)
+    extended_team = _canon_tags(presale_payload.get("extended_team"), allowed=role_lexicon)
 
     if (team_size is None or not team_size.members) and expert_roles:
         fallback_member = TeamMember(
@@ -156,6 +196,8 @@ def parse_request(text: str, model: str, settings: Settings, client: OpenAIClien
         domain=domains,
         tech_stack=tech_stack,
         expert_roles=expert_roles,
-        project_type=data.get("project_type"),
+        project_type=criteria_payload.get("project_type"),
         team_size=team_size,
+        minimum_team=minimum_team,
+        extended_team=extended_team,
     )

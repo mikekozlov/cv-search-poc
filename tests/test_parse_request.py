@@ -7,7 +7,14 @@ class _StubClient:
     def __init__(self, payload):
         self.payload = payload
 
+    def get_structured_brief(self, text: str, model: str, settings: Settings):
+        if "criteria" in self.payload or "presale_team" in self.payload:
+            return self.payload
+        return {"criteria": self.payload}
+
     def get_structured_criteria(self, text: str, model: str, settings: Settings):
+        if "criteria" in self.payload:
+            return self.payload["criteria"]
         return self.payload
 
 
@@ -110,3 +117,29 @@ def test_parse_request_maps_tech_synonyms_via_reverse_index():
     assert member.nice_to_have == ["stripe", "etl"]
     assert "data vault modeling" not in crit.tech_stack
     assert "api design" not in crit.tech_stack
+
+
+def test_parse_request_includes_presale_team_from_combined_payload():
+    payload = {
+        "criteria": {
+            "domain": ["HealthTech"],
+            "tech_stack": ["python"],
+            "expert_roles": ["Backend_Engineer", "non_canonical_role"],
+            "team_size": {},
+        },
+        "presale_team": {
+            "minimum_team": ["Backend_Engineer", "unknown_role"],
+            "extended_team": ["Data_Privacy_Expert", "random_consultant"],
+        },
+    }
+
+    crit = parse_request(
+        text="privacy-heavy health project",
+        model="gpt-4.1-mini",
+        settings=Settings(),
+        client=_StubClient(payload),
+    )
+
+    assert crit.expert_roles == ["backend_engineer"]
+    assert crit.minimum_team == ["backend_engineer"]
+    assert crit.extended_team == ["data_privacy_expert"]

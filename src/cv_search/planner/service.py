@@ -116,15 +116,32 @@ class Planner:
         criteria_dict = self._criteria_dict(crit)
         role_lexicon = set(load_role_lexicon(settings.lexicon_dir))
 
-        plan = client.get_presale_team_plan(
-            brief=raw_text or "",
-            criteria=criteria_dict,
-            model=model or settings.openai_model,
-            settings=settings,
+        minimum = self._normalize_roles(
+            criteria_dict.get("minimum_team") or crit.minimum_team, allowed=role_lexicon
+        )
+        extended = self._normalize_roles(
+            criteria_dict.get("extended_team") or crit.extended_team, allowed=role_lexicon
         )
 
-        minimum = self._normalize_roles(plan.get("minimum_team"), allowed=role_lexicon)
-        extended = self._normalize_roles(plan.get("extended_team"), allowed=role_lexicon)
+        if not minimum:
+            presale_payload = criteria_dict.get("presale_team") or {}
+            minimum = self._normalize_roles(
+                presale_payload.get("minimum_team"), allowed=role_lexicon
+            )
+            extended = self._normalize_roles(
+                presale_payload.get("extended_team"), allowed=role_lexicon
+            )
+
+        if not minimum:
+            plan = client.get_presale_team_plan(
+                brief=raw_text or "",
+                criteria=criteria_dict,
+                model=model or settings.openai_model,
+                settings=settings,
+            )
+
+            minimum = self._normalize_roles(plan.get("minimum_team"), allowed=role_lexicon)
+            extended = self._normalize_roles(plan.get("extended_team"), allowed=role_lexicon)
 
         if not minimum:
             raise ValueError("Presale LLM returned no minimum_team roles; cannot proceed.")

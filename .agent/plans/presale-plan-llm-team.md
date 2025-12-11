@@ -12,6 +12,8 @@ Enable the presale planning flow to call the LLM for team composition and return
 - [x] (2025-12-11 15:55Z) Added presale Pydantic schema, OpenAI client method with lexicon-guarded prompt, and stub fixture for deterministic runs.
 - [x] (2025-12-11 16:10Z) Extended Criteria/planner to attach minimum/extended teams from the LLM (with fallback) and wired presale-plan CLI commands to emit Criteria JSON; added stub-backed unit test.
 - [x] (2025-12-11 16:25Z) Ran Ruff format/check and integration suite (5 passed; noted existing PytestReturnNotNoneWarning in test_settings).
+- [x] (2025-12-11 17:05Z) Removed presale fallback in favor of raising when LLM omits minimum_team; added failure-path unit test.
+- [x] (2025-12-11 17:25Z) Deleted fallback helper entirely to rely solely on LLM output and error on empty minimum_team.
 
 ## Surprises & Discoveries
 
@@ -21,6 +23,9 @@ Enable the presale planning flow to call the LLM for team composition and return
 
 - Decision: Filter LLM-returned presale roles against the canonical role lexicon and fall back to a deterministic heuristic when empty.  
   Rationale: Keeps presale team arrays aligned with search lexicons while ensuring output even if the LLM/stub omits roles.  
+  Date/Author: 2025-12-11 / assistant.
+- Decision: Raise an error when the LLM returns no `minimum_team` instead of silently falling back.  
+  Rationale: Surfaces incomplete LLM responses early so callers can handle/retry rather than accept a guessed team.  
   Date/Author: 2025-12-11 / assistant.
 
 ## Outcomes & Retrospective

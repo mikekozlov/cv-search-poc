@@ -10,7 +10,10 @@ from openai import AzureOpenAI, OpenAI
 
 from cv_search.config.settings import Settings
 from cv_search.lexicon.loader import load_domain_lexicon, load_expertise_lexicon, load_role_lexicon
-from cv_search.llm.schemas import CandidateJustification, PresaleTeamPlan
+from cv_search.llm.schemas import (
+    CandidateJustification,
+    LLMStructuredBrief,
+)
 from cv_search.llm.logger import log_chat
 
 try:
@@ -101,14 +104,6 @@ def _normalize_brief_tokens(text: str) -> str:
     return norm.strip()
 
 
-class LLMCriteria(BaseModel):
-    domain: List[str]
-    tech_stack: List[str]
-    expert_roles: List[str]
-    project_type: str | None = None
-    team_size: Dict[str, Any] | None = None
-
-
 class LLMCV(BaseModel):
     name: str | None = None
     location: str | None = None
@@ -122,6 +117,8 @@ class LLMCV(BaseModel):
 
 
 class OpenAIBackendProtocol(Protocol):
+    def get_structured_brief(self, text: str, model: str, settings: Settings) -> Dict[str, Any]: ...
+
     def get_structured_criteria(
         self, text: str, model: str, settings: Settings
     ) -> Dict[str, Any]: ...
@@ -217,14 +214,14 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         )
         return json.loads(content)
 
-    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+    def get_structured_brief(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         role_lex_list = load_role_lexicon(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
         expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
 
         role_candidates = _prioritize_full_lexicon(
             role_lex_list,
-            text,
+            _normalize_brief_tokens(text),
             "",
             max_candidates=30,
         )
@@ -242,68 +239,50 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         )
 
         system_prompt = f"""
-        You are a TA (Talent Acquisition) expert. Parse a user's free-text project brief into a structured JSON object that aligns with our search/ingestion lexicons.
+        You are a presale TA lead. Given a client brief, produce canonical search Criteria and presale staffing using ONLY the provided role/domain/expertise lexicons.
 
         Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
         Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
         Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
 
-        Strict rules:
-        - Use ONLY canonical role/domain/expertise keys from the candidate lists above. Do NOT invent new role/domain/expertise keys.
-        - Populate `team_size.members` whenever a role or hiring need is implied. If no explicit count is given but a role/stack is clear, create 1 member using the best-fit role candidate.
-        - Each member must include: `role`, `seniority` (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), `domains` (subset of domain candidates), `tech_tags` (must-have/core tech), and `nice_to_have` (optional/secondary tech).
-        - `tech_stack` is the deduplicated rollup of all technologies mentioned. List explicit technologies from the brief (do not guess or invent).
-        - `expert_roles` is the set of canonical roles relevant to the brief; include any roles you assigned to `team_size.members`.
-        - Prefer precision over recall. If unsure and not in candidates, leave the field empty instead of guessing.
+        Strict rules (apply to BOTH criteria and presale_team):
+        - Use ONLY canonical role keys from the Role candidates and ONLY canonical domain keys from the Domain candidates. Do NOT invent or rephrase keys.
+        - Output JSON matching the schema shown below (Criteria block + presale_team). Leave fields empty rather than guessing.
+
+        Criteria rules:
+        - Populate team_size.members whenever a role or hiring need is implied. Each member must include: role (canonical), seniority (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), domains (subset of Domain candidates), tech_tags (must-have/core tech), and nice_to_have (optional/secondary tech).
+        - tech_stack is the deduplicated rollup of explicit technologies mentioned in the brief. List only tech explicitly present; do not invent.
+        - expert_roles is the set of canonical roles relevant to the brief; include any roles assigned to team_size.members.
         - If the brief does not mention a domain, return an empty domain list; do NOT guess a domain.
 
-        Example (single-seat brief): "need 1 dotnet middle azure developer"
-        -> role: dotnet_developer (or backend_engineer), seniority: middle, domains: [], tech_tags: [dotnet, azure], nice_to_have: [], tech_stack: [dotnet, azure]
-        """
-        return self._get_structured_response(
-            prompt=text,
-            system_prompt=system_prompt,
-            model=model,
-            pydantic_model=LLMCriteria,
-        )
-
-    def get_presale_team_plan(
-        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
-    ) -> Dict[str, Any]:
-        role_lex_list = load_role_lexicon(settings.lexicon_dir)
-        role_candidates = _prioritize_full_lexicon(
-            role_lex_list,
-            _normalize_brief_tokens(brief),
-            "",
-            max_candidates=30,
-        )
-
-        system_prompt = f"""
-        You are a presale lead. Based on a client brief and normalized criteria context,
-        produce two presale staffing lists using only canonical role keys from the provided candidates.
-
-        Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
-
-        Rules:
-        - `minimum_team`: the smallest cross-functional set to run discovery and craft a proposal (aim for 2-4 roles).
-        - `extended_team`: optional specialists or advisors to de-risk integrations, compliance, security, analytics, or delivery (0-6 roles).
-        - Use ONLY canonical role keys from the candidate list. Do NOT invent or rephrase keys.
-        - Deduplicate roles; order by priority.
-        - Prefer roles that align with the brief's domain, stack, integrations, and regulatory needs (e.g., privacy/compliance/integration/project roles when applicable).
+        Presale team rules:
+        - minimum_team: smallest cross-functional set (aim for 2-4 roles) to run discovery and craft a proposal.
+        - extended_team: optional specialists/advisors (0-6 roles) to de-risk integrations, compliance, security, analytics, or delivery.
+        - Use ONLY canonical role keys from Role candidates. Deduplicate roles and order by priority.
+        - Prefer roles that align with the brief's domain, stack, integrations, and regulatory needs.
         """
 
-        prompt = (
-            f"Client brief:\n{brief.strip()}\n\n"
-            f"Normalized criteria (for context on domain/tech/roles):\n"
-            f"{json.dumps(criteria, indent=2, ensure_ascii=False)}"
-        )
+        prompt = f"Client brief:\n{text.strip()}"
 
         return self._get_structured_response(
             prompt=prompt,
             system_prompt=system_prompt,
             model=model,
-            pydantic_model=PresaleTeamPlan,
+            pydantic_model=LLMStructuredBrief,
         )
+
+    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        payload = self.get_structured_brief(text, model, settings)
+        return payload.get("criteria", payload)
+
+    def get_presale_team_plan(
+        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
+    ) -> Dict[str, Any]:
+        payload = self.get_structured_brief(brief, model, settings)
+        presale_payload = payload.get("presale_team", payload)
+        if isinstance(presale_payload, dict):
+            return presale_payload
+        return {}
 
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
         system_prompt = """
@@ -426,13 +405,24 @@ class StubOpenAIBackend(OpenAIBackendProtocol):
             return "structured_cv_backend.json"
         return "structured_cv.json"
 
+    def get_structured_brief(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        try:
+            return self._load_fixture("structured_brief.json")
+        except FileNotFoundError:
+            criteria = self._load_fixture("structured_criteria.json")
+            presale = self._load_fixture("presale_plan.json")
+            return {"criteria": criteria, "presale_team": presale}
+
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
-        return self._load_fixture("structured_criteria.json")
+        payload = self.get_structured_brief(text, model, settings)
+        return payload.get("criteria", payload)
 
     def get_presale_team_plan(
         self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
     ) -> Dict[str, Any]:
-        return self._load_fixture("presale_plan.json")
+        payload = self.get_structured_brief(brief, model, settings)
+        presale = payload.get("presale_team", payload)
+        return presale if isinstance(presale, dict) else {}
 
     def get_structured_cv(
         self, raw_text: str, role_folder_hint: str, model: str, settings: Settings
@@ -456,6 +446,9 @@ class OpenAIClient:
     def __init__(self, settings: Settings, backend: OpenAIBackendProtocol | None = None):
         self.settings = settings
         self.backend = backend or LiveOpenAIBackend(settings)
+
+    def get_structured_brief(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
+        return self.backend.get_structured_brief(text, model, settings)
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         return self.backend.get_structured_criteria(text, model, settings)
