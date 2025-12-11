@@ -9,7 +9,9 @@ try:
     from psycopg import errors as pg_errors
     from psycopg.rows import dict_row
     from pgvector.psycopg import Vector, register_vector
-except ImportError as exc:  # pragma: no cover - required dependency should be present in runtime/test envs
+except (
+    ImportError
+) as exc:  # pragma: no cover - required dependency should be present in runtime/test envs
     psycopg = None
     pg_errors = None
     dict_row = None
@@ -58,7 +60,10 @@ class CVDatabase:
         return conn
 
     def _is_missing_vector_type(self, exc: Exception) -> bool:
-        return isinstance(exc, psycopg.ProgrammingError) and "vector type not found" in str(exc).lower()
+        return (
+            isinstance(exc, psycopg.ProgrammingError)
+            and "vector type not found" in str(exc).lower()
+        )
 
     def _ensure_pg_extensions(self, conn: psycopg.Connection) -> None:
         try:
@@ -131,10 +136,14 @@ class CVDatabase:
             ).fetchall()
         ]
         if exp_ids:
-            self.conn.execute("DELETE FROM experience_tag WHERE experience_id = ANY(%s)", (exp_ids,))
+            self.conn.execute(
+                "DELETE FROM experience_tag WHERE experience_id = ANY(%s)", (exp_ids,)
+            )
         self.conn.execute("DELETE FROM experience WHERE candidate_id = %s", (candidate_id,))
         self.conn.execute("DELETE FROM candidate_tag WHERE candidate_id = %s", (candidate_id,))
-        self.conn.execute("DELETE FROM candidate_qualification WHERE candidate_id = %s", (candidate_id,))
+        self.conn.execute(
+            "DELETE FROM candidate_qualification WHERE candidate_id = %s", (candidate_id,)
+        )
 
     def upsert_candidate(self, cv: Dict[str, Any]) -> None:
         self.conn.execute(
@@ -188,7 +197,9 @@ class CVDatabase:
         for idx, exp in enumerate(experiences or []):
             domain_tags = domain_tags_list[idx]
             tech_tags = tech_tags_list[idx]
-            project_description = exp.get("project_description", "") or exp.get("description", "") or ""
+            project_description = (
+                exp.get("project_description", "") or exp.get("description", "") or ""
+            )
             responsibilities = exp.get("responsibilities") or exp.get("highlights") or []
             if isinstance(responsibilities, str):
                 responsibilities_list = [responsibilities]
@@ -255,7 +266,9 @@ class CVDatabase:
 
         return exp_ids
 
-    def insert_candidate_qualifications(self, candidate_id: str, qualifications: Dict[str, List[str]]) -> None:
+    def insert_candidate_qualifications(
+        self, candidate_id: str, qualifications: Dict[str, List[str]]
+    ) -> None:
         if not qualifications:
             return
         rows: List[tuple[str, str, str, float]] = []
@@ -368,7 +381,9 @@ class CVDatabase:
             ),
         )
 
-    def fetch_tag_hits(self, candidate_ids: List[str], tags: List[str]) -> Dict[str, Dict[str, bool]]:
+    def fetch_tag_hits(
+        self, candidate_ids: List[str], tags: List[str]
+    ) -> Dict[str, Dict[str, bool]]:
         if not candidate_ids or not tags:
             return {}
         rows = self.conn.execute(

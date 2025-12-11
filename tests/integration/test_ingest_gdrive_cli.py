@@ -24,7 +24,9 @@ def test_ingest_gdrive_single_file(monkeypatch) -> None:
 
     monkeypatch.setattr(CVParser, "extract_text", fake_extract_text, raising=True)
 
-    pptx_path = helpers.make_inbox_pptx_placeholder(settings, role_folder="backend_engineer", filename="test.pptx")
+    pptx_path = helpers.make_inbox_pptx_placeholder(
+        settings, role_folder="backend_engineer", filename="test.pptx"
+    )
     expected_candidate_id = helpers.pptx_candidate_id(pptx_path.name)
 
     helpers.run_cli(["init-db"], env)

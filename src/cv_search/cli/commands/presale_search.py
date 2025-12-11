@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 
 import click
@@ -40,14 +39,18 @@ def register(cli: click.Group) -> None:
     @click.pass_obj
     def presale_plan_cmd(ctx: CLIContext, text: str) -> None:
         """
-        Stateless, budget-agnostic presale role composition strictly from the brief.
+        LLM-derived presale team arrays returned as Criteria JSON (no search).
         """
         settings = ctx.settings
         client = ctx.client
 
         planner = Planner()
         crit = parse_request(text, model=settings.openai_model, settings=settings, client=client)
-        plan = planner.derive_presale_team(crit, raw_text=text)
+        crit_with_plan = planner.derive_presale_team(
+            crit,
+            raw_text=text,
+            client=client,
+            settings=settings,
+        )
 
-        click.echo(json.dumps(plan, indent=2, ensure_ascii=False))
-
+        click.echo(crit_with_plan.to_json())

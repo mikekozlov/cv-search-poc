@@ -29,7 +29,9 @@ def test_cli_ingest_and_search_backend():
     results = payload.get("topK", [])
 
     assert results, "Search should return at least one candidate."
-    assert set(backend_expected).issubset(set(results)), "Expected backend candidates should be present."
+    assert set(backend_expected).issubset(set(results)), (
+        "Expected backend candidates should be present."
+    )
 
     from cv_search.db.database import CVDatabase
 

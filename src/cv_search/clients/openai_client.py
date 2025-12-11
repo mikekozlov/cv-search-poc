@@ -10,7 +10,7 @@ from openai import AzureOpenAI, OpenAI
 
 from cv_search.config.settings import Settings
 from cv_search.lexicon.loader import load_domain_lexicon, load_expertise_lexicon, load_role_lexicon
-from cv_search.llm.schemas import CandidateJustification
+from cv_search.llm.schemas import CandidateJustification, PresaleTeamPlan
 from cv_search.llm.logger import log_chat
 
 try:
@@ -54,12 +54,12 @@ def _candidate_score(canonical: str, text_lower: str, tokens: set[str]) -> int:
 
 
 def _select_candidates(
-        lexicon: List[str],
-        text: str,
-        role_hint: str,
-        *,
-        max_candidates: int,
-        fallback: int | None = None,
+    lexicon: List[str],
+    text: str,
+    role_hint: str,
+    *,
+    max_candidates: int,
+    fallback: int | None = None,
 ) -> List[str]:
     combined = _normalize_text(f"{text} {role_hint}")
     tokens = _tokenize(combined)
@@ -76,11 +76,11 @@ def _select_candidates(
 
 
 def _prioritize_full_lexicon(
-        lexicon: List[str],
-        text: str,
-        role_hint: str,
-        *,
-        max_candidates: int,
+    lexicon: List[str],
+    text: str,
+    role_hint: str,
+    *,
+    max_candidates: int,
 ) -> List[str]:
     """Return the full lexicon ordered by best matches first."""
     top_matches = _select_candidates(
@@ -122,17 +122,21 @@ class LLMCV(BaseModel):
 
 
 class OpenAIBackendProtocol(Protocol):
-    def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
-        ...
+    def get_structured_criteria(
+        self, text: str, model: str, settings: Settings
+    ) -> Dict[str, Any]: ...
 
-    def get_structured_cv(self, raw_text: str, role_folder_hint: str, model: str, settings: Settings) -> Dict[str, Any]:
-        ...
+    def get_structured_cv(
+        self, raw_text: str, role_folder_hint: str, model: str, settings: Settings
+    ) -> Dict[str, Any]: ...
 
-    def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
-        ...
+    def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]: ...
 
-    def transcribe_audio(self, audio_path: Path, model: str, prompt: str | None = None) -> str:
-        ...
+    def get_presale_team_plan(
+        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
+    ) -> Dict[str, Any]: ...
+
+    def transcribe_audio(self, audio_path: Path, model: str, prompt: str | None = None) -> str: ...
 
 
 class LiveOpenAIBackend(OpenAIBackendProtocol):
@@ -141,8 +145,12 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
     def __init__(self, settings: Settings):
         self.settings = settings
         if settings.use_azure_openai:
-            if not all([settings.azure_endpoint, settings.azure_api_version, settings.openai_api_key_str]):
-                raise ValueError("Azure settings (endpoint, version, key) are not fully configured.")
+            if not all(
+                [settings.azure_endpoint, settings.azure_api_version, settings.openai_api_key_str]
+            ):
+                raise ValueError(
+                    "Azure settings (endpoint, version, key) are not fully configured."
+                )
             self.client = AzureOpenAI(
                 api_key=settings.openai_api_key_str,
                 api_version=settings.azure_api_version,
@@ -173,11 +181,11 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         return "{}"
 
     def _get_structured_response(
-            self,
-            prompt: str,
-            system_prompt: str,
-            model: str,
-            pydantic_model: Type[BaseModel],
+        self,
+        prompt: str,
+        system_prompt: str,
+        model: str,
+        pydantic_model: Type[BaseModel],
     ) -> Dict[str, Any]:
         messages = [
             {
@@ -259,6 +267,44 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
             pydantic_model=LLMCriteria,
         )
 
+    def get_presale_team_plan(
+        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
+    ) -> Dict[str, Any]:
+        role_lex_list = load_role_lexicon(settings.lexicon_dir)
+        role_candidates = _prioritize_full_lexicon(
+            role_lex_list,
+            _normalize_brief_tokens(brief),
+            "",
+            max_candidates=30,
+        )
+
+        system_prompt = f"""
+        You are a presale lead. Based on a client brief and normalized criteria context,
+        produce two presale staffing lists using only canonical role keys from the provided candidates.
+
+        Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
+
+        Rules:
+        - `minimum_team`: the smallest cross-functional set to run discovery and craft a proposal (aim for 2-4 roles).
+        - `extended_team`: optional specialists or advisors to de-risk integrations, compliance, security, analytics, or delivery (0-6 roles).
+        - Use ONLY canonical role keys from the candidate list. Do NOT invent or rephrase keys.
+        - Deduplicate roles; order by priority.
+        - Prefer roles that align with the brief's domain, stack, integrations, and regulatory needs (e.g., privacy/compliance/integration/project roles when applicable).
+        """
+
+        prompt = (
+            f"Client brief:\n{brief.strip()}\n\n"
+            f"Normalized criteria (for context on domain/tech/roles):\n"
+            f"{json.dumps(criteria, indent=2, ensure_ascii=False)}"
+        )
+
+        return self._get_structured_response(
+            prompt=prompt,
+            system_prompt=system_prompt,
+            model=model,
+            pydantic_model=PresaleTeamPlan,
+        )
+
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
         system_prompt = """
         You are an expert Talent Acquisition manager. Your task is to evaluate a candidate's CV
@@ -285,11 +331,11 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         )
 
     def get_structured_cv(
-            self,
-            raw_text: str,
-            role_folder_hint: str,
-            model: str,
-            settings: Settings,
+        self,
+        raw_text: str,
+        role_folder_hint: str,
+        model: str,
+        settings: Settings,
     ) -> Dict[str, Any]:
         role_lex_list = load_role_lexicon(settings.lexicon_dir)
         domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
@@ -383,7 +429,14 @@ class StubOpenAIBackend(OpenAIBackendProtocol):
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         return self._load_fixture("structured_criteria.json")
 
-    def get_structured_cv(self, raw_text: str, role_folder_hint: str, model: str, settings: Settings) -> Dict[str, Any]:
+    def get_presale_team_plan(
+        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
+    ) -> Dict[str, Any]:
+        return self._load_fixture("presale_plan.json")
+
+    def get_structured_cv(
+        self, raw_text: str, role_folder_hint: str, model: str, settings: Settings
+    ) -> Dict[str, Any]:
         fixture_name = self._pick_cv_fixture(raw_text, role_folder_hint)
         return self._load_fixture(fixture_name)
 
@@ -407,19 +460,26 @@ class OpenAIClient:
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
         return self.backend.get_structured_criteria(text, model, settings)
 
+    def get_presale_team_plan(
+        self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
+    ) -> Dict[str, Any]:
+        return self.backend.get_presale_team_plan(brief, criteria, model, settings)
+
     def get_candidate_justification(self, seat_details: str, cv_context: str) -> Dict[str, Any]:
         return self.backend.get_candidate_justification(seat_details, cv_context)
 
     def get_structured_cv(
-            self,
-            raw_text: str,
-            role_folder_hint: str,
-            model: str,
-            settings: Settings,
+        self,
+        raw_text: str,
+        role_folder_hint: str,
+        model: str,
+        settings: Settings,
     ) -> Dict[str, Any]:
         return self.backend.get_structured_cv(raw_text, role_folder_hint, model, settings)
 
-    def transcribe_audio(self, audio_path: str | Path, model: str | None = None, prompt: str | None = None) -> str:
+    def transcribe_audio(
+        self, audio_path: str | Path, model: str | None = None, prompt: str | None = None
+    ) -> str:
         path_obj = Path(audio_path)
         model_name = model or self.settings.openai_audio_model
         return self.backend.transcribe_audio(path_obj, model_name, prompt)

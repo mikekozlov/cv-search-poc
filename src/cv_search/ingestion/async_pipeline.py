@@ -20,14 +20,16 @@ QUEUE_EXTRACT_TASK = "ingest:queue:extract"
 QUEUE_ENRICH_TASK = "ingest:queue:enrich"
 QUEUE_DLQ = "ingest:queue:dlq"
 
+
 class Watcher:
     def __init__(self, settings: Settings, redis_client: RedisClient):
         self.settings = settings
         self.redis = redis_client
         self.inbox_dir = self.settings.gdrive_local_dest_dir
-        self.db = CVDatabase(settings) # Needed to check for existing files if we want to be smart, 
-                                       # but for now we'll just scan and push. 
-                                       # Actually, let's reuse the logic to skip unchanged files.
+        self.db = CVDatabase(settings)
+        # Needed to check for existing files if we want to be smart,
+        # but for now we'll just scan and push.
+        # Actually, let's reuse the logic to skip unchanged files.
 
     def close(self):
         if self.db:
@@ -58,48 +60,48 @@ class Watcher:
 
         # Simple logic: Just push everything for now, or we can check DB.
         # To match the "Producer" description: "When a file changes, it pushes..."
-        # For this POC, let's just push all files and let the workers handle idempotency or 
+        # For this POC, let's just push all files and let the workers handle idempotency or
         # we can implement a simple state in Redis or check DB.
         # Let's check DB to avoid spamming the queue.
-        
+
         # Re-using logic from pipeline.py roughly
         # We need to know if it's modified.
-        
+
         # For this task, let's keep it simple:
         # We will push a task to the EXTRACT queue.
         # The Extractor can decide if it needs to do work, but "Watcher" usually implies it knows something changed.
         # Let's assume we push all valid files and let downstream handle dedupe or we check DB here.
         # Checking DB here is safer to avoid queue flooding.
-        
+
         # We'll instantiate a DB connection just for this check
         # Note: In a real "Watcher", we might use filesystem events (watchdog), but polling is fine here.
-        
+
         last_updated_map = self.db.get_last_updated_for_filenames([p.name for p in pptx_files])
-        
+
         for file_path in pptx_files:
             mtime_iso = datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
             last_upd = last_updated_map.get(file_path.name)
-            
+
             if last_upd and last_upd == mtime_iso:
-                continue # Skip unchanged
-            
+                continue  # Skip unchanged
+
             # It's new or modified
             relative_path = file_path.relative_to(self.inbox_dir)
             path_parts = relative_path.parent.parts
             source_category = path_parts[0] if path_parts else None
-            
-            event = FileDetectedEvent(
-                file_path=str(file_path),
-                source_category=source_category
-            )
-            
+
+            event = FileDetectedEvent(file_path=str(file_path), source_category=source_category)
+
             # Push to Extract Queue
             # We use a queue (list) for tasks so workers can pick them up round-robin
             self.redis.push_to_queue(QUEUE_EXTRACT_TASK, event.to_dict())
             click.echo(f"Queued file: {file_path.name}")
 
+
 class ExtractorWorker:
-    def __init__(self, settings: Settings, redis_client: RedisClient, parser: CVParser | None = None):
+    def __init__(
+        self, settings: Settings, redis_client: RedisClient, parser: CVParser | None = None
+    ):
         self.settings = settings
         self.redis = redis_client
         self.parser = parser or CVParser()
@@ -112,9 +114,9 @@ class ExtractorWorker:
                 task_data = self.redis.pop_from_queue(QUEUE_EXTRACT_TASK, timeout=5)
                 if not task_data:
                     continue
-                
+
                 self._process_task(task_data)
-                
+
             except KeyboardInterrupt:
                 click.echo("Extractor Worker stopping...")
                 break
@@ -127,44 +129,43 @@ class ExtractorWorker:
         file_path_str = data.get("file_path")
         if not file_path_str:
             return
-            
+
         file_path = Path(file_path_str)
         click.echo(f"Extracting text from: {file_path.name}")
-        
+
         try:
             raw_text = self.parser.extract_text(file_path)
-            
+
             # Generate candidate_id
             file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
             candidate_id = f"pptx-{file_hash[:10]}"
-            
+
             event = TextExtractedEvent(
                 file_path=str(file_path),
                 text=raw_text,
                 candidate_id=candidate_id,
-                source_category=data.get("source_category")
+                source_category=data.get("source_category"),
             )
-            
+
             self.redis.push_to_queue(QUEUE_ENRICH_TASK, event.to_dict())
             click.echo("-> Text extracted. Pushed to Enrich Queue.")
-            
+
         except Exception as e:
             click.secho(f"Failed to extract {file_path.name}: {e}", fg="red")
-            self.redis.push_to_queue(QUEUE_DLQ, {
-                "stage": "extractor",
-                "error": str(e),
-                "original_task": data
-            })
+            self.redis.push_to_queue(
+                QUEUE_DLQ, {"stage": "extractor", "error": str(e), "original_task": data}
+            )
+
 
 class EnricherWorker:
     def __init__(
-            self,
-            settings: Settings,
-            redis_client: RedisClient,
-            db: CVDatabase | None = None,
-            client: OpenAIClient | None = None,
-            embedder: EmbedderProtocol | None = None,
-            parser: CVParser | None = None,
+        self,
+        settings: Settings,
+        redis_client: RedisClient,
+        db: CVDatabase | None = None,
+        client: OpenAIClient | None = None,
+        embedder: EmbedderProtocol | None = None,
+        parser: CVParser | None = None,
     ):
         self.settings = settings
         self.redis = redis_client
@@ -186,9 +187,9 @@ class EnricherWorker:
                     task_data = self.redis.pop_from_queue(QUEUE_ENRICH_TASK, timeout=5)
                     if not task_data:
                         continue
-                    
+
                     self._process_task(task_data)
-                    
+
                 except KeyboardInterrupt:
                     click.echo("Enricher Worker stopping...")
                     break
@@ -202,56 +203,57 @@ class EnricherWorker:
         file_path_str = data.get("file_path")
         text = data.get("text")
         source_category = data.get("source_category")
-        
+
         if not candidate_id or not text:
             return
 
         click.echo(f"Enriching candidate: {candidate_id}")
-        
+
         try:
             # Determine role_key from path if possible, similar to original pipeline
-            # The original pipeline used folder structure. 
-            # We can try to infer it or pass it. 
+            # The original pipeline used folder structure.
+            # We can try to infer it or pass it.
             # In the original code: role_key = self._normalize_folder_name(path_parts[1])
             # We passed source_category, but maybe not the role subfolder.
             # Let's re-derive it from file_path for simplicity or just pass "n/a"
-            
+
             file_path = Path(file_path_str)
             # We need to know the inbox dir to get relative path for role
             # But we don't have it easily here unless we pass it or config.
             # Let's try to use source_category as a hint if it's not None
-            
+
             role_key = ""
-            # Basic heuristic: if source_category is set, maybe that's it? 
+            # Basic heuristic: if source_category is set, maybe that's it?
             # Or we just let the LLM figure it out without a hint.
             # The original code passed role_key to get_structured_cv.
-            
+
             cv_data_dict = self.client.get_structured_cv(
                 text,
-                role_key, # We might need to improve this
+                role_key,  # We might need to improve this
                 self.settings.openai_model,
-                self.settings
+                self.settings,
             )
-            
+
             # Add metadata
             ingestion_time = datetime.now()
             file_stat = file_path.stat()
             mod_time = datetime.fromtimestamp(file_stat.st_mtime)
-            
+
             cv_data_dict["candidate_id"] = candidate_id
             cv_data_dict["last_updated"] = mod_time.isoformat()
             cv_data_dict["source_filename"] = file_path.name
             cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
-            cv_data_dict["source_gdrive_path"] = str(file_path) # Or relative if we want
+            cv_data_dict["source_gdrive_path"] = str(file_path)  # Or relative if we want
             cv_data_dict["source_category"] = source_category
-            
+
             from cv_search.ingestion.pipeline import CVIngestionPipeline
+
             pipeline = CVIngestionPipeline(
                 self.db,
                 self.settings,
                 embedder=self.embedder,
                 client=self.client,
-                parser=self.parser
+                parser=self.parser,
             )
 
             unmapped: list[str] = []
@@ -264,16 +266,18 @@ class EnricherWorker:
                 exp["tech_tags"] = mapped_exp
                 unmapped.extend(miss_exp)
             unmapped = pipeline._uniq(unmapped)
-            pipeline._log_unmapped_techs(file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"])
+            pipeline._log_unmapped_techs(
+                file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"]
+            )
 
             # Save JSON (optional, but good for debug)
             base_data_dir = self.settings.data_dir
             json_output_dir = base_data_dir / "ingested_cvs_json"
             json_output_dir.mkdir(exist_ok=True)
             json_filename = f"{candidate_id}.json"
-            with open(json_output_dir / json_filename, 'w', encoding='utf-8') as f:
+            with open(json_output_dir / json_filename, "w", encoding="utf-8") as f:
                 json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
-            
+
             # Write to DB
             # We need to use the pipeline logic for DB upsert.
             # We can duplicate the logic or import CVIngestionPipeline.
@@ -295,12 +299,10 @@ class EnricherWorker:
             self.db.commit()
 
             click.echo(f"-> Enriched and saved: {candidate_id}")
-            
+
         except Exception as e:
             click.secho(f"Failed to enrich {candidate_id}: {e}", fg="red")
             self.db.rollback()
-            self.redis.push_to_queue(QUEUE_DLQ, {
-                "stage": "enricher",
-                "error": str(e),
-                "original_task": data
-            })
+            self.redis.push_to_queue(
+                QUEUE_DLQ, {"stage": "enricher", "error": str(e), "original_task": data}
+            )

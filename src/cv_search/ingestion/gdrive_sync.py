@@ -7,10 +7,12 @@ import click
 from typing import List
 from cv_search.config.settings import Settings
 
+
 class GDriveSyncer:
     """
     Handles the execution of rclone to sync files from Google Drive.
     """
+
     def __init__(self, settings: Settings):
         self.settings = settings
         self.rclone_bin = shutil.which("rclone")
@@ -25,11 +27,12 @@ class GDriveSyncer:
                 "Please install rclone to use this feature."
             )
 
-        if self.settings.gdrive_rclone_config_path and \
-                not self.settings.gdrive_rclone_config_path.exists():
+        if (
+            self.settings.gdrive_rclone_config_path
+            and not self.settings.gdrive_rclone_config_path.exists()
+        ):
             raise FileNotFoundError(
-                f"Specified rclone config not found at: "
-                f"{self.settings.gdrive_rclone_config_path}"
+                f"Specified rclone config not found at: {self.settings.gdrive_rclone_config_path}"
             )
 
     def _build_command(self) -> List[str]:
@@ -37,20 +40,17 @@ class GDriveSyncer:
         Builds the rclone command array from settings.
         """
         local_path = self.settings.gdrive_local_dest_dir
-        remote_path = (
-            f"{self.settings.gdrive_remote_name}:"
-            f"{self.settings.gdrive_source_dir}"
-        )
+        remote_path = f"{self.settings.gdrive_remote_name}:{self.settings.gdrive_source_dir}"
 
         # Ensure the local destination directory exists
         os.makedirs(local_path, exist_ok=True)
 
         cmd = [
             self.rclone_bin,
-            "sync",          # Use "sync" to mirror the source
-            "--verbose",     # Show files being transferred
-            remote_path,     # Source
-            str(local_path)  # Destination
+            "sync",  # Use "sync" to mirror the source
+            "--verbose",  # Show files being transferred
+            remote_path,  # Source
+            str(local_path),  # Destination
         ]
 
         # Add the explicit config path ONLY if it's set in settings

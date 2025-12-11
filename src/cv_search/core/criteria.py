@@ -37,6 +37,8 @@ class Criteria:
     expert_roles: List[str]
     project_type: Optional[str] = None
     team_size: Optional[TeamSize] = None
+    minimum_team: List[str] = field(default_factory=list)
+    extended_team: List[str] = field(default_factory=list)
 
     def to_json(self) -> str:
         def _prune_none(obj):

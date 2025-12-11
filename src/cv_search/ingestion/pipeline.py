@@ -22,14 +22,15 @@ from cv_search.lexicon.loader import load_tech_synonym_map, build_tech_reverse_i
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
+
 class CVIngestionPipeline:
     def __init__(
-            self,
-            db: CVDatabase,
-            settings: Settings,
-            embedder: EmbedderProtocol | None = None,
-            client: OpenAIClient | None = None,
-            parser: CVParser | None = None,
+        self,
+        db: CVDatabase,
+        settings: Settings,
+        embedder: EmbedderProtocol | None = None,
+        client: OpenAIClient | None = None,
+        parser: CVParser | None = None,
     ):
         self.db = db
         self.settings = settings
@@ -80,7 +81,9 @@ class CVIngestionPipeline:
                     unmapped.append(val)
         return mapped, unmapped
 
-    def _log_unmapped_techs(self, source_filename: str, candidate_id: str, unmapped: List[str], ingestion_ts: str) -> None:
+    def _log_unmapped_techs(
+        self, source_filename: str, candidate_id: str, unmapped: List[str], ingestion_ts: str
+    ) -> None:
         if not unmapped:
             return
         self.unmapped_dir.mkdir(parents=True, exist_ok=True)
@@ -106,7 +109,9 @@ class CVIngestionPipeline:
         company = exp.get("company", "")
         domains = ", ".join(self._canon_tags(exp.get("domain_tags", []) or []))
         techs = ", ".join(self._canon_tags(exp.get("tech_tags", []) or []))
-        project_description = (exp.get("project_description") or exp.get("description") or "").strip()
+        project_description = (
+            exp.get("project_description") or exp.get("description") or ""
+        ).strip()
         responsibilities_raw = exp.get("responsibilities") or exp.get("highlights") or []
         if isinstance(responsibilities_raw, str):
             responsibilities = [responsibilities_raw]
@@ -137,11 +142,13 @@ class CVIngestionPipeline:
             lines.append("Highlights: " + " ; ".join(highlights))
         return "\n".join([ln for ln in lines if ln]).strip()
 
-    def _select_recent_experiences(self, experiences: List[Dict[str, Any]], limit: int = 3) -> List[Dict[str, Any]]:
+    def _select_recent_experiences(
+        self, experiences: List[Dict[str, Any]], limit: int = 3
+    ) -> List[Dict[str, Any]]:
         """Pick the most recent experiences (assumes input is already ordered newest-first)."""
         if not experiences:
             return []
-        return list(experiences[:max(0, limit)])
+        return list(experiences[: max(0, limit)])
 
     def _build_candidate_doc_texts(
         self,
@@ -175,7 +182,9 @@ class CVIngestionPipeline:
         seniority = (cv.get("seniority", "") or "").strip().lower()
 
         experiences = cv.get("experience", []) or []
-        domain_tags_list = [self._canon_tags(exp.get("domain_tags", []) or []) for exp in experiences]
+        domain_tags_list = [
+            self._canon_tags(exp.get("domain_tags", []) or []) for exp in experiences
+        ]
         tech_tags_list = [self._canon_tags(exp.get("tech_tags", []) or []) for exp in experiences]
         domain_rollup = self._canon_tags([tag for sublist in domain_tags_list for tag in sublist])
         qualifications_raw = cv.get("qualifications") or {}
@@ -192,10 +201,7 @@ class CVIngestionPipeline:
         experiences_for_text = self._select_recent_experiences(experiences, limit=3)
 
         self.db.insert_experiences_and_tags(
-            candidate_id,
-            experiences,
-            domain_tags_list,
-            tech_tags_list
+            candidate_id, experiences, domain_tags_list, tech_tags_list
         )
 
         if qualifications_raw:
@@ -234,7 +240,11 @@ class CVIngestionPipeline:
             "tech": tech_tags_top,
         }
 
-        role = (vs_attributes.get("role") or "") if isinstance(vs_attributes.get("role"), str) else (vs_attributes.get("role") or "")
+        role = (
+            (vs_attributes.get("role") or "")
+            if isinstance(vs_attributes.get("role"), str)
+            else (vs_attributes.get("role") or "")
+        )
         header = (
             f"candidate_id={candidate_id}"
             f" | role={role}"
@@ -309,17 +319,17 @@ class CVIngestionPipeline:
 
     def _normalize_folder_name(self, name: str) -> str:
         s = name.lower().strip()
-        s = re.sub(r'\s+', '_', s)
-        s = re.sub(r'[^a-z0-9_]', '', s)
+        s = re.sub(r"\s+", "_", s)
+        s = re.sub(r"[^a-z0-9_]", "", s)
         return s
 
     def _process_single_cv_file(
-            self,
-            file_path: Path,
-            parser: CVParser,
-            client: OpenAIClient,
-            json_output_dir: Path,
-            inbox_dir: Path
+        self,
+        file_path: Path,
+        parser: CVParser,
+        client: OpenAIClient,
+        json_output_dir: Path,
+        inbox_dir: Path,
     ) -> tuple[str, dict | tuple[Path, str] | Path]:
         try:
             relative_path = file_path.relative_to(inbox_dir)
@@ -338,10 +348,7 @@ class CVIngestionPipeline:
             raw_text = parser.extract_text(file_path)
 
             cv_data_dict = client.get_structured_cv(
-                raw_text,
-                role_key,
-                self.settings.openai_model,
-                self.settings
+                raw_text, role_key, self.settings.openai_model, self.settings
             )
 
             ingestion_time = datetime.now()
@@ -369,11 +376,13 @@ class CVIngestionPipeline:
                 exp["tech_tags"] = mapped_exp
                 unmapped.extend(miss_exp)
             unmapped = self._uniq(unmapped)
-            self._log_unmapped_techs(file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"])
+            self._log_unmapped_techs(
+                file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"]
+            )
 
             json_filename = f"{cv_data_dict['candidate_id']}.json"
             json_save_path = json_output_dir / json_filename
-            with open(json_save_path, 'w', encoding='utf-8') as f:
+            with open(json_save_path, "w", encoding="utf-8") as f:
                 json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
 
             return "processed", (file_path, cv_data_dict)
@@ -383,9 +392,7 @@ class CVIngestionPipeline:
             return "failed_parsing", file_path
 
     def _partition_gdrive_files(
-            self,
-            files: List[Path],
-            inbox_dir: Path
+        self, files: List[Path], inbox_dir: Path
     ) -> tuple[List[Path], Dict[str, List[str]]]:
         skipped: Dict[str, List[str]] = defaultdict(list)
         if not files:
@@ -400,8 +407,7 @@ class CVIngestionPipeline:
             except ValueError:
                 display_path = str(resolved_path)
                 click.secho(
-                    f"Skipping {display_path}: outside Google Drive sync directory.",
-                    fg="yellow"
+                    f"Skipping {display_path}: outside Google Drive sync directory.", fg="yellow"
                 )
                 skipped["outside_gdrive"].append(display_path)
                 continue
@@ -415,7 +421,9 @@ class CVIngestionPipeline:
             selected.append(file_path)
         return selected, skipped
 
-    def run_gdrive_ingestion(self, client: OpenAIClient | None = None, target_filename: str | None = None) -> Dict[str, Any]:
+    def run_gdrive_ingestion(
+        self, client: OpenAIClient | None = None, target_filename: str | None = None
+    ) -> Dict[str, Any]:
         parser = self.parser
         client = client or self.client
 
@@ -483,8 +491,9 @@ class CVIngestionPipeline:
                     parser,
                     client,
                     json_output_dir,
-                    inbox_dir
-                ): file_path for file_path in filtered
+                    inbox_dir,
+                ): file_path
+                for file_path in filtered
             }
 
             for future in as_completed(future_to_path):
@@ -503,19 +512,19 @@ class CVIngestionPipeline:
         if cvs_to_ingest:
             click.echo(f"\nIngesting {len(cvs_to_ingest)} processed CV(s) into database...")
             ingested_count = self.upsert_cvs(cvs_to_ingest)
-            click.secho(f"✅ Successfully upserted {ingested_count} new CV(s). Index is updated.", fg="green")
+            click.secho(
+                f"✅ Successfully upserted {ingested_count} new CV(s). Index is updated.",
+                fg="green",
+            )
         else:
             click.echo("\nNo new CVs to ingest.")
 
-        unmapped = [
-            cv.get("unmapped_tags") for cv in cvs_to_ingest
-            if cv.get("unmapped_tags")
-        ]
+        unmapped = [cv.get("unmapped_tags") for cv in cvs_to_ingest if cv.get("unmapped_tags")]
         all_unmapped_tags = []
         if unmapped:
-            all_unmapped_tags = sorted(list(set(
-                t.strip() for tags in unmapped for t in tags.split(',') if t.strip()
-            )))
+            all_unmapped_tags = sorted(
+                list(set(t.strip() for tags in unmapped for t in tags.split(",") if t.strip()))
+            )
 
         return {
             "processed_count": ingested_count,
@@ -530,4 +539,3 @@ class CVIngestionPipeline:
 
     def run_ingestion_from_list(self, cvs: List[Dict[str, Any]]) -> int:
         return self.upsert_cvs(cvs)
-

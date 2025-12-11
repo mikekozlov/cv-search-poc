@@ -43,7 +43,9 @@ class Settings(BaseSettings):
     )
     db_pool_min_size: int = Field(default=1)
     db_pool_max_size: int = Field(default=4)
-    schema_pg_file: Path = Field(default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "db" / "schema_pg.sql")
+    schema_pg_file: Path = Field(
+        default_factory=lambda: REPO_ROOT / "src" / "cv_search" / "db" / "schema_pg.sql"
+    )
 
     data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data")
     test_data_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test")

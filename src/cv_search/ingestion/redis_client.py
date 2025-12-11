@@ -70,6 +70,7 @@ class _InMemoryRedis:
     def pubsub(self):
         return _InMemoryPubSub()
 
+
 class RedisClient:
     def __init__(
         self,
@@ -91,7 +92,7 @@ class RedisClient:
         pubsub = self.client.pubsub()
         pubsub.subscribe(channel)
         print(f"Subscribed to {channel}...")
-        
+
         for message in pubsub.listen():
             if message["type"] == "message":
                 try:

@@ -5,6 +5,7 @@ from typing import Dict, List
 
 # Removed PKG_DIR, REPO_ROOT, DEFAULT_LEXICON_DIR, os.getenv
 
+
 def _load_json(p: Path):
     with open(p, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -40,7 +41,9 @@ def load_tech_synonym_map(lexicon_dir: Path) -> Dict[str, List[str]]:
     """
     raw = _load_json(lexicon_dir / "tech_synonyms.json")
     if not isinstance(raw, dict):
-        raise ValueError("tech_synonyms.json must be an object mapping canonical tech -> list of synonyms")
+        raise ValueError(
+            "tech_synonyms.json must be an object mapping canonical tech -> list of synonyms"
+        )
 
     normalized: Dict[str, List[str]] = {}
     for canonical, variants in raw.items():
@@ -49,7 +52,7 @@ def load_tech_synonym_map(lexicon_dir: Path) -> Dict[str, List[str]]:
             continue
         seen = set()
         vals: List[str] = []
-        for item in (variants or []):
+        for item in variants or []:
             val = str(item).strip().lower()
             if not val or val in seen:
                 continue

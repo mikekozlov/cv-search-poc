@@ -26,7 +26,9 @@ def _load_test_env_vars() -> dict:
     env = os.environ.copy()
     missing = [key for key in REQUIRED_ENV_KEYS if not env.get(key)]
     if missing:
-        raise RuntimeError(f"Missing required test env vars in {TEST_ENV_FILE}: {', '.join(missing)}")
+        raise RuntimeError(
+            f"Missing required test env vars in {TEST_ENV_FILE}: {', '.join(missing)}"
+        )
 
     for key in PATH_ENV_KEYS:
         val = env.get(key)
@@ -107,7 +109,9 @@ def ingest_mock_state() -> Tuple[Settings, dict]:
     return settings, env
 
 
-def make_inbox_pptx_placeholder(settings: Settings, role_folder: str = "backend_engineer", filename: str = "test.pptx") -> Path:
+def make_inbox_pptx_placeholder(
+    settings: Settings, role_folder: str = "backend_engineer", filename: str = "test.pptx"
+) -> Path:
     """Create an inbox layout and dummy PPTX file for ingestion tests."""
     role_dir = settings.gdrive_local_dest_dir / "CVs" / role_folder
     role_dir.mkdir(parents=True, exist_ok=True)

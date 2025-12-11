@@ -6,6 +6,7 @@ from pptx import Presentation
 from pptx.shapes.autoshape import Shape
 from pptx.text.text import _Paragraph
 
+
 class CVParser:
     """
     Handles the extraction of raw text from .pptx CV files.

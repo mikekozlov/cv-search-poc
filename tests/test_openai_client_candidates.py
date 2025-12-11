@@ -11,5 +11,7 @@ def test_select_candidates_prefers_text_hits():
 
 def test_select_candidates_falls_back_deterministically():
     lexicon = ["java", "python", "rust"]
-    candidates = _select_candidates(lexicon, "no matches here", role_hint="", max_candidates=2, fallback=2)
+    candidates = _select_candidates(
+        lexicon, "no matches here", role_hint="", max_candidates=2, fallback=2
+    )
     assert candidates == ["java", "python"]

@@ -4,32 +4,35 @@ from typing import Any, Dict, List, Tuple
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
 
+
 class HybridRanker:
     """
     Handles the "late fusion" of lexical and semantic search results
     and assembles the final evidence payload for a candidate.
     """
+
     def __init__(self, db: CVDatabase, settings: Settings):
         self.db = db
         self.settings = settings
         self.w_lex = settings.search_w_lex
         self.w_sem = settings.search_w_sem
 
-    def _fetch_tag_hits(self,
-                        candidate_ids: List[str],
-                        tags: List[str]) -> Dict[str, Dict[str, bool]]:
+    def _fetch_tag_hits(
+        self, candidate_ids: List[str], tags: List[str]
+    ) -> Dict[str, Dict[str, bool]]:
         """(Logic moved from search.py)"""
         return self.db.fetch_tag_hits(candidate_ids, tags)
 
-    def _assemble_item(self,
-                       cid: str,
-                       seat: Dict[str, Any],
-                       final_score: float,
-                       order: int,
-                       lex_map: Dict[str, Dict[str, Any]],
-                       sem_score: Dict[str, float],
-                       sem_evidence: Dict[str, Dict[str, Any]]
-                       ) -> Dict[str, Any]:
+    def _assemble_item(
+        self,
+        cid: str,
+        seat: Dict[str, Any],
+        final_score: float,
+        order: int,
+        lex_map: Dict[str, Dict[str, Any]],
+        sem_score: Dict[str, float],
+        sem_evidence: Dict[str, Dict[str, Any]],
+    ) -> Dict[str, Any]:
         """
         Builds the final JSON object for a single ranked candidate.
         (Logic moved from search.py/_assemble_item)
@@ -39,10 +42,17 @@ class HybridRanker:
         must_map = {t: bool(tech_hits.get(cid, {}).get(t, False)) for t in seat["must_have"]}
         nice_map = {t: bool(tech_hits.get(cid, {}).get(t, False)) for t in seat["nice_to_have"]}
 
-        lex = lex_map.get(cid, {
-            "score_val": 0.0, "coverage": 0.0, "must_idf_sum": 0.0, "nice_idf_sum": 0.0,
-            "domain_bonus": 0.0, "last_updated": None
-        })
+        lex = lex_map.get(
+            cid,
+            {
+                "score_val": 0.0,
+                "coverage": 0.0,
+                "must_idf_sum": 0.0,
+                "nice_idf_sum": 0.0,
+                "domain_bonus": 0.0,
+                "last_updated": None,
+            },
+        )
 
         return {
             "candidate_id": cid,
@@ -56,7 +66,7 @@ class HybridRanker:
                     "domain_bonus": lex["domain_bonus"],
                 },
                 "semantic": {"score": float(sem_score.get(cid, 0.0))},
-                "weights": {"w_lex": self.w_lex, "w_sem": self.w_sem}
+                "weights": {"w_lex": self.w_lex, "w_sem": self.w_sem},
             },
             "semantic_evidence": sem_evidence.get(cid, None),
             "must_have": must_map,
@@ -64,13 +74,14 @@ class HybridRanker:
             "recency": {"last_updated": lex.get("last_updated")},
         }
 
-    def rank(self,
-             seat: Dict[str, Any],
-             lexical_results: List[Dict[str, Any]],
-             semantic_hits: List[Dict[str, Any]],
-             mode: str,
-             top_k: int
-             ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def rank(
+        self,
+        seat: Dict[str, Any],
+        lexical_results: List[Dict[str, Any]],
+        semantic_hits: List[Dict[str, Any]],
+        mode: str,
+        top_k: int,
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """
         Performs late fusion and ranking based on the specified mode.
         Returns (final_results, fusion_debug_dump)
@@ -123,23 +134,29 @@ class HybridRanker:
             cut = lexical_results[:top_k]
             for i, row in enumerate(cut, start=1):
                 cid = row["candidate_id"]
-                final_results.append(self._assemble_item(
-                    cid, seat, lex_map[cid]["score_val"], i, lex_map, sem_score, sem_evidence
-                ))
+                final_results.append(
+                    self._assemble_item(
+                        cid, seat, lex_map[cid]["score_val"], i, lex_map, sem_score, sem_evidence
+                    )
+                )
 
         elif mode == "semantic":
             cut = semantic_hits[:top_k]
             for i, h in enumerate(cut, start=1):
                 cid = h["candidate_id"]
-                final_results.append(self._assemble_item(
-                    cid, seat, sem_score.get(cid, 0.0), i, lex_map, sem_score, sem_evidence
-                ))
+                final_results.append(
+                    self._assemble_item(
+                        cid, seat, sem_score.get(cid, 0.0), i, lex_map, sem_score, sem_evidence
+                    )
+                )
 
         else:  # hybrid
-            pool_ids = list(dict.fromkeys(
-                [r["candidate_id"] for r in lexical_results[:top_k]] +
-                [h["candidate_id"] for h in semantic_hits[:top_k]]
-            ))
+            pool_ids = list(
+                dict.fromkeys(
+                    [r["candidate_id"] for r in lexical_results[:top_k]]
+                    + [h["candidate_id"] for h in semantic_hits[:top_k]]
+                )
+            )
             if not pool_ids:
                 pool_ids = [r["candidate_id"] for r in lexical_results[:top_k]]
 
@@ -164,8 +181,8 @@ class HybridRanker:
 
             for order, (cid, final, lx, sm) in enumerate(fused[:top_k], start=1):
                 fusion_dump.append({"candidate_id": cid, "lex_norm": lx, "sem": sm, "final": final})
-                final_results.append(self._assemble_item(
-                    cid, seat, final, order, lex_map, sem_score, sem_evidence
-                ))
+                final_results.append(
+                    self._assemble_item(cid, seat, final, order, lex_map, sem_score, sem_evidence)
+                )
 
         return final_results, fusion_dump

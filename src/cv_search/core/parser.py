@@ -22,7 +22,9 @@ def _canon_tags(seq: List[str] | None) -> List[str]:
     return out
 
 
-def _map_tech_tags(seq: List[str] | None, reverse_index: dict[str, str], tech_lexicon: set[str]) -> List[str]:
+def _map_tech_tags(
+    seq: List[str] | None, reverse_index: dict[str, str], tech_lexicon: set[str]
+) -> List[str]:
     """Normalize tech strings, split simple combos, map via reverse index, and keep only canonical techs."""
     seen = set()
     out: List[str] = []
@@ -46,7 +48,13 @@ def _normalize_seniority(value: str | None) -> str:
     if not value:
         return ""
     val = (value or "").strip().lower()
-    mapping = {"mid": "middle", "mid-level": "middle", "jr": "junior", "sr": "senior", "sr.": "senior"}
+    mapping = {
+        "mid": "middle",
+        "mid-level": "middle",
+        "jr": "junior",
+        "sr": "senior",
+        "sr.": "senior",
+    }
     return mapping.get(val, val)
 
 
@@ -60,7 +68,9 @@ def _as_seniority_enum(value: str | None) -> Optional[SeniorityEnum]:
         return None
 
 
-def _normalize_member(payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]) -> Optional[TeamMember]:
+def _normalize_member(
+    payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]
+) -> Optional[TeamMember]:
     role = (payload.get("role") or "").strip().lower()
     if not role:
         return None
@@ -79,7 +89,9 @@ def _normalize_member(payload: dict, tech_reverse: dict[str, str], tech_lexicon:
     )
 
 
-def _build_team_size(payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]) -> TeamSize | None:
+def _build_team_size(
+    payload: dict, tech_reverse: dict[str, str], tech_lexicon: set[str]
+) -> TeamSize | None:
     raw_members: List[dict] = payload.get("members") or []
     members: List[TeamMember] = []
     for raw in raw_members:

@@ -9,8 +9,7 @@ from typing import List, Protocol
 class EmbedderProtocol(Protocol):
     dims: int
 
-    def get_embeddings(self, texts: List[str]) -> List[List[float]]:
-        ...
+    def get_embeddings(self, texts: List[str]) -> List[List[float]]: ...
 
 
 class DeterministicEmbedder:

@@ -100,7 +100,9 @@ with search_tab:
                 crit_obj = Criteria(
                     domain=crit_dict.get("domain", []), tech_stack=crit_dict.get("tech_stack", []),
                     expert_roles=crit_dict.get("expert_roles", []),
-                    project_type=crit_dict.get("project_type"), team_size=team_size_obj
+                    project_type=crit_dict.get("project_type"), team_size=team_size_obj,
+                    minimum_team=crit_dict.get("minimum_team", []),
+                    extended_team=crit_dict.get("extended_team", []),
                 )
                 st.success("Searching based on uploaded JSON criteria...")
 

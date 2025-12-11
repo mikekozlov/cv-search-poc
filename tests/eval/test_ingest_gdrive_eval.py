@@ -73,17 +73,23 @@ def test_ingest_gdrive_eval_backend(monkeypatch) -> None:
 
     monkeypatch.setattr(CVParser, "extract_text", fake_extract_text, raising=True)
 
-    pptx_path = helpers.make_inbox_pptx_placeholder(settings, role_folder="backend_engineer", filename="test.pptx")
+    pptx_path = helpers.make_inbox_pptx_placeholder(
+        settings, role_folder="backend_engineer", filename="test.pptx"
+    )
     candidate_id = helpers.pptx_candidate_id(pptx_path.name)
 
     helpers.run_cli(["init-db"], env)
     helpers.run_cli(["ingest-gdrive", "--file", pptx_path.name], env)
 
-    golden_path = Path(__file__).resolve().parents[1] / "fixtures" / "golden" / "ingest_gdrive_backend.yaml"
+    golden_path = (
+        Path(__file__).resolve().parents[1] / "fixtures" / "golden" / "ingest_gdrive_backend.yaml"
+    )
     golden = yaml.safe_load(golden_path.read_text(encoding="utf-8"))
     cv_json = helpers.load_ingested_json(settings, candidate_id)
 
-    llm_domain = sorted({tag for exp in cv_json.get("experience", []) for tag in exp.get("domain_tags", [])})
+    llm_domain = sorted(
+        {tag for exp in cv_json.get("experience", []) for tag in exp.get("domain_tags", [])}
+    )
     llm_metrics = {
         "role_tags": _f1(golden["role_tags"], cv_json.get("role_tags", [])),
         "tech_tags": _f1(golden["tech_tags"], cv_json.get("tech_tags", [])),

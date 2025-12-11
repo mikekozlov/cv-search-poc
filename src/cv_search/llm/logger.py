@@ -14,13 +14,16 @@ _DEFAULT_BASE = contextvars.ContextVar("cv_search_llm_default_base", default=Non
 _LOCKS: dict[str, threading.Lock] = {}
 _LOCKS_GUARD = threading.Lock()
 
+
 def set_run_dir(run_dir: str | Path):
     p = Path(run_dir)
     p.mkdir(parents=True, exist_ok=True)
     return _RUN_DIR.set(str(p))
 
+
 def reset_run_dir(token):
     _RUN_DIR.reset(token)
+
 
 def _default_base_dir() -> Path:
     cached = _DEFAULT_BASE.get()
@@ -99,6 +102,7 @@ def _build_entry(entry: dict[str, Any]) -> str:
     pieces.append("---\n\n")
     return "".join(pieces)
 
+
 def _lock_for(path: Path) -> threading.Lock:
     key = str(path)
     with _LOCKS_GUARD:
@@ -106,7 +110,16 @@ def _lock_for(path: Path) -> threading.Lock:
             _LOCKS[key] = threading.Lock()
         return _LOCKS[key]
 
-def log_chat(*, messages: list[dict], model: str, response_content: str, provider: str, usage: dict | None = None, meta: dict | None = None) -> None:
+
+def log_chat(
+    *,
+    messages: list[dict],
+    model: str,
+    response_content: str,
+    provider: str,
+    usage: dict | None = None,
+    meta: dict | None = None,
+) -> None:
     entry = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "provider": provider,

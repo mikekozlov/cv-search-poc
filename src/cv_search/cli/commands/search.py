@@ -118,16 +118,21 @@ def register(cli: click.Group) -> None:
     @click.pass_obj
     def presale_plan_cmd(ctx: CLIContext, text: str) -> None:
         """
-        Stateless, budget-agnostic presale role composition strictly from the brief.
+        LLM-derived presale team arrays returned as Criteria JSON (no search).
         """
         settings = ctx.settings
         client = ctx.client
 
         planner = Planner()
         crit = parse_request(text, model=settings.openai_model, settings=settings, client=client)
-        plan = planner.derive_presale_team(crit, raw_text=text)
+        crit_with_plan = planner.derive_presale_team(
+            crit,
+            raw_text=text,
+            client=client,
+            settings=settings,
+        )
 
-        click.echo(json.dumps(plan, indent=2, ensure_ascii=False))
+        click.echo(crit_with_plan.to_json())
 
     @cli.command("project-search")
     @click.option(
@@ -202,6 +207,8 @@ def register(cli: click.Group) -> None:
                     expert_roles=crit_dict.get("expert_roles", []),
                     project_type=crit_dict.get("project_type"),
                     team_size=team_size_obj,
+                    minimum_team=crit_dict.get("minimum_team", []),
+                    extended_team=crit_dict.get("extended_team", []),
                 )
                 payload = processor.search_for_project(
                     criteria=criteria_obj,
@@ -211,7 +218,9 @@ def register(cli: click.Group) -> None:
                     with_justification=justify,
                 )
             else:
-                criteria_obj = parse_request(text, model=settings.openai_model, settings=settings, client=client)
+                criteria_obj = parse_request(
+                    text, model=settings.openai_model, settings=settings, client=client
+                )
                 payload = processor.search_for_project(
                     criteria=criteria_obj,
                     top_k=topk,

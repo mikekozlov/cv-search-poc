@@ -36,7 +36,7 @@ def build_context(db_url: Optional[str] = None) -> CLIContext:
     if db_url:
         settings.db_url = db_url
 
-    use_stub_flag = (os.environ.get("USE_OPENAI_STUB") or os.environ.get("HF_HUB_OFFLINE"))
+    use_stub_flag = os.environ.get("USE_OPENAI_STUB") or os.environ.get("HF_HUB_OFFLINE")
     force_stub = use_stub_flag and str(use_stub_flag).lower() in {"1", "true", "yes", "on"}
     backend = StubOpenAIBackend(settings) if force_stub or not settings.openai_api_key_str else None
     client = OpenAIClient(settings, backend=backend)

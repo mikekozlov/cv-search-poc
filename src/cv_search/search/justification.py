@@ -42,14 +42,18 @@ class JustificationService:
             }
         return self.client.get_candidate_justification(seat_json, cv_context)
 
-    def generate(self, candidates: List[Dict[str, object]], seat: Dict[str, object]) -> Dict[str, Dict[str, object]]:
+    def generate(
+        self, candidates: List[Dict[str, object]], seat: Dict[str, object]
+    ) -> Dict[str, Dict[str, object]]:
         seat_json = json.dumps(seat, indent=2)
         candidate_ids = [item["candidate_id"] for item in candidates]
         if not candidate_ids:
             return {}
         results: Dict[str, Dict[str, object]] = {}
         with ThreadPoolExecutor(max_workers=len(candidate_ids)) as pool:
-            futures = {pool.submit(self._justify_candidate, cid, seat_json): cid for cid in candidate_ids}
+            futures = {
+                pool.submit(self._justify_candidate, cid, seat_json): cid for cid in candidate_ids
+            }
             for future, cid in futures.items():
                 results[cid] = future.result()
         return results

@@ -5,6 +5,7 @@ from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
 
+
 class LocalEmbedder:
     """
     A wrapper class to handle loading and using a local
@@ -13,7 +14,7 @@ class LocalEmbedder:
 
     # Using a common, high-performance, lightweight model.
     # This can be changed to any model compatible with sentence-transformers.
-    MODEL_NAME = 'all-MiniLM-L6-v2'
+    MODEL_NAME = "all-MiniLM-L6-v2"
 
     def __init__(self):
         """
@@ -44,6 +45,6 @@ class LocalEmbedder:
         embeddings = self.model.encode(texts)
 
         # Ensure the output is a standard list of lists
-        if hasattr(embeddings, 'tolist'):
+        if hasattr(embeddings, "tolist"):
             return embeddings.tolist()
         return [list(map(float, vec)) for vec in embeddings]

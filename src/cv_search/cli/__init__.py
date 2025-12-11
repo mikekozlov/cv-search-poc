@@ -16,7 +16,15 @@ def _register_commands(cli_group: click.Group) -> None:
         transcription,
     )
 
-    for module in (diagnostics, db_admin, search, ingestion, async_ingestion, presale_search, transcription):
+    for module in (
+        diagnostics,
+        db_admin,
+        search,
+        ingestion,
+        async_ingestion,
+        presale_search,
+        transcription,
+    ):
         module.register(cli_group)
 
 

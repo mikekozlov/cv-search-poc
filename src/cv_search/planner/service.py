@@ -1,6 +1,6 @@
 # src/cvsearch/planner.py
 # Stateless business logic for deriving project/presale teams.
-# No orchestration, no DB, no API calls.
+# Presale planning uses a provided LLM client; no DB or orchestration here.
 
 from __future__ import annotations
 
@@ -8,7 +8,11 @@ import json
 from dataclasses import asdict, is_dataclass
 from typing import Any, Dict, List, Optional
 
+from cv_search.clients.openai_client import OpenAIClient
+from cv_search.config.settings import Settings
 from cv_search.core.criteria import Criteria, SeniorityEnum, TeamMember, TeamSize
+from cv_search.lexicon.loader import load_role_lexicon
+
 
 class Planner:
     """
@@ -19,20 +23,44 @@ class Planner:
     def __init__(self):
         # --- (Internal constant helpers) ---
         self._AI_TEXT_TOKENS = {
-            "openai", "chatgpt", "gpt", "llm", "ai chatbot", "ai assistant", "assistant"
+            "openai",
+            "chatgpt",
+            "gpt",
+            "llm",
+            "ai chatbot",
+            "ai assistant",
+            "assistant",
         }
         self._AI_TECH_TOKENS = {
-            "machine_learning", "deep_learning", "pytorch", "tensorflow",
-            "huggingface", "vertex_ai", "azure_ml"
+            "machine_learning",
+            "deep_learning",
+            "pytorch",
+            "tensorflow",
+            "huggingface",
+            "vertex_ai",
+            "azure_ml",
         }
         self._MOBILE_TECH_TOKENS = {
-            "flutter", "react_native", "android", "ios", "kotlin", "swift", "xamarin", "dart"
+            "flutter",
+            "react_native",
+            "android",
+            "ios",
+            "kotlin",
+            "swift",
+            "xamarin",
+            "dart",
         }
-        self._WEB_TECH_TOKENS = {
-            "react", "angular", "vue", "svelte", "nextjs", "nuxt", "sveltekit"
-        }
+        self._WEB_TECH_TOKENS = {"react", "angular", "vue", "svelte", "nextjs", "nuxt", "sveltekit"}
         self._BACKEND_TECH_HINTS = {
-            "dotnet", "nodejs", "java", "python", "go", "rust", "php", "ruby", "scala"
+            "dotnet",
+            "nodejs",
+            "java",
+            "python",
+            "go",
+            "rust",
+            "php",
+            "ruby",
+            "scala",
         }
         self._BACKEND_NICE_DEFAULTS = ["rest", "openapi", "oauth2", "postgresql"]
 
@@ -55,35 +83,93 @@ class Planner:
                 return k
         return None
 
+    def _normalize_roles(
+        self, roles: List[str] | None, *, allowed: set[str] | None = None
+    ) -> List[str]:
+        """Lowercase/deduplicate role names and optionally filter to an allowed set."""
+        normalized: List[str] = []
+        seen = set()
+        for role in roles or []:
+            key = (role or "").strip().lower().replace(" ", "_").replace("-", "_")
+            if not key or key in seen:
+                continue
+            if allowed is not None and key not in allowed:
+                continue
+            seen.add(key)
+            normalized.append(key)
+        return normalized
+
+    def _fallback_presale_team(
+        self, crit: Criteria, raw_text: Optional[str] = None
+    ) -> Dict[str, List[str]]:
+        """Deterministic fallback presale team when LLM output is missing."""
+        techs = crit.tech_stack or []
+        ai = self._has_any(techs, self._AI_TECH_TOKENS) or self._text_has_any(
+            raw_text, self._AI_TEXT_TOKENS
+        )
+        mobile = self._has_any(techs, self._MOBILE_TECH_TOKENS) or self._text_has_any(
+            raw_text, {"ios", "android", "mobile"}
+        )
+        needs_integrations = self._text_has_any(raw_text, {"integration", "outlook", "sync", "api"})
+        needs_privacy = (
+            self._text_has_any(raw_text, {"privacy", "compliance", "gdpr", "ccpa", "security"})
+            or ai
+        )
+
+        minimum = ["business_analyst"]
+        if ai:
+            minimum.insert(0, "ai_solution_architect")
+        else:
+            minimum.append("solution_architect")
+
+        extended = ["project_manager"]
+        if needs_privacy:
+            extended.insert(0, "data_privacy_expert")
+        if needs_integrations or mobile:
+            extended.append("integration_specialist")
+
+        return {
+            "minimum_team": self._normalize_roles(minimum),
+            "extended_team": self._normalize_roles(extended),
+        }
 
     # ---------- public: presale team derivation ----------
 
-    def derive_presale_team(self, crit: Criteria, raw_text: Optional[str] = None) -> Dict[str, Any]:
+    def derive_presale_team(
+        self,
+        crit: Criteria,
+        *,
+        client: OpenAIClient,
+        settings: Settings,
+        raw_text: Optional[str] = None,
+        model: Optional[str] = None,
+    ) -> Criteria:
         """
-        Returns a budget-agnostic presale team strictly from the brief's tech/features.
+        Enriches Criteria with presale team arrays using an LLM, with deterministic fallback.
         """
-        techs = crit.tech_stack or []
-        ai = self._has_any(techs, self._AI_TECH_TOKENS) or self._text_has_any(raw_text, self._AI_TEXT_TOKENS)
-        mobile = self._has_any(techs, self._MOBILE_TECH_TOKENS) or self._text_has_any(raw_text, {"ios", "android", "mobile"})
+        criteria_dict = self._criteria_dict(crit)
+        role_lexicon = set(load_role_lexicon(settings.lexicon_dir))
 
-        minimum = [
-            {"role": "Business Analyst", "purpose": "Uncover needs, success metrics, scope."},
-            {"role": "Technical Architect", "purpose": "MVP skeleton: auth, data, integrations."},
-            {"role": "Account Manager", "purpose": "Expectations, comms, next steps."},
-        ]
-        extended = []
-        if ai:
-            extended.append({"role": "AI Specialist", "purpose": "Model choice, prompting, evals, cost guardrails."})
-        if mobile:
-            extended.append({"role": "Mobile Development Expert", "purpose": "Flutter/React Native tradeoffs, app release."})
+        plan = client.get_presale_team_plan(
+            brief=raw_text or "",
+            criteria=criteria_dict,
+            model=model or settings.openai_model,
+            settings=settings,
+        )
 
-        return {
-            "minimum_roles": minimum,
-            "extended_roles": extended,
-            "triggers": {"ai": ai, "mobile": mobile},
-            "notes": "Composed purely from tech/features; no budget heuristics.",
-        }
+        minimum = self._normalize_roles(plan.get("minimum_team"), allowed=role_lexicon)
+        extended = self._normalize_roles(plan.get("extended_team"), allowed=role_lexicon)
 
+        if not minimum:
+            fallback = self._fallback_presale_team(crit, raw_text=raw_text)
+            minimum = fallback.get("minimum_team", [])
+            if not extended:
+                extended = fallback.get("extended_team", [])
+
+        crit.minimum_team = minimum
+        crit.extended_team = extended
+
+        return crit
 
     # ---------- public: project seats derivation ----------
 
@@ -99,57 +185,107 @@ class Planner:
         domains = crit.domain or []
         roles: List[TeamMember] = []
 
-        ai = self._has_any(techs, self._AI_TECH_TOKENS) or self._text_has_any(raw_text, self._AI_TEXT_TOKENS)
-        mobile = self._has_any(techs, self._MOBILE_TECH_TOKENS) or self._text_has_any(raw_text, {"ios", "android", "mobile"})
-        web = self._has_any(techs, self._WEB_TECH_TOKENS) or self._text_has_any(raw_text, {"web", "react", "frontend", "ui"})
-        needs_backend = (
-                self._has_any(techs, self._BACKEND_TECH_HINTS)
-                or self._text_has_any(raw_text, {"donate", "payment", "stripe", "paypal", "consequence", "partner", "auth", "api", "backend"})
+        ai = self._has_any(techs, self._AI_TECH_TOKENS) or self._text_has_any(
+            raw_text, self._AI_TEXT_TOKENS
+        )
+        mobile = self._has_any(techs, self._MOBILE_TECH_TOKENS) or self._text_has_any(
+            raw_text, {"ios", "android", "mobile"}
+        )
+        web = self._has_any(techs, self._WEB_TECH_TOKENS) or self._text_has_any(
+            raw_text, {"web", "react", "frontend", "ui"}
+        )
+        needs_backend = self._has_any(techs, self._BACKEND_TECH_HINTS) or self._text_has_any(
+            raw_text,
+            {
+                "donate",
+                "payment",
+                "stripe",
+                "paypal",
+                "consequence",
+                "partner",
+                "auth",
+                "api",
+                "backend",
+            },
         )
 
         if mobile:
-            must = self._first_present(techs, ["flutter", "react_native", "android", "ios"]) or "flutter"
+            must = (
+                self._first_present(techs, ["flutter", "react_native", "android", "ios"])
+                or "flutter"
+            )
             roles.append(
                 TeamMember(
-                    role="mobile_engineer", seniority=SeniorityEnum.senior, domains=list(domains),
-                    tech_tags=[must], nice_to_have=[],
-                    rationale=f"Mobile app presence implied; must-have {must}."
+                    role="mobile_engineer",
+                    seniority=SeniorityEnum.senior,
+                    domains=list(domains),
+                    tech_tags=[must],
+                    nice_to_have=[],
+                    rationale=f"Mobile app presence implied; must-have {must}.",
                 )
             )
         if web:
-            fe_must = self._first_present(techs, ["react", "nextjs", "vue", "angular", "svelte"]) or "react"
+            fe_must = (
+                self._first_present(techs, ["react", "nextjs", "vue", "angular", "svelte"])
+                or "react"
+            )
             roles.append(
                 TeamMember(
-                    role="frontend_engineer", seniority=SeniorityEnum.senior, domains=list(domains),
+                    role="frontend_engineer",
+                    seniority=SeniorityEnum.senior,
+                    domains=list(domains),
                     tech_tags=[fe_must if fe_must != "nextjs" else "react"],
                     nice_to_have=(["nextjs"] if fe_must == "react" or fe_must == "nextjs" else []),
-                    rationale=f"Web client implied; must-have {fe_must}."
+                    rationale=f"Web client implied; must-have {fe_must}.",
                 )
             )
         if needs_backend:
             musts = [t for t in techs if t in self._BACKEND_TECH_HINTS]
             roles.append(
                 TeamMember(
-                    role="backend_engineer", seniority=SeniorityEnum.senior, domains=list(domains),
-                    tech_tags=musts, nice_to_have=list(self._BACKEND_NICE_DEFAULTS),
-                    rationale="APIs/auth/payments implied by flows; backend required."
+                    role="backend_engineer",
+                    seniority=SeniorityEnum.senior,
+                    domains=list(domains),
+                    tech_tags=musts,
+                    nice_to_have=list(self._BACKEND_NICE_DEFAULTS),
+                    rationale="APIs/auth/payments implied by flows; backend required.",
                 )
             )
         if ai:
             roles.append(
                 TeamMember(
-                    role="ml_engineer", seniority=SeniorityEnum.senior, domains=list(domains),
-                    tech_tags=[], nice_to_have=["python", "mlops", "pytorch", "tensorflow"],
-                    rationale="AI/assistant/chatbot mentioned; add ML engineering for integration & evals."
+                    role="ml_engineer",
+                    seniority=SeniorityEnum.senior,
+                    domains=list(domains),
+                    tech_tags=[],
+                    nice_to_have=["python", "mlops", "pytorch", "tensorflow"],
+                    rationale="AI/assistant/chatbot mentioned; add ML engineering for integration & evals.",
                 )
             )
         if not roles:
-            fallback_role = "frontend_engineer" if self._has_any(techs, self._WEB_TECH_TOKENS) else "backend_engineer"
+            fallback_role = (
+                "frontend_engineer"
+                if self._has_any(techs, self._WEB_TECH_TOKENS)
+                else "backend_engineer"
+            )
             roles = [
                 TeamMember(
-                    role=fallback_role, seniority=SeniorityEnum.senior, domains=list(domains),
-                    tech_tags=[self._first_present(techs, list(self._WEB_TECH_TOKENS if fallback_role == "frontend_engineer" else self._BACKEND_TECH_HINTS)) or ""],
-                    nice_to_have=[], rationale="Fallback seat due to sparse brief."
+                    role=fallback_role,
+                    seniority=SeniorityEnum.senior,
+                    domains=list(domains),
+                    tech_tags=[
+                        self._first_present(
+                            techs,
+                            list(
+                                self._WEB_TECH_TOKENS
+                                if fallback_role == "frontend_engineer"
+                                else self._BACKEND_TECH_HINTS
+                            ),
+                        )
+                        or ""
+                    ],
+                    nice_to_have=[],
+                    rationale="Fallback seat due to sparse brief.",
                 )
             ]
 
@@ -162,6 +298,8 @@ class Planner:
             expert_roles=expert_roles,
             project_type=crit.project_type or "greenfield",
             team_size=team,
+            minimum_team=crit.minimum_team,
+            extended_team=crit.extended_team,
         )
 
     # ---------- Helpers for project search (used by SearchProcessor) ----------
@@ -176,7 +314,9 @@ class Planner:
             return json.loads(obj.to_json())
         return json.loads(json.dumps(obj))
 
-    def _pack_single_seat_criteria(self, base_criteria: Dict[str, Any], seat: Dict[str, Any]) -> Dict[str, Any]:
+    def _pack_single_seat_criteria(
+        self, base_criteria: Dict[str, Any], seat: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Creates a new Criteria dict for a single seat."""
         expert = list(dict.fromkeys((base_criteria.get("expert_roles") or []) + [seat["role"]]))
         return {

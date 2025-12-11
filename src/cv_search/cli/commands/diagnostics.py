@@ -43,7 +43,9 @@ def register(cli: click.Group) -> None:
         doms = load_domain_lexicon(settings.lexicon_dir)
         expertise = load_expertise_lexicon(settings.lexicon_dir)
 
-        click.echo(f"Roles: {len(roles)} | Techs: {len(techs)} | Domains: {len(doms)} | Expertise: {len(expertise)}")
+        click.echo(
+            f"Roles: {len(roles)} | Techs: {len(techs)} | Domains: {len(doms)} | Expertise: {len(expertise)}"
+        )
 
         sample = ", ".join(techs[:10])
         more = "..." if len(techs) > 10 else ""

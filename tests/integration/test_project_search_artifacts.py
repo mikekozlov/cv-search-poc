@@ -27,7 +27,9 @@ def test_project_search_writes_artifacts_and_respects_expected_order():
 
     run_dir = Path(payload["run_dir"])
     assert run_dir.exists(), "Run directory should be created."
-    assert str(settings.active_runs_dir) in str(run_dir), "Artifacts should live under the configured runs dir."
+    assert str(settings.active_runs_dir) in str(run_dir), (
+        "Artifacts should live under the configured runs dir."
+    )
 
     for idx, seat in enumerate(payload["seats"], start=1):
         seat_dir = run_dir / f"seat_{idx:02d}_{seat['role']}"

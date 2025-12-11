@@ -14,7 +14,12 @@ from cv_search.ingestion.async_pipeline import (
 )
 from cv_search.ingestion.parser_stub import StubCVParser
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder
-from tests.integration.helpers import REPO_ROOT, cleanup_test_state, ensure_postgres_available, test_settings
+from tests.integration.helpers import (
+    REPO_ROOT,
+    cleanup_test_state,
+    ensure_postgres_available,
+    test_settings,
+)
 
 
 def test_async_pipeline_ingests_text_samples(redis_client):

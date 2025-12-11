@@ -15,7 +15,9 @@ def register(cli: click.Group) -> None:
         try:
             db.initialize_schema()
             ext = db.check_extensions()
-            click.echo(f"Initialized database at {db.dsn if hasattr(db, 'dsn') else '[unknown DSN]'}")
+            click.echo(
+                f"Initialized database at {db.dsn if hasattr(db, 'dsn') else '[unknown DSN]'}"
+            )
             click.echo(f"Extensions: vector={ext.get('vector')}, pg_trgm={ext.get('pg_trgm')}")
         finally:
             db.close()

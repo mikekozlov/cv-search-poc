@@ -5,6 +5,7 @@ from typing import List
 
 # --- embed_texts function REMOVED ---
 
+
 def cosine(a: List[float], b: List[float]) -> float:
     if not a or not b or len(a) != len(b):
         return 0.0

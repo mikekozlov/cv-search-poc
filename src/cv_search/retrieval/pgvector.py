@@ -11,7 +11,9 @@ from cv_search.retrieval.local_embedder import LocalEmbedder
 class PgVectorSemanticRetriever:
     """Vector-based retrieval backed by Postgres pgvector."""
 
-    def __init__(self, db: CVDatabase, settings: Settings, embedder: EmbedderProtocol | None = None):
+    def __init__(
+        self, db: CVDatabase, settings: Settings, embedder: EmbedderProtocol | None = None
+    ):
         self.db = db
         self.settings = settings
         self.embedder = embedder or LocalEmbedder()
@@ -20,8 +22,12 @@ class PgVectorSemanticRetriever:
         role = seat["role"].replace("_", " ")
         seniority = seat["seniority"]
         domains = ", ".join(seat.get("domains") or []) if seat.get("domains") else "any domain"
-        musts = ", ".join(seat.get("must_have") or []) if seat.get("must_have") else "(no hard musts)"
-        nice = ", ".join(seat.get("nice_to_have") or []) if seat.get("nice_to_have") else "(optional)"
+        musts = (
+            ", ".join(seat.get("must_have") or []) if seat.get("must_have") else "(no hard musts)"
+        )
+        nice = (
+            ", ".join(seat.get("nice_to_have") or []) if seat.get("nice_to_have") else "(optional)"
+        )
         return (
             f"{seniority} {role} in {domains}. "
             f"Must: {musts}. Nice: {nice}. "

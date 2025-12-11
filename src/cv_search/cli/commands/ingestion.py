@@ -35,7 +35,9 @@ def _print_gdrive_report(report: Dict[str, Any]) -> None:
 
     if skipped_ambiguous:
         click.secho("\n--- Skipped Ambiguous CVs ---", fg="yellow")
-        click.secho("The following CVs were skipped because they were not in a role folder:", fg="yellow")
+        click.secho(
+            "The following CVs were skipped because they were not in a role folder:", fg="yellow"
+        )
         for file_path in skipped_ambiguous:
             click.echo(f"  - {file_path}")
 
@@ -89,9 +91,7 @@ def register(cli: click.Group) -> None:
                 "\n? Google Drive sync completed successfully.",
                 fg="green",
             )
-            click.echo(
-                f"Files are available in: {settings.gdrive_local_dest_dir}"
-            )
+            click.echo(f"Files are available in: {settings.gdrive_local_dest_dir}")
 
         except FileNotFoundError as exc:
             click.secho(f"\n? Error: {exc}", fg="red")

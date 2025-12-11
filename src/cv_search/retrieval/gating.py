@@ -9,7 +9,13 @@ def _normalize_seniority(s: str) -> str:
     if not s:
         return ""
     s = s.strip().lower()
-    mapping = {"mid": "middle", "jr": "junior", "sr": "senior", "staff": "lead", "principal": "manager"}
+    mapping = {
+        "mid": "middle",
+        "jr": "junior",
+        "sr": "senior",
+        "staff": "lead",
+        "principal": "manager",
+    }
     return mapping.get(s, s)
 
 
