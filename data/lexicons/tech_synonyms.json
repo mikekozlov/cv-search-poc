@@ -33,6 +33,15 @@
     "java 17",
     "java-17",
     "java17",
+    "java 5",
+    "java 7",
+    "java 8",
+    "java 11",
+    "java 14",
+    "java 15",
+    "java 21",
+    "javaee",
+    "javase",
     "jdk",
     "jre",
     "jvm"
@@ -286,6 +295,9 @@
   "php": [
     "cakephp",
     "php",
+    "php 4",
+    "php 5",
+    "php 6",
     "php 7",
     "php 8",
     "php fpm",
@@ -442,7 +454,12 @@
     "angular-16",
     "angular-2+",
     "angular-8",
-    "angular-9"
+    "angular-9",
+    "angular 2",
+    "angular 5",
+    "angular 7",
+    "angular 10+",
+    "angular 15+"
   ],
   "angularjs": [
     "angular 1 x",
@@ -463,7 +480,8 @@
     "ng-1.x",
     "ng-1x",
     "ng1",
-    "angular js"
+    "angular js",
+    "angular.js"
   ],
   "vue": [
     "vue",
@@ -611,7 +629,8 @@
     "highcharts",
     "highcharts js",
     "highcharts-js",
-    "hightcharts"
+    "hightcharts",
+    "highcharts.js"
   ],
   "nodejs": [
     "node",
@@ -692,20 +711,24 @@
     "ruby-on-rails"
   ],
   "laravel": [
-    "laravel"
+    "laravel",
+    "laravel 5.8",
+    "laravel 8.0"
   ],
   "symfony": [
     "symfony"
   ],
   "spring": [
-    "spring"
+    "spring",
+    "spring 1.3"
   ],
   "spring_boot": [
     "spring boot",
     "spring-boot"
   ],
   "hibernate": [
-    "hibernate"
+    "hibernate",
+    "hibernate 5"
   ],
   "quarkus": [
     "quarkus",
@@ -799,7 +822,8 @@
     "asp.net forms",
     "asp.net mvc 5",
     "asp.net zero",
-    "asp.net mvc core"
+    "asp.net mvc core",
+    "web.api"
   ],
   "aspnet_core": [
     "asp  net core",
@@ -897,7 +921,8 @@
     "android-sdk",
     "jetpack",
     "native android",
-    "native-android"
+    "native-android",
+    "android 2.2/2.3"
   ],
   "jetpack_compose": [
     "android compose",
@@ -1029,11 +1054,13 @@
     "sql script",
     "sql developer",
     "sql compare",
-    "sql navigator"
+    "sql navigator",
+    "sqlscript"
   ],
   "t_sql": [
     "t sql",
-    "t-sql"
+    "t-sql",
+    "tsql"
   ],
   "pl_sql": [
     "pl sql",
@@ -1112,7 +1139,8 @@
   "ssis": [
     "sql server integration services",
     "sql-server integration services",
-    "ssis"
+    "ssis",
+    "ss is"
   ],
   "oracle": [
     "oracle",
@@ -1123,7 +1151,10 @@
     "oracle-database",
     "oracle-database-server",
     "oracle-db",
-    "oracle-rdbms"
+    "oracle-rdbms",
+    "oracledb",
+    "oracle 11",
+    "oracle 10.1 - 11.2"
   ],
   "sqlite": [
     "sqlite",
@@ -1716,7 +1747,8 @@
     "rest-api",
     "restful",
     "restful api",
-    "restful-api"
+    "restful-api",
+    "restapi"
   ],
   "openapi": [
     "openapi",
@@ -2012,7 +2044,8 @@
     "service bus queue",
     "service-bus",
     "service-bus-queue",
-    "azure service-bus"
+    "azure service-bus",
+    "servicebus"
   ],
   "azure_event_hubs": [
     "azure event hubs",
@@ -2857,7 +2890,8 @@
   "magento": [
     "adobe commerce",
     "adobe-commerce",
-    "magento"
+    "magento",
+    "magento 2"
   ],
   "woocommerce": [
     "woo commerce",
@@ -2915,7 +2949,8 @@
     "qlik sense analytics",
     "qlik-sense-analytics",
     "qliksense",
-    "qlikview"
+    "qlikview",
+    "qlik sense"
   ],
   "junit": [
     "junit",
@@ -3086,7 +3121,8 @@
     "gnu/linux",
     "linux",
     "linux os",
-    "linux-os"
+    "linux-os",
+    "linux 2.6"
   ],
   "ubuntu": [
     "ubuntu",
@@ -3151,7 +3187,11 @@
     "windows os",
     "windows server",
     "windows-os",
-    "windows-server"
+    "windows-server",
+    "windows 10",
+    "windows 11",
+    "win10",
+    "win 10"
   ],
   "macos": [
     "mac os",
@@ -3742,7 +3782,10 @@
     "business object bi",
     "business object di",
     "sap businessobjects",
-    "businessobjects"
+    "sap business objects",
+    "businessobjects",
+    "business objects 3.1",
+    "business objects 4.1"
   ],
   "ci_cd": [
     "ci/cd",
@@ -3990,7 +4033,8 @@
   "unit_testing": [
     "unit test",
     "unit tests",
-    "unit testing"
+    "unit testing",
+    "unit-tests"
   ],
   "yandex_direct": [
     "yandex.direct",
@@ -4054,7 +4098,10 @@
   "visual_studio": [
     "visual studio",
     "visual studio ide",
-    "visual_studio"
+    "visual_studio",
+    "visual studio 6.0",
+    "visual studio 12",
+    "visual studio 2010"
   ],
   "jetbrains_rider": [
     "jetbrains rider",
@@ -4146,7 +4193,8 @@
   "argo_cd": [
     "argo cd",
     "argo-cd",
-    "argo_cd"
+    "argo_cd",
+    "argocd"
   ],
   "artifactory": [
     "artifactory",
@@ -4163,7 +4211,8 @@
     "fluent assertions",
     "fluentassertions",
     "fluent assertion",
-    "fluent_assertions"
+    "fluent_assertions",
+    "fluentassertion"
   ],
   "devops": [
     "devops",
@@ -4210,9 +4259,6 @@
   ],
   "phage_purification": [
     "phage purification"
-  ],
-  "zend_1": [
-    "zend 1"
   ],
   "gateway": [
     "gateway"
@@ -4325,14 +4371,8 @@
   "database_testing": [
     "database testing"
   ],
-  "sap_netweaver_7_50": [
-    "sap netweaver 7.50"
-  ],
   "soup": [
     "soup"
-  ],
-  "vs_code": [
-    "vs code"
   ],
   "atlantis": [
     "atlantis"
@@ -4418,9 +4458,6 @@
   "mvi": [
     "mvi"
   ],
-  "windows_11": [
-    "windows 11"
-  ],
   "oocss": [
     "oocss"
   ],
@@ -4428,7 +4465,8 @@
     "crf"
   ],
   "web_services": [
-    "web services"
+    "web services",
+    "webservices"
   ],
   "activiti_bpm": [
     "activiti bpm"
@@ -4465,9 +4503,6 @@
   ],
   "axis_cameras": [
     "axis cameras"
-  ],
-  "leafletjs": [
-    "leafletjs"
   ],
   "networking_l2_l3": [
     "networking (l2/l3)"
@@ -4519,9 +4554,6 @@
   ],
   "oracle_retail_supply_chain": [
     "oracle retail supply chain"
-  ],
-  "sap_netweaver_7_40": [
-    "sap netweaver 7.40"
   ],
   "gbg": [
     "gbg"
@@ -4577,9 +4609,6 @@
     "aws step functions",
     "aws step function"
   ],
-  "angular_js": [
-    "angular.js"
-  ],
   "serverless_framework": [
     "serverless framework"
   ],
@@ -4594,9 +4623,6 @@
   ],
   "mapstruct": [
     "mapstruct"
-  ],
-  "delphi_5": [
-    "delphi 5"
   ],
   "rpg": [
     "rpg"
@@ -4694,12 +4720,6 @@
   "camunda_modeler": [
     "camunda modeler"
   ],
-  "sap_solution_manager_2_0": [
-    "sap solution manager 2.0"
-  ],
-  "webservices": [
-    "webservices"
-  ],
   "google_firebase": [
     "google firebase"
   ],
@@ -4764,7 +4784,8 @@
     "qxdm"
   ],
   "retrofit": [
-    "retrofit"
+    "retrofit",
+    "retrofit 2"
   ],
   "react_virtualized": [
     "react-virtualized"
@@ -4861,9 +4882,6 @@
   "data_integration": [
     "data integration"
   ],
-  "laravel_8_0": [
-    "laravel 8.0"
-  ],
   "microsoft_excel_2010": [
     "microsoft excel 2010"
   ],
@@ -4883,7 +4901,8 @@
     "xrm toolbox"
   ],
   "sap_hana": [
-    "sap hana"
+    "sap hana",
+    "sap hana 2.0"
   ],
   "ui_testing": [
     "ui testing"
@@ -4924,14 +4943,8 @@
   "amazon_music": [
     "amazon music"
   ],
-  "php_6": [
-    "php 6"
-  ],
   "pagerslidingtabstrip_library": [
     "pagerslidingtabstrip library"
-  ],
-  "java_5": [
-    "java 5"
   ],
   "firebase_messaging": [
     "firebase messaging"
@@ -5105,7 +5118,9 @@
     "amundsen"
   ],
   "ble": [
-    "ble"
+    "ble",
+    "ble 4",
+    "ble 5"
   ],
   "devsecops": [
     "devsecops"
@@ -5181,7 +5196,8 @@
     "metadata-driven services"
   ],
   "leaflet_js": [
-    "leaflet.js"
+    "leaflet.js",
+    "leafletjs"
   ],
   "rapidapi": [
     "rapidapi"
@@ -5197,9 +5213,6 @@
   ],
   "communications_protocols": [
     "communications protocols"
-  ],
-  "oracle_11": [
-    "oracle 11"
   ],
   "adaptive_streaming": [
     "adaptive streaming"
@@ -5231,9 +5244,6 @@
   "bw_workbench": [
     "bw workbench"
   ],
-  "win10": [
-    "win10"
-  ],
   "eclipse_adt": [
     "eclipse adt"
   ],
@@ -5249,9 +5259,6 @@
   "turbo_rails": [
     "turbo rails"
   ],
-  "argocd": [
-    "argocd"
-  ],
   "dopplerometry": [
     "dopplerometry"
   ],
@@ -5265,7 +5272,9 @@
     "coreos"
   ],
   "sap_solution_manager": [
-    "sap solution manager"
+    "sap solution manager",
+    "sap solution manager 2.0",
+    "sap solution manager 7.2"
   ],
   "laboratory_journal_maintenance": [
     "laboratory journal maintenance"
@@ -5379,7 +5388,8 @@
     "issue reporting library"
   ],
   "ms_visual_studio": [
-    "ms visual studio"
+    "ms visual studio",
+    "ms visual studio 2005-2019"
   ],
   "vector_embeddings": [
     "vector embeddings"
@@ -5398,9 +5408,6 @@
   ],
   "plotly": [
     "plotly"
-  ],
-  "spring_web_flux": [
-    "spring web flux"
   ],
   "ada": [
     "ada"
@@ -5435,9 +5442,6 @@
   ],
   "des": [
     "des"
-  ],
-  "javaee": [
-    "javaee"
   ],
   "microsoft_word": [
     "microsoft word"
@@ -5580,9 +5584,6 @@
   "gstreamer": [
     "gstreamer"
   ],
-  "localstorage": [
-    "localstorage"
-  ],
   "asyncio": [
     "asyncio"
   ],
@@ -5639,9 +5640,6 @@
   ],
   "vb_scripts": [
     "vb scripts"
-  ],
-  "business_objects_3_1": [
-    "business objects 3.1"
   ],
   "ebtax": [
     "ebtax"
@@ -5762,9 +5760,6 @@
   ],
   "smacss": [
     "smacss"
-  ],
-  "qlik_sense": [
-    "qlik sense"
   ],
   "spring_webmvc": [
     "spring webmvc"
@@ -6007,9 +6002,6 @@
   "oracle_adf": [
     "oracle adf"
   ],
-  "knockoutjs": [
-    "knockoutjs"
-  ],
   "waterfall": [
     "waterfall"
   ],
@@ -6154,9 +6146,6 @@
   "jsdom": [
     "jsdom"
   ],
-  "java_14": [
-    "java 14"
-  ],
   "klarna": [
     "klarna"
   ],
@@ -6219,7 +6208,8 @@
     "fiddler"
   ],
   "zend": [
-    "zend"
+    "zend",
+    "zend 1"
   ],
   "process_assessment_frameworks": [
     "process assessment frameworks"
@@ -6279,7 +6269,8 @@
     "reportportal"
   ],
   "auto_route": [
-    "auto route"
+    "auto route",
+    "autoroute"
   ],
   "fastlane": [
     "fastlane"
@@ -6329,9 +6320,6 @@
   "volley": [
     "volley"
   ],
-  "servicebus": [
-    "servicebus"
-  ],
   "storekit2": [
     "storekit2"
   ],
@@ -6365,14 +6353,8 @@
   "sap_bpc_5_1_10": [
     "sap bpc 5.1 - 10"
   ],
-  "linux_2_6": [
-    "linux 2.6"
-  ],
   "genesys_outbound": [
     "genesys outbound"
-  ],
-  "angular_7": [
-    "angular 7"
   ],
   "data_architecture": [
     "data architecture"
@@ -6381,7 +6363,9 @@
     "data foundation"
   ],
   "sharepoint": [
-    "sharepoint"
+    "sharepoint",
+    "sharepoint 2013",
+    "sharepoint 2016"
   ],
   "icefaces": [
     "icefaces"
@@ -6479,14 +6463,8 @@
   "z_wave_modules": [
     "z-wave modules"
   ],
-  "oracle_10_1_11_2": [
-    "oracle 10.1 - 11.2"
-  ],
   "jooq": [
     "jooq"
-  ],
-  "angular_5": [
-    "angular 5"
   ],
   "zeplin": [
     "zeplin"
@@ -6520,9 +6498,6 @@
   ],
   "mq": [
     "mq"
-  ],
-  "sharepoint_2013": [
-    "sharepoint 2013"
   ],
   "nlog": [
     "nlog"
@@ -6701,9 +6676,6 @@
   "cisco_jabber": [
     "cisco jabber"
   ],
-  "sharepoint_2016": [
-    "sharepoint 2016"
-  ],
   "deb": [
     "deb"
   ],
@@ -6811,7 +6783,9 @@
     "fastreport"
   ],
   "sap_bw": [
-    "sap bw"
+    "sap bw",
+    "sap bw 7.0",
+    "sap bw 7.3"
   ],
   "twitter_api": [
     "twitter api"
@@ -6895,7 +6869,8 @@
     "webview"
   ],
   "state_machine": [
-    "state machine"
+    "state machine",
+    "statemachine"
   ],
   "clockify": [
     "clockify"
@@ -6906,9 +6881,6 @@
   "mks": [
     "mks"
   ],
-  "java_7": [
-    "java 7"
-  ],
   "aws_aurora_mysql": [
     "aws aurora mysql"
   ],
@@ -6917,9 +6889,6 @@
   ],
   "strimzi_kafka_operator": [
     "strimzi kafka operator"
-  ],
-  "sqlscript": [
-    "sqlscript"
   ],
   "sap_ecc": [
     "sap ecc"
@@ -6957,9 +6926,6 @@
   "selinux": [
     "selinux"
   ],
-  "restapi": [
-    "restapi"
-  ],
   "avr_jtagice_mkii": [
     "avr jtagice mkii"
   ],
@@ -6968,9 +6934,6 @@
   ],
   "api_test_systems": [
     "api test systems"
-  ],
-  "web_api": [
-    "web.api"
   ],
   "subnets": [
     "subnets"
@@ -7032,17 +6995,11 @@
   "sops": [
     "sops"
   ],
-  "sap_bw_7_3": [
-    "sap bw 7.3"
-  ],
   "fasterxml_jackson": [
     "fasterxml/jackson"
   ],
   "rap": [
     "rap"
-  ],
-  "win7_10": [
-    "win7/10"
   ],
   "amazon_elasticache": [
     "amazon elasticache"
@@ -7076,9 +7033,6 @@
   ],
   "avfoundation": [
     "avfoundation"
-  ],
-  "retrofit_2": [
-    "retrofit 2"
   ],
   "oebs_11i": [
     "oebs 11i"
@@ -7116,9 +7070,6 @@
   "arm": [
     "arm"
   ],
-  "fluentassertion": [
-    "fluentassertion"
-  ],
   "linux_device_driver": [
     "linux device driver"
   ],
@@ -7143,17 +7094,11 @@
   "dunning": [
     "dunning"
   ],
-  "dagger_2": [
-    "dagger 2"
-  ],
   "biological_risk_assessment": [
     "biological risk assessment"
   ],
   "pointnet": [
     "pointnet"
-  ],
-  "php_5": [
-    "php 5"
   ],
   "oracle_applications": [
     "oracle applications"
@@ -7206,9 +7151,6 @@
   "itil": [
     "itil"
   ],
-  "java_8": [
-    "java 8"
-  ],
   "npr": [
     "npr"
   ],
@@ -7248,17 +7190,12 @@
   "oracle_xe": [
     "oracle xe"
   ],
-  "windows_10": [
-    "windows 10"
-  ],
-  "as400": [
-    "as400"
-  ],
   "amazon_aws": [
     "amazon aws"
   ],
   "as_400": [
-    "as/400"
+    "as/400",
+    "as400"
   ],
   "api_documentation": [
     "api documentation"
@@ -7323,9 +7260,6 @@
   "rup": [
     "rup"
   ],
-  "ble_4": [
-    "ble 4"
-  ],
   "rpg_free_form": [
     "rpg free form"
   ],
@@ -7345,7 +7279,8 @@
     "business objects enterprise 3.1 - 4.2"
   ],
   "win7": [
-    "win7"
+    "win7",
+    "win7/10"
   ],
   "mm": [
     "mm"
@@ -7376,9 +7311,6 @@
   ],
   "ruff": [
     "ruff"
-  ],
-  "spring_1_3": [
-    "spring 1.3"
   ],
   "azure_virtual_machines": [
     "azure virtual machines"
@@ -7484,9 +7416,6 @@
   ],
   "torch_lightning": [
     "torch lightning"
-  ],
-  "java_15": [
-    "java 15"
   ],
   "bots_api": [
     "bots api"
@@ -7626,9 +7555,6 @@
   "archunit": [
     "archunit"
   ],
-  "json_rpc_2_0": [
-    "json-rpc 2.0"
-  ],
   "c_core": [
     "c# core"
   ],
@@ -7667,9 +7593,6 @@
   ],
   "workflow_foundation": [
     "workflow foundation"
-  ],
-  "autoroute": [
-    "autoroute"
   ],
   "azure_cdn": [
     "azure cdn"
@@ -7752,9 +7675,6 @@
   "filerun": [
     "filerun"
   ],
-  "sap_netweaver_7_51": [
-    "sap netweaver 7.51"
-  ],
   "spring_core": [
     "spring core"
   ],
@@ -7784,9 +7704,6 @@
   ],
   "tortoisegit": [
     "tortoisegit"
-  ],
-  "sap_business_objects": [
-    "sap business objects"
   ],
   "lighttpd": [
     "lighttpd"
@@ -7855,7 +7772,8 @@
     "coredata"
   ],
   "local_storage": [
-    "local storage"
+    "local storage",
+    "localstorage"
   ],
   "cqs": [
     "cqs"
@@ -8235,9 +8153,6 @@
   "diffusion_probabilistic_models": [
     "diffusion probabilistic models"
   ],
-  "sap_solution_manager_7_2": [
-    "sap solution manager 7.2"
-  ],
   "cron_jobs": [
     "cron jobs"
   ],
@@ -8256,14 +8171,12 @@
   "nunit_reports": [
     "nunit reports"
   ],
-  "business_objects_4_1": [
-    "business objects 4.1"
-  ],
   "tcp_and_unix_sockets": [
     "tcp and unix sockets"
   ],
   "vscode": [
-    "vscode"
+    "vscode",
+    "vs code"
   ],
   "ipso": [
     "ipso"
@@ -8292,9 +8205,6 @@
   ],
   "safe": [
     "safe"
-  ],
-  "chrome_devtools": [
-    "chrome devtools"
   ],
   "oligo": [
     "oligo"
@@ -8390,7 +8300,8 @@
     "biochemical identification"
   ],
   "dagger": [
-    "dagger"
+    "dagger",
+    "dagger 2"
   ],
   "usb_device_drivers": [
     "usb device drivers"
@@ -8400,9 +8311,6 @@
   ],
   "kvm": [
     "kvm"
-  ],
-  "sap_netweaver_7_55": [
-    "sap netweaver 7.55"
   ],
   "prezi": [
     "prezi"
@@ -8464,9 +8372,6 @@
   "typer": [
     "typer"
   ],
-  "angular_10": [
-    "angular 10+"
-  ],
   "canvas_apps": [
     "canvas apps"
   ],
@@ -8525,7 +8430,8 @@
     "relational dbs"
   ],
   "chrome_dev_tools": [
-    "chrome dev tools"
+    "chrome dev tools",
+    "chrome devtools"
   ],
   "power_automate": [
     "power automate"
@@ -8535,9 +8441,6 @@
   ],
   "soa_suite": [
     "soa suite"
-  ],
-  "javase": [
-    "javase"
   ],
   "fluent_validation": [
     "fluent validation"
@@ -8585,7 +8488,11 @@
     "hyperion fm"
   ],
   "sap_netweaver": [
-    "sap netweaver"
+    "sap netweaver",
+    "sap netweaver 7.40",
+    "sap netweaver 7.50",
+    "sap netweaver 7.51",
+    "sap netweaver 7.55"
   ],
   "a_gps": [
     "a-gps"
@@ -8600,10 +8507,8 @@
     "vxworks"
   ],
   "json_rpc": [
-    "json-rpc"
-  ],
-  "highcharts_js": [
-    "highcharts.js"
+    "json-rpc",
+    "json-rpc 2.0"
   ],
   "toplink": [
     "toplink"
@@ -8725,9 +8630,6 @@
   "milter": [
     "milter"
   ],
-  "oracledb": [
-    "oracledb"
-  ],
   "combine": [
     "combine"
   ],
@@ -8743,9 +8645,6 @@
   "veeam": [
     "veeam"
   ],
-  "laravel_5_8": [
-    "laravel 5.8"
-  ],
   "im": [
     "im"
   ],
@@ -8757,9 +8656,6 @@
   ],
   "deployment_documentation": [
     "deployment documentation"
-  ],
-  "visual_studio_2010": [
-    "visual studio 2010"
   ],
   "admin_api": [
     "admin api"
@@ -8840,7 +8736,8 @@
     "bitbucket pipeline"
   ],
   "delphi": [
-    "delphi"
+    "delphi",
+    "delphi 5"
   ],
   "just_audio": [
     "just_audio"
@@ -8850,9 +8747,6 @@
   ],
   "jax_ws": [
     "jax-ws"
-  ],
-  "java_11": [
-    "java 11"
   ],
   "windows_services": [
     "windows services"
@@ -8867,16 +8761,14 @@
     "poco"
   ],
   "knockout_js": [
-    "knockout js"
+    "knockout js",
+    "knockoutjs"
   ],
   "clearquest": [
     "clearquest"
   ],
   "dialogflow": [
     "dialogflow"
-  ],
-  "sap_bw_7_0": [
-    "sap bw 7.0"
   ],
   "telegram": [
     "telegram"
@@ -8916,9 +8808,6 @@
   ],
   "wi_fi": [
     "wi-fi"
-  ],
-  "tcp_ip_v4": [
-    "tcp/ip v4"
   ],
   "alpine_js": [
     "alpine js"
@@ -8966,7 +8855,8 @@
     "nvda"
   ],
   "spring_webflux": [
-    "spring webflux"
+    "spring webflux",
+    "spring web flux"
   ],
   "firebase_service": [
     "firebase service"
@@ -8977,26 +8867,11 @@
   "gcc": [
     "gcc"
   ],
-  "angular_2": [
-    "angular 2"
-  ],
   "saucelabs": [
     "saucelabs"
   ],
-  "tcp_ip_v6": [
-    "tcp/ip v6"
-  ],
-  "win_10": [
-    "win 10"
-  ],
   "terminal": [
     "terminal"
-  ],
-  "ms_visual_studio_2005_2019": [
-    "ms visual studio 2005-2019"
-  ],
-  "statemachine": [
-    "statemachine"
   ],
   "request": [
     "request"
@@ -9042,9 +8917,6 @@
   ],
   "stylecop": [
     "stylecop"
-  ],
-  "php_4": [
-    "php 4"
   ],
   "win32": [
     "win32"
@@ -9102,9 +8974,6 @@
   ],
   "communication_protocols": [
     "communication protocols"
-  ],
-  "android_2_2_2_3": [
-    "android 2.2/2.3"
   ],
   "texttospeech_engine": [
     "texttospeech engine"
@@ -9206,9 +9075,6 @@
   "axon": [
     "axon"
   ],
-  "ss_is": [
-    "ss is"
-  ],
   "mvp": [
     "mvp"
   ],
@@ -9278,9 +9144,6 @@
   "data_analytics_platforms": [
     "data analytics platforms"
   ],
-  "visual_studio_12": [
-    "visual studio 12"
-  ],
   "pl_sql_developer": [
     "pl/sql developer"
   ],
@@ -9310,9 +9173,6 @@
   ],
   "lucidchart": [
     "lucidchart"
-  ],
-  "hibernate_5": [
-    "hibernate 5"
   ],
   "boost": [
     "boost"
@@ -9348,16 +9208,15 @@
     "jira (xray)"
   ],
   "tcp_ip": [
-    "tcp/ip"
+    "tcp/ip",
+    "tcp/ip v4",
+    "tcp/ip v6"
   ],
   "automation_and_billing_tools": [
     "automation and billing tools"
   ],
   "silverlight": [
     "silverlight"
-  ],
-  "java_21": [
-    "java 21"
   ],
   "mtm": [
     "mtm"
@@ -9419,9 +9278,6 @@
   "evaluation": [
     "evaluation"
   ],
-  "magento_2": [
-    "magento 2"
-  ],
   "intershop_enfinity": [
     "intershop enfinity"
   ],
@@ -9479,9 +9335,6 @@
   "ftp": [
     "ftp"
   ],
-  "ble_5": [
-    "ble 5"
-  ],
   "qml": [
     "qml"
   ],
@@ -9527,9 +9380,6 @@
   ],
   "project_reactor": [
     "project reactor"
-  ],
-  "angular_15": [
-    "angular 15+"
   ],
   "easymock": [
     "easymock"
@@ -9690,9 +9540,6 @@
   "facebook_sdk": [
     "facebook sdk"
   ],
-  "tsql": [
-    "tsql"
-  ],
   "rs_485": [
     "rs-485"
   ],
@@ -9714,9 +9561,6 @@
   "tca": [
     "tca"
   ],
-  "unit_tests": [
-    "unit-tests"
-  ],
   "flame": [
     "flame"
   ],
@@ -9737,9 +9581,6 @@
   ],
   "ms_unit_tests": [
     "ms unit-tests"
-  ],
-  "sap_hana_2_0": [
-    "sap hana 2.0"
   ],
   "oebs_r12": [
     "oebs r12"
@@ -9812,9 +9653,6 @@
   ],
   "adobe_cq": [
     "adobe cq"
-  ],
-  "visual_studio_6_0": [
-    "visual studio 6.0"
   ],
   "oracle_service_bus": [
     "oracle service bus"
