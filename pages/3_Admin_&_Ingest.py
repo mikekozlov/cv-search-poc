@@ -23,11 +23,7 @@ except ImportError as e:
     st.stop()
 
 
-st.set_page_config(
-    page_title="Admin & Ingest",
-    page_icon="📥",
-    layout="wide"
-)
+st.set_page_config(page_title="Admin & Ingest", page_icon="📥", layout="wide")
 st.title("📥 Ingestion & System Administration")
 
 if "services_loaded" not in st.session_state:
@@ -48,16 +44,15 @@ def get_db_pipeline():
     pipeline = CVIngestionPipeline(db, settings)
     return db, pipeline
 
-st.subheader("Upload New CVs")
-st.info("Upload one or more JSON files containing CV data. "
-        "Files can contain a single CV object or a list of CV objects "
-        "(like mock_cvs.json).")
 
-uploaded_files = st.file_uploader(
-    "Upload CV JSON files",
-    type=['json'],
-    accept_multiple_files=True
+st.subheader("Upload New CVs")
+st.info(
+    "Upload one or more JSON files containing CV data. "
+    "Files can contain a single CV object or a list of CV objects "
+    "(like mock_cvs.json)."
 )
+
+uploaded_files = st.file_uploader("Upload CV JSON files", type=["json"], accept_multiple_files=True)
 
 if st.button("Ingest New CVs"):
     if not uploaded_files:
@@ -84,7 +79,6 @@ if st.button("Ingest New CVs"):
 
             if cvs_to_ingest:
                 with st.spinner(f"Ingesting {len(cvs_to_ingest)} CV(s) into Postgres..."):
-
                     count = pipeline.run_ingestion_from_list(cvs_to_ingest)
 
                     # Clear cached services so the next load picks up the refreshed DB state.

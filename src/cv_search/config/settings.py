@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     openai_audio_model: str = Field(default="whisper-1")
 
     search_mode: str = "hybrid"
-    search_vs_topk: int = 8
+    search_vs_topk: int = 5
     search_w_lex: float = 1.0
     search_w_sem: float = 0.8
 

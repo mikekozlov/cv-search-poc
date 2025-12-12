@@ -26,11 +26,7 @@ except ImportError as e:
     st.stop()
 
 
-st.set_page_config(
-    page_title="Project Search",
-    page_icon="🚀",
-    layout="wide"
-)
+st.set_page_config(page_title="Project Search", page_icon="🚀", layout="wide")
 st.title("🚀 Project Search & Planning")
 
 if "services_loaded" not in st.session_state:
@@ -56,29 +52,20 @@ with search_tab:
         text_brief = st.text_area(
             "Enter a free-text project brief:",
             height=200,
-            placeholder="e.g., 'We need two senior .NET developers and one React dev for a fintech project...'"
+            placeholder="e.g., 'We need two senior .NET developers and one React dev for a fintech project...'",
         )
 
     with col2:
         st.subheader("Option 2: Search by Criteria File")
-        criteria_file = st.file_uploader(
-            "Upload a criteria.json file",
-            type=['json']
-        )
+        criteria_file = st.file_uploader("Upload a criteria.json file", type=["json"])
 
     st.divider()
 
     search_cols = st.columns(2)
     with search_cols[0]:
-        top_k = st.slider(
-            "Top-K candidates per seat:",
-            min_value=1, max_value=10, value=3
-        )
+        top_k = st.slider("Top-K candidates per seat:", min_value=1, max_value=10, value=3)
     with search_cols[1]:
-        with_justification = st.toggle(
-            "Run LLM Justification (Slower)",
-            value=True
-        )
+        with_justification = st.toggle("Run LLM Justification (Slower)", value=True)
 
     if st.button("Run Project Search", type="primary"):
         payload = None
@@ -91,16 +78,22 @@ with search_tab:
                 ts_dict = crit_dict.get("team_size", {})
                 members = [
                     TeamMember(
-                        role=m["role"], seniority=m.get("seniority"), domains=m.get("domains", []),
-                        tech_tags=m.get("tech_tags", []), nice_to_have=m.get("nice_to_have", []),
-                        rationale=m.get("rationale")
-                    ) for m in ts_dict.get("members", [])
+                        role=m["role"],
+                        seniority=m.get("seniority"),
+                        domains=m.get("domains", []),
+                        tech_tags=m.get("tech_tags", []),
+                        nice_to_have=m.get("nice_to_have", []),
+                        rationale=m.get("rationale"),
+                    )
+                    for m in ts_dict.get("members", [])
                 ]
                 team_size_obj = TeamSize(total=ts_dict.get("total"), members=members)
                 crit_obj = Criteria(
-                    domain=crit_dict.get("domain", []), tech_stack=crit_dict.get("tech_stack", []),
+                    domain=crit_dict.get("domain", []),
+                    tech_stack=crit_dict.get("tech_stack", []),
                     expert_roles=crit_dict.get("expert_roles", []),
-                    project_type=crit_dict.get("project_type"), team_size=team_size_obj,
+                    project_type=crit_dict.get("project_type"),
+                    team_size=team_size_obj,
                     minimum_team=crit_dict.get("minimum_team", []),
                     extended_team=crit_dict.get("extended_team", []),
                 )
@@ -112,16 +105,14 @@ with search_tab:
         elif text_brief:
             st.success("Parsing text brief and searching...")
             raw_text = text_brief
-            crit_obj = parse_request(
-                raw_text, settings.openai_model, settings, client
-            )
+            crit_obj = parse_request(raw_text, settings.openai_model, settings, client)
+            raw_text = getattr(crit_obj, "_english_brief", None) or raw_text
 
         else:
             st.warning("Please provide a text brief or upload a criteria file.")
             st.stop()
 
         if crit_obj:
-
             db = None
             try:
                 # Open the database connection. It will be used for both
@@ -136,7 +127,7 @@ with search_tab:
                         top_k=top_k,
                         run_dir=None,
                         raw_text=raw_text,
-                        with_justification=with_justification
+                        with_justification=with_justification,
                     )
 
                 if not payload:
@@ -158,40 +149,40 @@ with search_tab:
                 if payload.get("gaps"):
                     st.warning(f"Could not find candidates for seat(s): {payload['gaps']}")
 
-                seat_tabs = st.tabs([
-                    f"Seat {s['index']}: {s['role']}" for s in payload['seats']
-                ])
+                seat_tabs = st.tabs([f"Seat {s['index']}: {s['role']}" for s in payload["seats"]])
 
-                for i, seat_data in enumerate(payload['seats']):
+                for i, seat_data in enumerate(payload["seats"]):
                     with seat_tabs[i]:
                         st.write(f"**Role:** {seat_data['role']}")
                         seat_rationale = "No rationale provided."
                         try:
-                            seat_rationale = seat_data['criteria']['team_size']['members'][0]['rationale']
+                            seat_rationale = seat_data["criteria"]["team_size"]["members"][0][
+                                "rationale"
+                            ]
                         except (KeyError, IndexError):
                             pass
                         st.write(f"**Rationale:** *{seat_rationale}*")
 
-                        if not seat_data['results']:
+                        if not seat_data["results"]:
                             st.write("No matching candidates found.")
                             continue
 
-                        for result in seat_data['results']:
-                            cid = result['candidate_id']
-                            score = result['score']['value']
+                        for result in seat_data["results"]:
+                            cid = result["candidate_id"]
+                            score = result["score"]["value"]
 
                             with st.expander(f"**{cid}** (Score: {score:.3f})"):
-                                justification = result.get('llm_justification')
+                                justification = result.get("llm_justification")
                                 if justification:
-                                    st.markdown(f"##### ✅ Justification")
+                                    st.markdown("##### ✅ Justification")
                                     st.markdown(f"**{justification.get('match_summary')}**")
                                     st.markdown("**Strengths:**")
-                                    for point in justification.get('strength_analysis', []):
+                                    for point in justification.get("strength_analysis", []):
                                         st.markdown(f"- {point}")
                                     st.markdown("**Gaps:**")
-                                    for point in justification.get('gap_analysis', []):
+                                    for point in justification.get("gap_analysis", []):
                                         st.markdown(f"- {point}")
-                                    score = justification.get('overall_match_score', 0.0)
+                                    score = justification.get("overall_match_score", 0.0)
                                     st.metric("LLM Match Score", f"{score * 100:.0f}%")
                                 else:
                                     st.info("Justification was not run for this candidate.")
@@ -205,27 +196,29 @@ with search_tab:
                                         st.markdown(f"> {context.get('summary_text', 'N/A')}")
 
                                         st.markdown("##### Experience")
-                                        experience_text = context.get('experience_text', 'N/A')
+                                        experience_text = context.get("experience_text", "N/A")
                                         # Split the experience text back into individual job lines
                                         # This parsing logic is based on _mk_experience_line in ingestion_pipeline.py
-                                        experience_lines = experience_text.split(' \n')
+                                        experience_lines = experience_text.split(" \n")
 
                                         for line in experience_lines:
                                             if not line.strip():
                                                 continue
 
-                                            parts = line.split(' | ')
+                                            parts = line.split(" | ")
                                             if parts:
-                                                st.markdown(f"**{parts[0]}**") # Title @ Company
+                                                st.markdown(f"**{parts[0]}**")  # Title @ Company
                                                 with st.container(border=True):
                                                     for part in parts[1:]:
                                                         if part.startswith("domains: "):
-                                                            st.markdown(f"**Domains:** `{part[9:]}`")
+                                                            st.markdown(
+                                                                f"**Domains:** `{part[9:]}`"
+                                                            )
                                                         elif part.startswith("tech: "):
                                                             st.markdown(f"**Tech:** `{part[6:]}`")
                                                         elif part.startswith("highlights: "):
                                                             # Split highlights by " ; "
-                                                            highlights = part[12:].split(' ; ')
+                                                            highlights = part[12:].split(" ; ")
                                                             st.markdown("**Highlights:**")
                                                             for h in highlights:
                                                                 st.markdown(f"- {h}")
@@ -233,7 +226,7 @@ with search_tab:
                                                             st.markdown(part)
 
                                         st.markdown("##### Tags")
-                                        st.code(context.get('tags_text', 'N/A'), language=None)
+                                        st.code(context.get("tags_text", "N/A"), language=None)
                                     else:
                                         st.error(f"Could not retrieve context for {cid}.")
                                 # --- END UPDATED CODE BLOCK ---
@@ -252,14 +245,16 @@ with search_tab:
 
 with plan_tab:
     st.subheader("Generate Presale Team")
-    st.info("This tool generates a budget-agnostic presale team "
-            "based *only* on the tech and features in the brief. (This feature is currently disabled)")
+    st.info(
+        "This tool generates a budget-agnostic presale team "
+        "based *only* on the tech and features in the brief. (This feature is currently disabled)"
+    )
 
     presale_text = st.text_area(
         "Enter a project brief to plan for:",
         height=200,
         placeholder="e.g., 'Mobile + web app with Flutter/React; AI chatbot for goal setting...'",
-        disabled=True
+        disabled=True,
     )
 
     if st.button("Generate Presale Plan", disabled=True):

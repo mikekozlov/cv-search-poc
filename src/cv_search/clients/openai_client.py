@@ -12,6 +12,7 @@ from cv_search.config.settings import Settings
 from cv_search.lexicon.loader import load_domain_lexicon, load_expertise_lexicon, load_role_lexicon
 from cv_search.llm.schemas import (
     CandidateJustification,
+    LLMCriteria,
     LLMStructuredBrief,
 )
 from cv_search.llm.logger import log_chat
@@ -241,6 +242,10 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         system_prompt = f"""
         You are a presale TA lead. Given a client brief, produce canonical search Criteria and presale staffing using ONLY the provided role/domain/expertise lexicons.
 
+        Translation rule:
+        - If the brief is not in English, first translate it to clear English (preserve technical terms). Use ONLY that English translation for all matching and reasoning.
+        - Include a top-level field `english_brief` with the English translation of the client brief.
+
         Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
         Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
         Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
@@ -272,8 +277,60 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         )
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
-        payload = self.get_structured_brief(text, model, settings)
-        return payload.get("criteria", payload)
+        role_lex_list = load_role_lexicon(settings.lexicon_dir)
+        domain_lex_list = load_domain_lexicon(settings.lexicon_dir)
+        expertise_lex_list = load_expertise_lexicon(settings.lexicon_dir)
+
+        role_candidates = _prioritize_full_lexicon(
+            role_lex_list,
+            _normalize_brief_tokens(text),
+            "",
+            max_candidates=30,
+        )
+        domain_candidates = _prioritize_full_lexicon(
+            domain_lex_list,
+            text,
+            "",
+            max_candidates=30,
+        )
+        expertise_candidates = _prioritize_full_lexicon(
+            expertise_lex_list,
+            text,
+            "",
+            max_candidates=30,
+        )
+
+        system_prompt = f"""
+        You are a TA lead. Given a client brief, produce canonical search Criteria using ONLY the provided role/domain/expertise lexicons.
+
+        Translation rule:
+        - If the brief is not in English, first translate it to clear English (preserve technical terms). Use ONLY that English translation for all matching and reasoning.
+        - Include a top-level field `english_brief` with the English translation of the client brief.
+
+        Role candidates (canonical keys): {json.dumps(role_candidates, indent=2)}
+        Domain candidates (canonical keys): {json.dumps(domain_candidates, indent=2)}
+        Expertise candidates (canonical keys): {json.dumps(expertise_candidates, indent=2)}
+
+        Strict rules:
+        - Use ONLY canonical role keys from the Role candidates and ONLY canonical domain keys from the Domain candidates. Do NOT invent or rephrase keys.
+        - Output JSON matching the Criteria schema shown below. Leave fields empty rather than guessing.
+
+        Criteria rules:
+        - Populate team_size.members only when a specific role need is implied. Each member must include: role (canonical), seniority (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), domains (subset of Domain candidates), tech_tags (must-have/core tech), and nice_to_have (optional/secondary tech).
+        - tech_stack is the deduplicated rollup of explicit technologies mentioned in the brief. List only tech explicitly present; do not invent.
+        - expert_roles is the set of canonical roles relevant to the brief; include any roles assigned to team_size.members.
+        - If the brief does not mention a domain, return an empty domain list; do NOT guess a domain.
+        - If the brief is generic hiring intent like "need a developer/engineer" with no role qualifiers, domain, seniority, or technologies, return empty expert_roles and team_size (null/empty) instead of guessing a generic role.
+        """
+
+        prompt = f"Client brief:\n{text.strip()}"
+
+        return self._get_structured_response(
+            prompt=prompt,
+            system_prompt=system_prompt,
+            model=model,
+            pydantic_model=LLMCriteria,
+        )
 
     def get_presale_team_plan(
         self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings
@@ -414,8 +471,11 @@ class StubOpenAIBackend(OpenAIBackendProtocol):
             return {"criteria": criteria, "presale_team": presale}
 
     def get_structured_criteria(self, text: str, model: str, settings: Settings) -> Dict[str, Any]:
-        payload = self.get_structured_brief(text, model, settings)
-        return payload.get("criteria", payload)
+        try:
+            return self._load_fixture("structured_criteria.json")
+        except FileNotFoundError:
+            payload = self.get_structured_brief(text, model, settings)
+            return payload.get("criteria", payload)
 
     def get_presale_team_plan(
         self, brief: str, criteria: Dict[str, Any], model: str, settings: Settings

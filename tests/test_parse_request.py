@@ -138,8 +138,28 @@ def test_parse_request_includes_presale_team_from_combined_payload():
         model="gpt-4.1-mini",
         settings=Settings(),
         client=_StubClient(payload),
+        include_presale=True,
     )
 
     assert crit.expert_roles == ["backend_engineer"]
     assert crit.minimum_team == ["backend_engineer"]
     assert crit.extended_team == ["data_privacy_expert"]
+
+
+def test_parse_request_attaches_english_brief_when_present():
+    payload = {
+        "english_brief": "Need a strong Senior .NET developer with AI and Python experience on Azure, 5+ years, for a banking startup.",
+        "domain": [],
+        "tech_stack": ["dotnet", "python", "azure"],
+        "expert_roles": ["Backend_Engineer"],
+        "team_size": {},
+    }
+
+    crit = parse_request(
+        text="Потрібен сильний Senior .NET розробник ...",
+        model="gpt-4.1-mini",
+        settings=Settings(),
+        client=_StubClient(payload),
+    )
+
+    assert getattr(crit, "_english_brief", None) == payload["english_brief"]

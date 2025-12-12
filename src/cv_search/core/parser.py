@@ -136,8 +136,18 @@ def _build_team_size(
     return TeamSize(total=total, members=members)
 
 
-def parse_request(text: str, model: str, settings: Settings, client: OpenAIClient) -> Criteria:
-    """Extract canonical search criteria using the LLM client."""
+def parse_request(
+    text: str,
+    model: str,
+    settings: Settings,
+    client: OpenAIClient,
+    *,
+    include_presale: bool = False,
+) -> Criteria:
+    """Extract canonical search criteria using the LLM client.
+
+    By default this parses criteria only. Set include_presale=True for presale workflows.
+    """
 
     role_lexicon = set(load_role_lexicon(settings.lexicon_dir))
     domain_lexicon = set(load_domain_lexicon(settings.lexicon_dir))
@@ -147,12 +157,17 @@ def parse_request(text: str, model: str, settings: Settings, client: OpenAIClien
 
     presale_payload: dict = {}
     criteria_payload: dict
-    if hasattr(client, "get_structured_brief"):
+    english_brief: str | None = None
+    if include_presale and hasattr(client, "get_structured_brief"):
         payload = client.get_structured_brief(text, model=model, settings=settings)
+        if isinstance(payload, dict):
+            english_brief = payload.get("english_brief")
         presale_payload = payload.get("presale_team") or {}
         criteria_payload = payload.get("criteria", payload)
     else:
         criteria_payload = client.get_structured_criteria(text, model=model, settings=settings)
+        if isinstance(criteria_payload, dict):
+            english_brief = criteria_payload.get("english_brief")
 
     team_payload = criteria_payload.get("team_size") or {}
     team_size = _build_team_size(
@@ -192,7 +207,7 @@ def parse_request(text: str, model: str, settings: Settings, client: OpenAIClien
         )
         team_size.total = team_size.total or len(team_size.members)
 
-    return Criteria(
+    crit_obj = Criteria(
         domain=domains,
         tech_stack=tech_stack,
         expert_roles=expert_roles,
@@ -201,3 +216,7 @@ def parse_request(text: str, model: str, settings: Settings, client: OpenAIClien
         minimum_team=minimum_team,
         extended_team=extended_team,
     )
+    if english_brief:
+        setattr(crit_obj, "_english_brief", english_brief)
+
+    return crit_obj

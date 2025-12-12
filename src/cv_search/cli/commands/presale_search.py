@@ -45,10 +45,17 @@ def register(cli: click.Group) -> None:
         client = ctx.client
 
         planner = Planner()
-        crit = parse_request(text, model=settings.openai_model, settings=settings, client=client)
+        crit = parse_request(
+            text,
+            model=settings.openai_model,
+            settings=settings,
+            client=client,
+            include_presale=True,
+        )
+        raw_text_en = getattr(crit, "_english_brief", None) or text
         crit_with_plan = planner.derive_presale_team(
             crit,
-            raw_text=text,
+            raw_text=raw_text_en,
             client=client,
             settings=settings,
         )

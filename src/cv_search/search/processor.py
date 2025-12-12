@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -23,6 +24,40 @@ def default_run_dir(base: str | Path | None = None) -> str:
 class SearchProcessor:
     """High-level orchestrator for single-seat and multi-seat searches."""
 
+    _GENERIC_WORDS = {
+        "developer",
+        "developers",
+        "engineer",
+        "engineers",
+        "dev",
+        "coder",
+        "programmer",
+    }
+    _STOPWORDS = {
+        "need",
+        "needs",
+        "want",
+        "wants",
+        "looking",
+        "look",
+        "for",
+        "to",
+        "hire",
+        "hiring",
+        "a",
+        "an",
+        "the",
+        "some",
+        "someone",
+        "somebody",
+        "please",
+        "we",
+        "i",
+        "our",
+        "team",
+        "project",
+    }
+
     def __init__(
         self,
         db: CVDatabase,
@@ -41,6 +76,25 @@ class SearchProcessor:
         self.planner = Planner()
         self.artifact_writer = SearchRunArtifactWriter()
         self.justification_service = JustificationService(client, settings, db=db)
+
+    def _is_generic_low_signal(
+        self, raw_text: str, criteria: Dict[str, Any], seats: List[Dict[str, Any]]
+    ) -> bool:
+        tokens = set(re.findall(r"[a-z0-9_+#\\.]+", raw_text.lower()))
+        meaningful = tokens - self._STOPWORDS - self._GENERIC_WORDS
+        if meaningful:
+            return False
+
+        if criteria.get("domain") or criteria.get("tech_stack"):
+            return False
+
+        for seat in seats:
+            if seat.get("seniority"):
+                return False
+            if seat.get("domains") or seat.get("tech_tags") or seat.get("nice_to_have"):
+                return False
+
+        return bool(tokens & self._GENERIC_WORDS)
 
     def _extract_seat(self, criteria: Dict[str, Any]) -> Dict[str, Any]:
         seat = criteria["team_size"]["members"][0]
@@ -157,6 +211,20 @@ class SearchProcessor:
         base_dict = self.planner._criteria_dict(crit_with_seats)
 
         seats = (base_dict.get("team_size") or {}).get("members") or []
+        if raw_text and self._is_generic_low_signal(raw_text, base_dict, seats):
+            note = (
+                "This brief is too broad to search reliably. "
+                "Please specify the role(s) you need and, if possible, seniority, domain, or tech stack."
+            )
+            return {
+                "project_criteria": base_dict,
+                "seats": [],
+                "gaps": [],
+                "run_dir": None,
+                "note": note,
+                "reason": "low_signal_brief",
+            }
+
         if not seats:
             if raw_text:
                 note = (

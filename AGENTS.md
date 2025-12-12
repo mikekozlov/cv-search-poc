@@ -63,7 +63,7 @@ At a minimum, before changing code:
 ## Mandatory Testing for Any Code Change
 
 If you change **any code or tests**, you must run tests and ensure they pass before giving a final answer.
-Run only unit tests, don't run integration tests that reside under /tests/integration folder
+Run only unit tests, don't run integration tests that reside under /tests/integration folder and /tests/eval folder 
 
 ### Default test flow (PowerShell, from repo root)
 

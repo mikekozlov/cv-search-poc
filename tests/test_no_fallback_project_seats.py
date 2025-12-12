@@ -1,6 +1,6 @@
 from cv_search.clients.openai_client import OpenAIClient, StubOpenAIBackend
 from cv_search.config.settings import Settings
-from cv_search.core.criteria import Criteria
+from cv_search.core.criteria import Criteria, TeamMember, TeamSize
 from cv_search.planner.service import Planner
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder
 from cv_search.search.processor import SearchProcessor
@@ -57,3 +57,50 @@ def test_search_for_project_returns_empty_payload_when_no_seats(tmp_path):
     assert payload["seats"] == []
     assert payload["gaps"] == []
     assert payload["reason"] == "low_signal_brief"
+
+
+def test_search_for_project_returns_low_signal_when_llm_guesses_generic_role(tmp_path):
+    settings = Settings()
+    client = OpenAIClient(settings, backend=StubOpenAIBackend(settings))
+
+    class _StubDB:
+        pass
+
+    processor = SearchProcessor(
+        db=_StubDB(),
+        client=client,
+        settings=settings,
+        embedder=DeterministicEmbedder(),
+    )
+
+    crit = Criteria(
+        domain=[],
+        tech_stack=[],
+        expert_roles=["fullstack_engineer"],
+        project_type=None,
+        team_size=TeamSize(
+            total=1,
+            members=[
+                TeamMember(
+                    role="fullstack_engineer",
+                    seniority=None,
+                    domains=[],
+                    tech_tags=[],
+                    nice_to_have=[],
+                    rationale=None,
+                )
+            ],
+        ),
+    )
+
+    payload = processor.search_for_project(
+        criteria=crit,
+        top_k=3,
+        run_dir=str(tmp_path),
+        raw_text="need a developer",
+        with_justification=False,
+    )
+
+    assert payload["reason"] == "low_signal_brief"
+    assert payload["seats"] == []
+    assert payload["run_dir"] is None
