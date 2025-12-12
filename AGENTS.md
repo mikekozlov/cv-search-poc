@@ -153,14 +153,7 @@ When you cite code locations, always output file references in a Rider-linkify-s
 - Prefer forward slashes `/` in paths.
 - Avoid line-wrapping inside the path; if there are many references, list them on separate lines.
 
-### Where to put them
-At the end of your response (or after the relevant paragraph), include a section titled exactly:
-
-File references:
-<then list the plain `path:line` lines>
-
 ### Examples (good)
-File references:
 src/cv_search/cli/commands/search.py:41
 src/cv_search/search/processor.py:112
 src/cv_search/cli/commands/search.py:137
