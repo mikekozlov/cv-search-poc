@@ -159,7 +159,16 @@ class SearchProcessor:
         out_dir = run_dir or default_run_dir(self.settings.active_runs_dir)
         Path(out_dir).mkdir(parents=True, exist_ok=True)
 
-        seats = base_dict["team_size"]["members"]
+        seats = (base_dict.get("team_size") or {}).get("members") or []
+        if not seats:
+            return {
+                "project_criteria": base_dict,
+                "seats": [],
+                "gaps": [],
+                "run_dir": out_dir,
+                "note": "No canonical roles derived from brief; no seats searched.",
+                "reason": "no_seats_derived",
+            }
         aggregated: List[Dict[str, Any]] = []
         gaps: List[int] = []
 

@@ -137,3 +137,38 @@ PS C:\Users\<username>\Projects\cv-search-poc> uv run pytest tests\eval\test_ing
 Explicitly: Docker is not required for these instructions. Point `DB_URL` at an already-running Postgres on `localhost:5433/cvsearch_test` (or your configured host) and ensure Redis in `.env.test` is reachable.
 
 The eval test is skipped unless `RUN_INGEST_EVAL` is set; always set that (and `EVAL_USE_LIVE` if you want live OpenAI) before invoking pytest so the test actually runs.
+
+
+## Rider-navigable file references (terminal linkify)
+
+When you cite code locations, always output file references in a Rider-linkify-safe format.
+
+### Required format
+- Use **one location per line**:
+  relative/path/from/repo/root.ext:LINE
+- The line must contain **only** the `path:line` token:
+    - No surrounding parentheses, brackets, quotes, or backticks
+    - No trailing punctuation after the line number (no `,` `.` `)` etc.)
+    - Do not put multiple `path:line` references on the same line separated by commas
+- Prefer forward slashes `/` in paths.
+- Avoid line-wrapping inside the path; if there are many references, list them on separate lines.
+
+### Where to put them
+At the end of your response (or after the relevant paragraph), include a section titled exactly:
+
+File references:
+<then list the plain `path:line` lines>
+
+### Examples (good)
+File references:
+src/cv_search/cli/commands/search.py:41
+src/cv_search/search/processor.py:112
+src/cv_search/cli/commands/search.py:137
+src/cv_search/search/processor.py:148
+
+### Examples (bad — do not do this)
+- (src/cv_search/cli/commands/search.py:41,)
+- src/cv_search/cli/commands/search.py:41,
+- src/cv_search/cli/commands/search.py:41.
+- src/.../search.py:41, src/.../processor.py:112
+- `src/cv_search/cli/commands/search.py:41`

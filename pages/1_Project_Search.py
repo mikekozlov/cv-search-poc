@@ -149,6 +149,12 @@ with search_tab:
                     with st.expander("Show Derived Criteria"):
                         st.json(payload.get("project_criteria"))
 
+                if not payload.get("seats"):
+                    st.warning(
+                        "No canonical roles could be derived from this brief, so no candidates were searched."
+                    )
+                    st.stop()
+
                 if payload.get("gaps"):
                     st.warning(f"Could not find candidates for seat(s): {payload['gaps']}")
 

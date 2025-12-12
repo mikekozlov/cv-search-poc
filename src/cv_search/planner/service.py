@@ -156,7 +156,7 @@ class Planner:
     def derive_project_seats(self, crit: Criteria, raw_text: Optional[str] = None) -> Criteria:
         """
         Deterministically build seat definitions (if not already provided) from normalized tech/features.
-        Always returns a Criteria that has team_size.members >= 1.
+        May return zero seats when no canonical roles are implied.
         """
         if crit.team_size and (crit.team_size.members or 0):
             return crit
@@ -242,32 +242,6 @@ class Planner:
                     rationale="AI/assistant/chatbot mentioned; add ML engineering for integration & evals.",
                 )
             )
-        if not roles:
-            fallback_role = (
-                "frontend_engineer"
-                if self._has_any(techs, self._WEB_TECH_TOKENS)
-                else "backend_engineer"
-            )
-            roles = [
-                TeamMember(
-                    role=fallback_role,
-                    seniority=SeniorityEnum.senior,
-                    domains=list(domains),
-                    tech_tags=[
-                        self._first_present(
-                            techs,
-                            list(
-                                self._WEB_TECH_TOKENS
-                                if fallback_role == "frontend_engineer"
-                                else self._BACKEND_TECH_HINTS
-                            ),
-                        )
-                        or ""
-                    ],
-                    nice_to_have=[],
-                    rationale="Fallback seat due to sparse brief.",
-                )
-            ]
 
         team = TeamSize(total=len(roles), members=roles)
         expert_roles = list({m.role for m in roles})
