@@ -141,27 +141,58 @@ The eval test is skipped unless `RUN_INGEST_EVAL` is set; always set that (and `
 
 ## Rider-navigable file references (terminal linkify)
 
-When you cite code locations, always output file references in a Rider-linkify-safe format.
+When citing code locations, always emit Rider-linkifiable file references **inline**, immediately after the step they support (not as a separate list at the end).
 
-### Required format
-- Use **one location per line**:
-  relative/path/from/repo/root.ext:LINE
-- The line must contain **only** the `path:line` token:
-    - No surrounding parentheses, brackets, quotes, or backticks
+### Placement (mandatory)
+- Any time you mention a **specific function/method/class/CLI command entrypoint** (e.g., `ingest_gdrive_cmd`, `run_gdrive_ingestion`, `_process_single_cv_file`, `upsert_cvs`, etc.), you MUST place the corresponding file reference(s) **directly under that line**.
+- Do **not** collect references into a “References” or “File references” section at the bottom.
+- If a step maps to multiple relevant locations, output **multiple reference lines** immediately under that step (one per line).
+
+### Reference line format (must be Rider-linkifiable)
+A “reference line” must be:
+
+[optional leading spaces]relative/path/from/repo/root.ext:LINE
+
+Rules:
+- The reference line may have **leading spaces only** (to visually “nest” under the step).
+- After any leading spaces, the line must contain **only** the `path:line` token.
+    - No bullets (`-`, `*`, `•`)
+    - No prefixes/labels (`File:`, `Ref:`, `at`, `→`, `↳`)
+    - No surrounding punctuation (`(` `)` `[` `]` `"` `'` `` ` ``)
     - No trailing punctuation after the line number (no `,` `.` `)` etc.)
-    - Do not put multiple `path:line` references on the same line separated by commas
-- Prefer forward slashes `/` in paths.
-- Avoid line-wrapping inside the path; if there are many references, list them on separate lines.
+- Prefer forward slashes `/`.
+- Avoid line-wrapping inside the path. If needed, split the explanation but keep the reference line intact.
 
-### Examples (good)
-src/cv_search/cli/commands/search.py:41
-src/cv_search/search/processor.py:112
-src/cv_search/cli/commands/search.py:137
-src/cv_search/search/processor.py:148
+### Example (good)
+- ingest-gdrive --file <name> calls ingest_gdrive_cmd(...).
+  src/cv_search/cli/commands/ingestion.py:137
+
+- ingest_gdrive_cmd instantiates CVIngestionPipeline and calls run_gdrive_ingestion(...).
+  src/cv_search/ingestion/pipeline.py:424
+
+- run_gdrive_ingestion:
+  src/cv_search/ingestion/pipeline.py:394
+  src/cv_search/ingestion/pipeline.py:326
+    - _partition_gdrive_files(...) skips unchanged/out-of-inbox files.
+      src/cv_search/ingestion/pipeline.py:269
+    - Submits _process_single_cv_file(...) for that file.
+      src/cv_search/ingestion/pipeline.py:172
+
+- _process_single_cv_file(...) extracts text then requests structured CV.
+  src/cv_search/ingestion/pipeline.py:172
+  src/cv_search/ingestion/cv_parser.py:15
+  src/cv_search/clients/openai_client.py:464
+  src/cv_search/clients/openai_client.py:312
+
+- upsert_cvs(...) embeds and upserts candidate doc then commits.
+  src/cv_search/retrieval/local_embedder.py:30
+  src/cv_search/db/database.py:148
+  src/cv_search/db/database.py:335
+  src/cv_search/db/database.py:91
 
 ### Examples (bad — do not do this)
-- (src/cv_search/cli/commands/search.py:41,)
-- src/cv_search/cli/commands/search.py:41,
-- src/cv_search/cli/commands/search.py:41.
-- src/.../search.py:41, src/.../processor.py:112
-- `src/cv_search/cli/commands/search.py:41`
+- ingest-gdrive ... (src/cv_search/cli/commands/ingestion.py:137)
+- ingest-gdrive ... src/cv_search/cli/commands/ingestion.py:137,
+- - src/cv_search/cli/commands/ingestion.py:137
+- File: src/cv_search/cli/commands/ingestion.py:137
+- `src/cv_search/cli/commands/ingestion.py:137`
