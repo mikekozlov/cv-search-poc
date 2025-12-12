@@ -56,4 +56,4 @@ def test_search_for_project_returns_empty_payload_when_no_seats(tmp_path):
 
     assert payload["seats"] == []
     assert payload["gaps"] == []
-    assert payload["reason"] == "no_seats_derived"
+    assert payload["reason"] == "low_signal_brief"

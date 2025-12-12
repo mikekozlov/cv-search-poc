@@ -156,19 +156,28 @@ class SearchProcessor:
         crit_with_seats = self.planner.derive_project_seats(criteria, raw_text=raw_text)
         base_dict = self.planner._criteria_dict(crit_with_seats)
 
-        out_dir = run_dir or default_run_dir(self.settings.active_runs_dir)
-        Path(out_dir).mkdir(parents=True, exist_ok=True)
-
         seats = (base_dict.get("team_size") or {}).get("members") or []
         if not seats:
+            if raw_text:
+                note = (
+                    "Not enough information to derive roles from this brief. "
+                    "Please specify the role(s) you need and, if possible, seniority, domain, or tech stack."
+                )
+                reason = "low_signal_brief"
+            else:
+                note = "Criteria contains no seats; provide team_size.members or use a free-text brief."
+                reason = "no_seats_derived"
             return {
                 "project_criteria": base_dict,
                 "seats": [],
                 "gaps": [],
-                "run_dir": out_dir,
-                "note": "No canonical roles derived from brief; no seats searched.",
-                "reason": "no_seats_derived",
+                "run_dir": None,
+                "note": note,
+                "reason": reason,
             }
+
+        out_dir = run_dir or default_run_dir(self.settings.active_runs_dir)
+        Path(out_dir).mkdir(parents=True, exist_ok=True)
         aggregated: List[Dict[str, Any]] = []
         gaps: List[int] = []
 
