@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
 import click
 
@@ -115,8 +116,14 @@ def register(cli: click.Group) -> None:
 
     @cli.command("presale-plan")
     @click.option("--text", type=str, required=True, help="Free-text client brief")
+    @click.option(
+        "--run-dir",
+        type=click.Path(file_okay=False),
+        default=None,
+        help="Output folder for artifacts (default: runs/<timestamp>/)",
+    )
     @click.pass_obj
-    def presale_plan_cmd(ctx: CLIContext, text: str) -> None:
+    def presale_plan_cmd(ctx: CLIContext, text: str, run_dir: str | None) -> None:
         """
         LLM-derived presale team arrays returned as Criteria JSON (no search).
         """
@@ -138,6 +145,10 @@ def register(cli: click.Group) -> None:
             client=client,
             settings=settings,
         )
+
+        out_dir = run_dir or default_run_dir(settings.active_runs_dir)
+        Path(out_dir).mkdir(parents=True, exist_ok=True)
+        (Path(out_dir) / "criteria.json").write_text(crit_with_plan.to_json(), encoding="utf-8")
 
         click.echo(crit_with_plan.to_json())
 

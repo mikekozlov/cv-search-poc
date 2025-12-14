@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from datetime import datetime
 from pathlib import Path
@@ -134,6 +135,7 @@ class SearchProcessor:
 
         if not gated_ids:
             return {
+                "criteria": criteria,
                 "query_fingerprint": self._fingerprint(seat, mode),
                 "metrics": {
                     "gate_count": 0,
@@ -246,6 +248,10 @@ class SearchProcessor:
 
         out_dir = run_dir or default_run_dir(self.settings.active_runs_dir)
         Path(out_dir).mkdir(parents=True, exist_ok=True)
+        (Path(out_dir) / "criteria.json").write_text(
+            json.dumps(base_dict, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
         aggregated: List[Dict[str, Any]] = []
         gaps: List[int] = []
 

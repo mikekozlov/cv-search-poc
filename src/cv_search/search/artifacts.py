@@ -21,6 +21,10 @@ class SearchRunArtifactWriter:
                 encoding="utf-8",
             )
 
+        criteria = payload.get("criteria")
+        if criteria is not None:
+            _write_json("criteria.json", criteria)
+
         gating_sql = (payload.get("gating_sql") or "").strip()
         _write_text("gating.sql.txt", f"{gating_sql}\n")
 

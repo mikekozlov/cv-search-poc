@@ -20,7 +20,8 @@ class PgVectorSemanticRetriever:
 
     def _build_vs_query(self, seat: Dict[str, Any]) -> str:
         role = seat["role"].replace("_", " ")
-        seniority = seat["seniority"]
+        seniority_obj = seat.get("seniority") or ""
+        seniority = getattr(seniority_obj, "value", seniority_obj) or ""
         domains = ", ".join(seat.get("domains") or []) if seat.get("domains") else "any domain"
         musts = (
             ", ".join(seat.get("must_have") or []) if seat.get("must_have") else "(no hard musts)"
