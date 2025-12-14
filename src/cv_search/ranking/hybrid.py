@@ -96,12 +96,16 @@ class HybridRanker:
             coverage = float(row.get("must_hit_count", 0)) / M
             must_idf_sum = float(row.get("must_idf_sum") or 0.0)
             nice_idf_sum = float(row.get("nice_idf_sum") or 0.0)
+            must_idf_total = float(row.get("must_idf_total") or 0.0)
+            nice_idf_total = float(row.get("nice_idf_total") or 0.0)
+            must_idf_cov = must_idf_sum / must_idf_total if must_idf_total > 0 else 0.0
+            nice_idf_cov = nice_idf_sum / nice_idf_total if nice_idf_total > 0 else 0.0
             domain_hit = bool(row.get("domain_present"))
             fts_rank = float(row.get("fts_rank") or 0.0)
             lex_score_val = (
                 2.0 * coverage
-                + 1.0 * must_idf_sum
-                + 0.3 * nice_idf_sum
+                + 1.0 * must_idf_cov
+                + 0.3 * nice_idf_cov
                 + 0.5 * (1.0 if domain_hit else 0.0)
                 + 0.4 * fts_rank
             )
@@ -117,12 +121,18 @@ class HybridRanker:
             }
 
         # 2. Build semantic map
-        n_sem = len(semantic_hits)
         sem_score: Dict[str, float] = {}
         sem_evidence: Dict[str, Dict[str, Any]] = {}
         for h in semantic_hits:
             cid = h["candidate_id"]
-            val = (n_sem - (h["rank"] - 1)) / float(n_sem) if n_sem > 0 else 0.0
+            raw = h.get("score")
+            if raw is None:
+                raw = 1.0 - float(h.get("distance", 0.0) or 0.0)
+            val = float(raw or 0.0)
+            if val < 0.0:
+                val = 0.0
+            elif val > 1.0:
+                val = 1.0
             sem_score[cid] = val
             sem_evidence[cid] = {"file_id": h.get("file_id", ""), "reason": h.get("reason", "")}
 
@@ -131,9 +141,16 @@ class HybridRanker:
         fusion_dump: List[Dict[str, Any]] = []
 
         if mode == "lexical":
-            cut = lexical_results[:top_k]
-            for i, row in enumerate(cut, start=1):
-                cid = row["candidate_id"]
+
+            def _last_upd(cid: str):
+                v = lex_map.get(cid, {}).get("last_updated")
+                return v or ""
+
+            ranked_ids = sorted(
+                lex_map.keys(),
+                key=lambda c: (-lex_map[c]["score_val"], _last_upd(c), c),
+            )
+            for i, cid in enumerate(ranked_ids[:top_k], start=1):
                 final_results.append(
                     self._assemble_item(
                         cid, seat, lex_map[cid]["score_val"], i, lex_map, sem_score, sem_evidence
@@ -151,14 +168,20 @@ class HybridRanker:
                 )
 
         else:  # hybrid
+
+            def _last_upd(cid: str):
+                v = lex_map.get(cid, {}).get("last_updated")
+                return v or ""
+
+            lex_top = sorted(
+                lex_map.keys(),
+                key=lambda c: (-lex_map[c]["score_val"], _last_upd(c), c),
+            )[:top_k]
             pool_ids = list(
-                dict.fromkeys(
-                    [r["candidate_id"] for r in lexical_results[:top_k]]
-                    + [h["candidate_id"] for h in semantic_hits[:top_k]]
-                )
+                dict.fromkeys(lex_top + [h["candidate_id"] for h in semantic_hits[:top_k]])
             )
             if not pool_ids:
-                pool_ids = [r["candidate_id"] for r in lexical_results[:top_k]]
+                pool_ids = lex_top
 
             lex_vals = [lex_map.get(cid, {"score_val": 0.0})["score_val"] for cid in pool_ids]
             lx_min, lx_max = (min(lex_vals), max(lex_vals)) if lex_vals else (0.0, 0.0)
@@ -172,10 +195,6 @@ class HybridRanker:
                 sm = sem_score.get(cid, 0.0)
                 final = self.w_lex * lx + self.w_sem * sm
                 fused.append((cid, final, lx, sm))
-
-            def _last_upd(cid: str):
-                v = lex_map.get(cid, {}).get("last_updated")
-                return v or ""
 
             fused.sort(key=lambda t: (-t[1], _last_upd(t[0]), t[0]))
 

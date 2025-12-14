@@ -27,9 +27,12 @@ class LexicalRetriever:
         seat: Dict[str, Any],
         top_k: int,
     ) -> Tuple[List[Any], str]:
-        must_have = seat.get("must_have", [])
-        nice_to_have = seat.get("nice_to_have", [])
-        domains = seat.get("domains", [])
+        must_have = [t for t in dict.fromkeys(seat.get("must_have", [])) if t]
+        nice_deduped = [t for t in dict.fromkeys(seat.get("nice_to_have", [])) if t]
+        must_set = set(must_have)
+        nice_to_have = [t for t in nice_deduped if t not in must_set]
+        domains = [d for d in dict.fromkeys(seat.get("domains", [])) if d]
+        seat = {**seat, "must_have": must_have, "nice_to_have": nice_to_have, "domains": domains}
 
         idf_must = self.db.compute_idf(must_have, "tech")
         idf_nice = self.db.compute_idf(nice_to_have, "tech")

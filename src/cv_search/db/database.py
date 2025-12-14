@@ -403,7 +403,8 @@ class CVDatabase:
         return result
 
     def compute_idf(self, tokens: List[str], tag_type: str) -> Dict[str, float]:
-        if not tokens:
+        unique_tokens = [t for t in dict.fromkeys(tokens) if t]
+        if not unique_tokens:
             return {}
         rows = self.conn.execute(
             """
@@ -413,15 +414,14 @@ class CVDatabase:
               AND tag_key = ANY(%s)
             GROUP BY tag_key
             """,
-            (tag_type, tokens),
+            (tag_type, unique_tokens),
         ).fetchall()
+        df_map = {row["tag_key"]: int(row["df"]) for row in rows}
         total_candidates = self.conn.execute("SELECT COUNT(*) AS c FROM candidate").fetchone()["c"]
-        idf: Dict[str, float] = {}
-        for row in rows:
-            key = row["tag_key"]
-            df = row["df"]
-            idf[key] = math.log((total_candidates + 1) / (df + 1)) + 1
-        return idf
+        return {
+            token: math.log((total_candidates + 1) / (df_map.get(token, 0) + 1)) + 1
+            for token in unique_tokens
+        }
 
     def rank_weighted_set(
         self,
@@ -436,17 +436,33 @@ class CVDatabase:
         if not gated_ids:
             return [], ""
 
+        must_keys = [t for t in dict.fromkeys(must_have) if t]
+        nice_keys = [t for t in dict.fromkeys(nice_to_have) if t]
+        must_weights = [float(idf_must.get(tag, 0.0)) for tag in must_keys]
+        nice_weights = [float(idf_nice.get(tag, 0.0)) for tag in nice_keys]
+
         sql = """
-        WITH candidates AS (
+        WITH
+        must_weights(tag_key, idf) AS (
+          SELECT * FROM UNNEST(%s::text[], %s::double precision[])
+        ),
+        nice_weights(tag_key, idf) AS (
+          SELECT * FROM UNNEST(%s::text[], %s::double precision[])
+        ),
+        candidates AS (
           SELECT c.candidate_id,
                  c.last_updated,
-                 SUM(CASE WHEN t.tag_type = 'tech' AND t.tag_key = ANY(%s) THEN 1 ELSE 0 END) AS must_hit_count,
-                 SUM(CASE WHEN t.tag_type = 'tech' AND t.tag_key = ANY(%s) THEN 1 ELSE 0 END) AS nice_hit_count,
+                 COALESCE(SUM(mw.idf), 0.0) AS must_idf_sum,
+                 COALESCE(SUM(nw.idf), 0.0) AS nice_idf_sum,
+                 SUM(CASE WHEN mw.tag_key IS NOT NULL THEN 1 ELSE 0 END) AS must_hit_count,
+                 SUM(CASE WHEN nw.tag_key IS NOT NULL THEN 1 ELSE 0 END) AS nice_hit_count,
                  MAX(CASE WHEN t.tag_type = 'domain' AND t.tag_key = ANY(%s) THEN 1 ELSE 0 END) AS domain_present
-          FROM candidate_tag t
-          JOIN candidate c ON c.candidate_id = t.candidate_id
+          FROM candidate c
+          LEFT JOIN candidate_tag t ON t.candidate_id = c.candidate_id
+          LEFT JOIN must_weights mw ON t.tag_type = 'tech' AND mw.tag_key = t.tag_key
+          LEFT JOIN nice_weights nw ON t.tag_type = 'tech' AND nw.tag_key = t.tag_key
           WHERE c.candidate_id = ANY(%s)
-          GROUP BY c.candidate_id
+          GROUP BY c.candidate_id, c.last_updated
         )
         SELECT * FROM candidates
         ORDER BY must_hit_count DESC, nice_hit_count DESC
@@ -454,19 +470,21 @@ class CVDatabase:
         """
 
         params = (
-            must_have or [],
-            nice_to_have or [],
+            must_keys,
+            must_weights,
+            nice_keys,
+            nice_weights,
             domains or [],
             gated_ids,
             top_k,
         )
         rows_raw = self.conn.execute(sql, params).fetchall()
         rows: List[Dict[str, Any]] = [dict(r) for r in rows_raw]
-        must_sum = sum(idf_must.get(tag, 0.0) for tag in must_have)
-        nice_sum = sum(idf_nice.get(tag, 0.0) for tag in nice_to_have)
+        must_sum = float(sum(must_weights))
+        nice_sum = float(sum(nice_weights))
         for r in rows:
-            r["must_idf_sum"] = must_sum
-            r["nice_idf_sum"] = nice_sum
+            r["must_idf_total"] = must_sum
+            r["nice_idf_total"] = nice_sum
         return rows, sql.strip()
 
     def get_full_candidate_context(self, candidate_id: str) -> Optional[Dict[str, Any]]:
