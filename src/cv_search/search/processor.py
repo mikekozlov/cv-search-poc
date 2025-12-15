@@ -117,6 +117,25 @@ class SearchProcessor:
             "mode": mode,
         }
 
+    @staticmethod
+    def _compute_lex_fanin(
+        *,
+        top_k: int,
+        sem_fanin: int,
+        gate_count: int,
+        multiplier: int,
+        max_cap: int,
+    ) -> int:
+        top_k = max(1, int(top_k))
+        sem_fanin = max(0, int(sem_fanin))
+        gate_count = max(0, int(gate_count))
+        multiplier = max(1, int(multiplier))
+        max_cap = max(1, int(max_cap))
+
+        desired = max(top_k, sem_fanin) * multiplier
+        cap = max(max_cap, top_k)
+        return min(gate_count or top_k, min(cap, desired))
+
     def _run_single_seat(
         self,
         criteria: Dict[str, Any],
@@ -127,7 +146,7 @@ class SearchProcessor:
         run_dir: Optional[str] = None,
     ) -> Dict[str, Any]:
         mode = (mode_override or self.settings.search_mode).lower()
-        vs_topk = vs_topk_override or self.settings.search_vs_topk
+        sem_fanin = int(vs_topk_override or self.settings.search_vs_topk)
 
         seat = self._extract_seat(criteria)
 
@@ -139,6 +158,9 @@ class SearchProcessor:
                 "query_fingerprint": self._fingerprint(seat, mode),
                 "metrics": {
                     "gate_count": 0,
+                    "lex_fanin": 0,
+                    "sem_fanin": max(0, sem_fanin),
+                    "pool_size": 0,
                 },
                 "gating_sql": gating_sql,
                 "ranking_sql": None,
@@ -150,13 +172,25 @@ class SearchProcessor:
                 "reason": "strict_gate_empty",
             }
 
-        lex_limit = max(top_k, vs_topk, len(gated_ids))
-        lex_rows, ranking_sql = self.lexical_retriever.search(gated_ids, seat, lex_limit)
+        gate_count = len(gated_ids)
+        top_k = min(int(top_k), gate_count)
+        sem_fanin = min(max(0, sem_fanin), gate_count)
+        lex_fanin = self._compute_lex_fanin(
+            top_k=top_k,
+            sem_fanin=sem_fanin,
+            gate_count=gate_count,
+            multiplier=self.settings.search_fanin_multiplier,
+            max_cap=self.settings.search_lex_fanin_max,
+        )
 
-        sem_raw = self.semantic_retriever.search(gated_ids, seat, vs_topk)
+        lex_rows, ranking_sql = self.lexical_retriever.search(gated_ids, seat, lex_fanin)
+
+        sem_raw = self.semantic_retriever.search(gated_ids, seat, sem_fanin)
         sem_hits = sem_raw.get("hits", [])
 
-        final_results, fusion_dump = self.hybrid_ranker.rank(seat, lex_rows, sem_hits, mode, top_k)
+        final_results, fusion_dump, pool_size = self.hybrid_ranker.rank(
+            seat, lex_rows, sem_hits, mode, top_k, sem_fanin=sem_fanin
+        )
 
         if with_justification and final_results:
             justifications = self.justification_service.generate(
@@ -169,7 +203,10 @@ class SearchProcessor:
             "criteria": criteria,
             "query_fingerprint": self._fingerprint(seat, mode),
             "metrics": {
-                "gate_count": len(gated_ids),
+                "gate_count": gate_count,
+                "lex_fanin": lex_fanin,
+                "sem_fanin": sem_fanin,
+                "pool_size": pool_size,
             },
             "vs_query": sem_raw.get("query"),
             "vs_results": sem_raw,

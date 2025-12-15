@@ -81,7 +81,9 @@ class HybridRanker:
         semantic_hits: List[Dict[str, Any]],
         mode: str,
         top_k: int,
-    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        *,
+        sem_fanin: int | None = None,
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], int]:
         """
         Performs late fusion and ranking based on the specified mode.
         Returns (final_results, fusion_debug_dump)
@@ -139,6 +141,7 @@ class HybridRanker:
         # 3. Assemble results based on mode
         final_results: List[Dict[str, Any]] = []
         fusion_dump: List[Dict[str, Any]] = []
+        pool_size = 0
 
         if mode == "lexical":
 
@@ -156,6 +159,7 @@ class HybridRanker:
                         cid, seat, lex_map[cid]["score_val"], i, lex_map, sem_score, sem_evidence
                     )
                 )
+            pool_size = len(ranked_ids)
 
         elif mode == "semantic":
             cut = semantic_hits[:top_k]
@@ -166,6 +170,7 @@ class HybridRanker:
                         cid, seat, sem_score.get(cid, 0.0), i, lex_map, sem_score, sem_evidence
                     )
                 )
+            pool_size = len(cut)
 
         else:  # hybrid
 
@@ -177,11 +182,11 @@ class HybridRanker:
                 lex_map.keys(),
                 key=lambda c: (-lex_map[c]["score_val"], _last_upd(c), c),
             )[:top_k]
-            pool_ids = list(
-                dict.fromkeys(lex_top + [h["candidate_id"] for h in semantic_hits[:top_k]])
-            )
+            sem_cut = semantic_hits[: (top_k if sem_fanin is None else max(0, int(sem_fanin)))]
+            pool_ids = list(dict.fromkeys(lex_top + [h["candidate_id"] for h in sem_cut]))
             if not pool_ids:
                 pool_ids = lex_top
+            pool_size = len(pool_ids)
 
             lex_vals = [lex_map.get(cid, {"score_val": 0.0})["score_val"] for cid in pool_ids]
             lx_min, lx_max = (min(lex_vals), max(lex_vals)) if lex_vals else (0.0, 0.0)
@@ -204,4 +209,4 @@ class HybridRanker:
                     self._assemble_item(cid, seat, final, order, lex_map, sem_score, sem_evidence)
                 )
 
-        return final_results, fusion_dump
+        return final_results, fusion_dump, pool_size

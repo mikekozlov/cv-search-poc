@@ -33,6 +33,14 @@ class Settings(BaseSettings):
 
     search_mode: str = "hybrid"
     search_vs_topk: int = 5
+    search_fanin_multiplier: int = Field(
+        default=10,
+        description="Scale lexical fan-in as max(top_k, sem_fanin) * multiplier.",
+    )
+    search_lex_fanin_max: int = Field(
+        default=250,
+        description="Hard cap on lexical fan-in to keep queries bounded.",
+    )
     search_w_lex: float = 1.0
     search_w_sem: float = 0.8
 

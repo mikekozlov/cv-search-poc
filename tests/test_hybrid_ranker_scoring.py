@@ -20,7 +20,7 @@ def test_hybrid_prefers_higher_semantic_score_over_rank_position():
     ranker = HybridRanker(db=_StubDB(), settings=_StubSettings(search_w_lex=0.0, search_w_sem=1.0))
     seat = {"role": "backend_engineer", "seniority": "senior", "must_have": [], "nice_to_have": []}
 
-    results, _ = ranker.rank(
+    results, _, _ = ranker.rank(
         seat=seat,
         lexical_results=[],
         semantic_hits=[
@@ -33,6 +33,37 @@ def test_hybrid_prefers_higher_semantic_score_over_rank_position():
 
     assert [r["candidate_id"] for r in results] == ["cand_high", "cand_low"]
     assert results[0]["score_components"]["semantic"]["score"] == 0.9
+
+
+def test_hybrid_pooling_changes_when_sem_fanin_changes():
+    ranker = HybridRanker(db=_StubDB(), settings=_StubSettings(search_w_lex=0.0, search_w_sem=1.0))
+    seat = {"role": "backend_engineer", "seniority": "senior", "must_have": [], "nice_to_have": []}
+    semantic_hits = [
+        {"rank": 1, "candidate_id": "cand_low", "score": 0.1, "distance": 0.9},
+        {"rank": 2, "candidate_id": "cand_high", "score": 0.9, "distance": 0.1},
+    ]
+
+    results_small, _, pool_small = ranker.rank(
+        seat=seat,
+        lexical_results=[],
+        semantic_hits=semantic_hits,
+        mode="hybrid",
+        top_k=1,
+        sem_fanin=1,
+    )
+    results_large, _, pool_large = ranker.rank(
+        seat=seat,
+        lexical_results=[],
+        semantic_hits=semantic_hits,
+        mode="hybrid",
+        top_k=1,
+        sem_fanin=2,
+    )
+
+    assert results_small[0]["candidate_id"] == "cand_low"
+    assert results_large[0]["candidate_id"] == "cand_high"
+    assert pool_small == 1
+    assert pool_large == 2
 
 
 def test_lexical_mode_is_sorted_by_lexical_scoring_formula():
@@ -71,7 +102,7 @@ def test_lexical_mode_is_sorted_by_lexical_scoring_formula():
         },
     ]
 
-    results, _ = ranker.rank(
+    results, _, _ = ranker.rank(
         seat=seat,
         lexical_results=lexical_results,
         semantic_hits=[],
