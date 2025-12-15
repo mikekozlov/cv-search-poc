@@ -32,7 +32,6 @@ class PgVectorSemanticRetriever:
         return (
             f"{seniority} {role} in {domains}. "
             f"Must: {musts}. Nice: {nice}. "
-            f"Prefer demonstrated outcomes and similar patterns (latency, availability, LCP, etc.)."
         )
 
     def search(self, gated_ids: List[str], seat: Dict[str, Any], top_k: int) -> Dict[str, Any]:
