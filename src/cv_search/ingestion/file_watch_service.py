@@ -35,6 +35,10 @@ def _signature(path: Path) -> FileSignature:
 
 
 def _is_interesting_file(path: Path, exts: Sequence[str]) -> bool:
+    # Office creates temporary files like "~$Resume.pptx" while a document is open.
+    # These are not real CV payloads and should never be ingested.
+    if path.name.startswith("~$"):
+        return False
     if path.suffix.lower() not in exts:
         return False
     try:

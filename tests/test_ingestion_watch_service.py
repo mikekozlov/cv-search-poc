@@ -81,3 +81,28 @@ def test_reconcile_once_skips_unchanged_file(tmp_path) -> None:
     svc.reconcile_once()
 
     assert redis_client.client.llen("ingest:queue:extract:test") == 0
+
+
+def test_reconcile_once_ignores_office_temp_files(tmp_path) -> None:
+    inbox_dir = tmp_path / "inbox"
+    file_path = inbox_dir / "Engineering" / "backend_engineer" / "~$resume.pptx"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text("not a real pptx", encoding="utf-8")
+
+    rel = file_path.relative_to(inbox_dir).as_posix()
+    redis_client = InMemoryRedisClient()
+    db = _StubDB(last_updated_by_path={rel: None})
+    svc = FileWatchService(
+        inbox_dir=inbox_dir,
+        redis=redis_client,
+        db=db,
+        queue_name="ingest:queue:extract:test",
+        reconcile=False,
+        reconcile_interval_s=None,
+        dedupe_ttl_s=60,
+        exts=(".pptx",),
+    )
+
+    svc.reconcile_once()
+
+    assert redis_client.client.llen("ingest:queue:extract:test") == 0
