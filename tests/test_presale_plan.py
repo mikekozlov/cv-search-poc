@@ -32,6 +32,14 @@ def test_presale_plan_enriches_criteria_with_llm_stub():
         "integration_specialist",
         "project_manager",
     ]
+    assert enriched.expert_roles == [
+        "ai_developer",
+        "ai_solution_architect",
+        "business_analyst",
+        "data_privacy_expert",
+        "integration_specialist",
+        "project_manager",
+    ]
 
 
 def test_presale_plan_raises_when_llm_returns_no_minimum(monkeypatch):

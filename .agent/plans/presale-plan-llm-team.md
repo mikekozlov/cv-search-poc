@@ -14,6 +14,7 @@ Enable the presale planning flow to call the LLM for team composition and return
 - [x] (2025-12-11 16:25Z) Ran Ruff format/check and integration suite (5 passed; noted existing PytestReturnNotNoneWarning in test_settings).
 - [x] (2025-12-11 17:05Z) Removed presale fallback in favor of raising when LLM omits minimum_team; added failure-path unit test.
 - [x] (2025-12-11 17:25Z) Deleted fallback helper entirely to rely solely on LLM output and error on empty minimum_team.
+- [x] (2025-12-16 17:35Z) Ensure `expert_roles` includes all roles from presale `minimum_team`/`extended_team` in addition to any seat roles (fix mismatch where minimum team included roles missing from criteria expert_roles); updated prompt, planner enforcement, and unit test.
 
 ## Surprises & Discoveries
 
@@ -27,6 +28,9 @@ Enable the presale planning flow to call the LLM for team composition and return
 - Decision: Raise an error when the LLM returns no `minimum_team` instead of silently falling back.  
   Rationale: Surfaces incomplete LLM responses early so callers can handle/retry rather than accept a guessed team.  
   Date/Author: 2025-12-11 / assistant.
+- Decision: Treat presale staffing roles as part of `expert_roles` by enforcing `expert_roles = union(expert_roles, minimum_team, extended_team)` after presale planning, and update the structured-brief prompt to request the same.
+  Rationale: Prevents inconsistent Criteria JSON where presale team contains canonical must-have roles that are missing from `expert_roles`, which later consumers may use as the authoritative role set for search or downstream planning.
+  Date/Author: 2025-12-16 / assistant.
 
 ## Outcomes & Retrospective
 
@@ -74,3 +78,7 @@ Capture an example presale-plan CLI output (with stub) showing the new team arra
 ## Interfaces and Dependencies
 
 New API surface: OpenAI client method for presale team composition, returning `{minimum_team: [canonical_role], extended_team: [canonical_role], ...}` using the role lexicon. Planner method should accept a Criteria + raw brief + client/settings and return a Criteria with team arrays set. CLI `presale-plan` should output `Criteria.to_json()` containing `minimum_team` and `extended_team`. Dependencies: role lexicon under `settings.lexicon_dir`, Settings/openai model selection, and the stub backend/fixtures for offline tests.
+
+---
+
+Plan revision note (2025-12-16): Added a new progress item and decision to align `expert_roles` with the presale team role lists, because observed presale outputs could contain `minimum_team` roles that were absent from `expert_roles`.

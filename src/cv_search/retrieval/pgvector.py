@@ -29,10 +29,7 @@ class PgVectorSemanticRetriever:
         nice = (
             ", ".join(seat.get("nice_to_have") or []) if seat.get("nice_to_have") else "(optional)"
         )
-        return (
-            f"{seniority} {role} in {domains}. "
-            f"Must: {musts}. Nice: {nice}. "
-        )
+        return f"{seniority} {role} in {domains}. Must: {musts}. Nice: {nice}. "
 
     def search(self, gated_ids: List[str], seat: Dict[str, Any], top_k: int) -> Dict[str, Any]:
         vs_query = self._build_vs_query(seat)

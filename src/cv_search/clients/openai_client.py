@@ -257,7 +257,7 @@ class LiveOpenAIBackend(OpenAIBackendProtocol):
         Criteria rules:
         - Populate team_size.members whenever a role or hiring need is implied. Each member must include: role (canonical), seniority (normalize mid/mid-level->middle, jr->junior, sr/senior->senior), domains (subset of Domain candidates), tech_tags (must-have/core tech), and nice_to_have (optional/secondary tech).
         - tech_stack is the deduplicated rollup of explicit technologies mentioned in the brief. List only tech explicitly present; do not invent.
-        - expert_roles is the set of canonical roles relevant to the brief; include any roles assigned to team_size.members.
+        - expert_roles is the set of canonical roles relevant to the brief. It MUST include every role used anywhere in the response: any roles assigned to team_size.members, plus all roles listed in presale_team.minimum_team and presale_team.extended_team. Deduplicate.
         - If the brief does not mention a domain, return an empty domain list; do NOT guess a domain.
 
         Presale team rules:

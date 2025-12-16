@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 
 import click
 
@@ -10,7 +9,6 @@ from cv_search.cli.context import CLIContext
 from cv_search.cli.shared import load_json_file
 from cv_search.core.criteria import Criteria, TeamMember, TeamSize
 from cv_search.core.parser import parse_request
-from cv_search.planner.service import Planner
 from cv_search.search import SearchProcessor, default_run_dir
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 

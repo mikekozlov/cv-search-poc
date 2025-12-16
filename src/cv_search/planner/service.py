@@ -148,6 +148,9 @@ class Planner:
 
         crit.minimum_team = minimum
         crit.extended_team = extended
+        crit.expert_roles = self._normalize_roles(
+            (crit.expert_roles or []) + minimum + extended, allowed=role_lexicon
+        )
 
         return crit
 
