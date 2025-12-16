@@ -1,13 +1,13 @@
-import time
 import json
-import hashlib
 from pathlib import Path
 from datetime import datetime
 import click
 
 from cv_search.config.settings import Settings
 from cv_search.ingestion.redis_client import RedisClient
-from cv_search.ingestion.events import FileDetectedEvent, TextExtractedEvent
+from cv_search.ingestion.events import TextExtractedEvent
+from cv_search.ingestion.file_watch_service import FileWatchService
+from cv_search.ingestion.source_identity import candidate_id_from_source_gdrive_path
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.cv_parser import CVParser
@@ -27,75 +27,52 @@ class Watcher:
         self.redis = redis_client
         self.inbox_dir = self.settings.gdrive_local_dest_dir
         self.db = CVDatabase(settings)
-        # Needed to check for existing files if we want to be smart,
-        # but for now we'll just scan and push.
-        # Actually, let's reuse the logic to skip unchanged files.
+        self._service: FileWatchService | None = None
 
     def close(self):
+        if self._service:
+            try:
+                self._service.stop()
+            except Exception:
+                pass
+            self._service = None
         if self.db:
             self.db.close()
             self.db = None
 
-    def run(self, loop_interval: int = 10):
+    def run(self):
         click.echo(f"Watcher started. Monitoring {self.inbox_dir}...")
         try:
-            while True:
-                try:
-                    self._scan_and_publish()
-                    time.sleep(loop_interval)
-                except KeyboardInterrupt:
-                    click.echo("Watcher stopping...")
-                    break
-                except Exception as e:
-                    click.secho(f"Watcher error: {e}", fg="red")
-                    time.sleep(loop_interval)
+            self._service = FileWatchService(
+                inbox_dir=self.inbox_dir,
+                redis=self.redis,
+                db=self.db,
+                queue_name=QUEUE_EXTRACT_TASK,
+                debounce_ms=self.settings.ingest_watch_debounce_ms,
+                stable_ms=self.settings.ingest_watch_stable_ms,
+                dedupe_ttl_s=self.settings.ingest_watch_dedupe_ttl_s,
+                reconcile=True,
+                reconcile_interval_s=self.settings.ingest_watch_reconcile_interval_s or None,
+            )
+            self._service.run_forever()
+        except KeyboardInterrupt:
+            click.echo("Watcher stopping...")
         finally:
             self.close()
 
     def _scan_and_publish(self):
-        pptx_files = list(self.inbox_dir.rglob("*.pptx"))
-        pptx_files += list(self.inbox_dir.rglob("*.txt"))
-        if not pptx_files:
-            return
-
-        # Simple logic: Just push everything for now, or we can check DB.
-        # To match the "Producer" description: "When a file changes, it pushes..."
-        # For this POC, let's just push all files and let the workers handle idempotency or
-        # we can implement a simple state in Redis or check DB.
-        # Let's check DB to avoid spamming the queue.
-
-        # Re-using logic from pipeline.py roughly
-        # We need to know if it's modified.
-
-        # For this task, let's keep it simple:
-        # We will push a task to the EXTRACT queue.
-        # The Extractor can decide if it needs to do work, but "Watcher" usually implies it knows something changed.
-        # Let's assume we push all valid files and let downstream handle dedupe or we check DB here.
-        # Checking DB here is safer to avoid queue flooding.
-
-        # We'll instantiate a DB connection just for this check
-        # Note: In a real "Watcher", we might use filesystem events (watchdog), but polling is fine here.
-
-        last_updated_map = self.db.get_last_updated_for_filenames([p.name for p in pptx_files])
-
-        for file_path in pptx_files:
-            mtime_iso = datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
-            last_upd = last_updated_map.get(file_path.name)
-
-            if last_upd and last_upd == mtime_iso:
-                continue  # Skip unchanged
-
-            # It's new or modified
-            relative_path = file_path.relative_to(self.inbox_dir)
-            path_parts = relative_path.parent.parts
-            source_category = path_parts[0] if path_parts else None
-
-            event = FileDetectedEvent(file_path=str(file_path), source_category=source_category)
-
-            # Push to Extract Queue
-            # We use a queue (list) for tasks so workers can pick them up round-robin
-            self.redis.push_to_queue(QUEUE_EXTRACT_TASK, event.to_dict())
-            click.echo(f"Queued file: {file_path.name}")
+        svc = FileWatchService(
+            inbox_dir=self.inbox_dir,
+            redis=self.redis,
+            db=self.db,
+            queue_name=QUEUE_EXTRACT_TASK,
+            debounce_ms=self.settings.ingest_watch_debounce_ms,
+            stable_ms=self.settings.ingest_watch_stable_ms,
+            dedupe_ttl_s=self.settings.ingest_watch_dedupe_ttl_s,
+            reconcile=False,
+            reconcile_interval_s=None,
+        )
+        svc.reconcile_once()
 
 
 class ExtractorWorker:
@@ -115,6 +92,13 @@ class ExtractorWorker:
                 if not task_data:
                     continue
 
+                source = (
+                    task_data.get("source_gdrive_path")
+                    or task_data.get("source_rel_path")
+                    or task_data.get("file_path")
+                    or "<unknown>"
+                )
+                click.echo(f"Extractor dequeued: {source}")
                 self._process_task(task_data)
 
             except KeyboardInterrupt:
@@ -136,15 +120,28 @@ class ExtractorWorker:
         try:
             raw_text = self.parser.extract_text(file_path)
 
-            # Generate candidate_id
-            file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
-            candidate_id = f"pptx-{file_hash[:10]}"
+            source_gdrive_path = data.get("source_gdrive_path") or data.get("source_rel_path")
+            if not source_gdrive_path:
+                try:
+                    source_gdrive_path = file_path.relative_to(
+                        self.settings.gdrive_local_dest_dir
+                    ).as_posix()
+                except ValueError:
+                    source_gdrive_path = file_path.name
+
+            candidate_id = candidate_id_from_source_gdrive_path(source_gdrive_path)
 
             event = TextExtractedEvent(
                 file_path=str(file_path),
                 text=raw_text,
                 candidate_id=candidate_id,
                 source_category=data.get("source_category"),
+                source_rel_path=data.get("source_rel_path") or source_gdrive_path,
+                source_gdrive_path=source_gdrive_path,
+                mtime_ns=data.get("mtime_ns"),
+                size_bytes=data.get("size_bytes"),
+                detected_at=data.get("detected_at"),
+                event_id=data.get("event_id"),
             )
 
             self.redis.push_to_queue(QUEUE_ENRICH_TASK, event.to_dict())
@@ -188,6 +185,13 @@ class EnricherWorker:
                     if not task_data:
                         continue
 
+                    source = (
+                        task_data.get("source_gdrive_path")
+                        or task_data.get("source_rel_path")
+                        or task_data.get("file_path")
+                        or "<unknown>"
+                    )
+                    click.echo(f"Enricher dequeued: {source}")
                     self._process_task(task_data)
 
                 except KeyboardInterrupt:
@@ -239,11 +243,20 @@ class EnricherWorker:
             file_stat = file_path.stat()
             mod_time = datetime.fromtimestamp(file_stat.st_mtime)
 
+            source_gdrive_path = data.get("source_gdrive_path") or data.get("source_rel_path")
+            if not source_gdrive_path:
+                try:
+                    source_gdrive_path = file_path.relative_to(
+                        self.settings.gdrive_local_dest_dir
+                    ).as_posix()
+                except ValueError:
+                    source_gdrive_path = file_path.name
+
             cv_data_dict["candidate_id"] = candidate_id
             cv_data_dict["last_updated"] = mod_time.isoformat()
             cv_data_dict["source_filename"] = file_path.name
             cv_data_dict["ingestion_timestamp"] = ingestion_time.isoformat()
-            cv_data_dict["source_gdrive_path"] = str(file_path)  # Or relative if we want
+            cv_data_dict["source_gdrive_path"] = source_gdrive_path
             cv_data_dict["source_category"] = source_category
 
             from cv_search.ingestion.pipeline import CVIngestionPipeline

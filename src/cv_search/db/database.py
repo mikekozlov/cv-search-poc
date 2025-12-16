@@ -507,6 +507,17 @@ class CVDatabase:
             return None
         return row["last_updated"]
 
+    def get_candidate_last_updated_by_source_gdrive_path(
+        self, source_gdrive_path: str
+    ) -> Optional[str]:
+        row = self.conn.execute(
+            "SELECT last_updated FROM candidate WHERE source_gdrive_path = %s",
+            (source_gdrive_path,),
+        ).fetchone()
+        if not row:
+            return None
+        return row["last_updated"]
+
     def get_last_updated_for_filenames(self, filenames: Iterable[str]) -> Dict[str, Optional[str]]:
         unique_names = [name for name in dict.fromkeys(filenames) if name]
         if not unique_names:
@@ -517,6 +528,17 @@ class CVDatabase:
         ).fetchall()
         existing = {row["source_filename"]: row["last_updated"] for row in rows}
         return {name: existing.get(name) for name in unique_names}
+
+    def get_last_updated_for_gdrive_paths(self, paths: Iterable[str]) -> Dict[str, Optional[str]]:
+        unique_paths = [path for path in dict.fromkeys(paths) if path]
+        if not unique_paths:
+            return {}
+        rows = self.conn.execute(
+            "SELECT source_gdrive_path, last_updated FROM candidate WHERE source_gdrive_path = ANY(%s)",
+            (unique_paths,),
+        ).fetchall()
+        existing = {row["source_gdrive_path"]: row["last_updated"] for row in rows}
+        return {path: existing.get(path) for path in unique_paths}
 
     def vector_search(
         self,

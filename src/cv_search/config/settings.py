@@ -65,6 +65,23 @@ class Settings(BaseSettings):
     gdrive_source_dir: str = Field(default="CV_Inbox")
     gdrive_local_dest_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "gdrive_inbox")
 
+    ingest_watch_debounce_ms: int = Field(
+        default=750,
+        description="Debounce window (ms) for local inbox filesystem events.",
+    )
+    ingest_watch_stable_ms: int = Field(
+        default=1500,
+        description="Stability window (ms) before ingesting a changing file.",
+    )
+    ingest_watch_dedupe_ttl_s: int = Field(
+        default=24 * 60 * 60,
+        description="TTL (seconds) for per-file event dedupe keys in Redis.",
+    )
+    ingest_watch_reconcile_interval_s: Optional[int] = Field(
+        default=10 * 60,
+        description="Periodic reconciliation scan interval (seconds). Set empty/0 to disable.",
+    )
+
     llm_stub_dir: Path = Field(default_factory=lambda: REPO_ROOT / "data" / "test" / "llm_stubs")
 
     @property

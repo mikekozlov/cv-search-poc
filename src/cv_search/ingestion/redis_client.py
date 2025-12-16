@@ -23,10 +23,28 @@ class _InMemoryRedis:
 
     def __init__(self):
         self._queues: dict[str, deque[str]] = defaultdict(deque)
+        self._kv: dict[str, tuple[str, float | None]] = {}
         self._cv = threading.Condition()
+
+    def _purge_expired(self) -> None:
+        now = time.time()
+        expired_keys = [
+            key for key, (_, expires_at) in self._kv.items() if expires_at and expires_at <= now
+        ]
+        for key in expired_keys:
+            self._kv.pop(key, None)
 
     def ping(self):
         return True
+
+    def set(self, name: str, value: str, *, nx: bool = False, ex: int | None = None):
+        with self._cv:
+            self._purge_expired()
+            if nx and name in self._kv:
+                return None
+            expires_at = None if ex is None else time.time() + int(ex)
+            self._kv[name] = (value, expires_at)
+            return True
 
     def rpush(self, name: str, value: str):
         with self._cv:
@@ -52,6 +70,7 @@ class _InMemoryRedis:
         with self._cv:
             for queue_name in names:
                 self._queues.pop(queue_name, None)
+                self._kv.pop(queue_name, None)
 
     def llen(self, name: str):
         with self._cv:
@@ -60,6 +79,7 @@ class _InMemoryRedis:
     def flushdb(self):
         with self._cv:
             self._queues.clear()
+            self._kv.clear()
 
     def close(self):
         return None
@@ -120,6 +140,10 @@ class RedisClient:
         if not names:
             return
         self.client.delete(*names)
+
+    def set_if_absent(self, key: str, value: str, ttl_seconds: int) -> bool:
+        """Atomic cross-process dedupe primitive using SET NX with an expiry."""
+        return bool(self.client.set(name=key, value=value, nx=True, ex=int(ttl_seconds)))
 
     def close(self) -> None:
         """Close the underlying Redis connection pool."""

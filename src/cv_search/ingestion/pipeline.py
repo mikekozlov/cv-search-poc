@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import os
 import json
 import re
@@ -19,6 +18,7 @@ from cv_search.db.database import CVDatabase
 from cv_search.ingestion.data_loader import load_mock_cvs
 from cv_search.ingestion.cv_parser import CVParser
 from cv_search.lexicon.loader import load_tech_synonym_map, build_tech_reverse_index
+from cv_search.ingestion.source_identity import candidate_id_from_source_gdrive_path
 from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
 from cv_search.retrieval.local_embedder import LocalEmbedder
 
@@ -353,9 +353,8 @@ class CVIngestionPipeline:
 
             ingestion_time = datetime.now()
 
-            file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
-            cv_data_dict["candidate_id"] = f"pptx-{file_hash[:10]}"
-            candidate_id = cv_data_dict["candidate_id"]
+            candidate_id = candidate_id_from_source_gdrive_path(source_gdrive_path_str)
+            cv_data_dict["candidate_id"] = candidate_id
 
             file_stat = file_path.stat()
             mod_time = datetime.fromtimestamp(file_stat.st_mtime)
@@ -398,7 +397,7 @@ class CVIngestionPipeline:
         if not files:
             return [], skipped
         resolved_inbox = inbox_dir.resolve(strict=False)
-        last_updated_map = self.db.get_last_updated_for_filenames([p.name for p in files])
+        inside: list[tuple[Path, str]] = []
         selected: List[Path] = []
         for file_path in files:
             resolved_path = file_path.resolve(strict=False)
@@ -411,12 +410,16 @@ class CVIngestionPipeline:
                 )
                 skipped["outside_gdrive"].append(display_path)
                 continue
+            inside.append((file_path, relative_path.as_posix()))
+
+        last_updated_map = self.db.get_last_updated_for_gdrive_paths([rel for _, rel in inside])
+
+        for file_path, relative_path_str in inside:
             mtime_iso = datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
-            last_upd = last_updated_map.get(file_path.name)
+            last_upd = last_updated_map.get(relative_path_str)
             if last_upd and last_upd == mtime_iso:
-                display_path = str(relative_path.as_posix())
-                click.echo(f"Skipping {display_path}: not modified since last ingestion.")
-                skipped["unchanged"].append(display_path)
+                click.echo(f"Skipping {relative_path_str}: not modified since last ingestion.")
+                skipped["unchanged"].append(relative_path_str)
                 continue
             selected.append(file_path)
         return selected, skipped
