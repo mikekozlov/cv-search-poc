@@ -114,44 +114,6 @@ def register(cli: click.Group) -> None:
         finally:
             db.close()
 
-    @cli.command("presale-plan")
-    @click.option("--text", type=str, required=True, help="Free-text client brief")
-    @click.option(
-        "--run-dir",
-        type=click.Path(file_okay=False),
-        default=None,
-        help="Output folder for artifacts (default: runs/<timestamp>/)",
-    )
-    @click.pass_obj
-    def presale_plan_cmd(ctx: CLIContext, text: str, run_dir: str | None) -> None:
-        """
-        LLM-derived presale team arrays returned as Criteria JSON (no search).
-        """
-        settings = ctx.settings
-        client = ctx.client
-
-        planner = Planner()
-        crit = parse_request(
-            text,
-            model=settings.openai_model,
-            settings=settings,
-            client=client,
-            include_presale=True,
-        )
-        raw_text_en = getattr(crit, "_english_brief", None) or text
-        crit_with_plan = planner.derive_presale_team(
-            crit,
-            raw_text=raw_text_en,
-            client=client,
-            settings=settings,
-        )
-
-        out_dir = run_dir or default_run_dir(settings.active_runs_dir)
-        Path(out_dir).mkdir(parents=True, exist_ok=True)
-        (Path(out_dir) / "criteria.json").write_text(crit_with_plan.to_json(), encoding="utf-8")
-
-        click.echo(crit_with_plan.to_json())
-
     @cli.command("project-search")
     @click.option(
         "--text",
