@@ -49,6 +49,7 @@ if "services_loaded" not in st.session_state:
     st.session_state["services_loaded"] = True
 
 st.title("Welcome to CV Search 🏠")
+st.write("Hi! 👋")
 st.markdown("Select a tool from the sidebar to begin.")
 
 st.subheader("System Status")
