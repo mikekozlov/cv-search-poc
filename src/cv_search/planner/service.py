@@ -143,6 +143,11 @@ class Planner:
             minimum = self._normalize_roles(plan.get("minimum_team"), allowed=role_lexicon)
             extended = self._normalize_roles(plan.get("extended_team"), allowed=role_lexicon)
 
+            if crit.presale_rationale is None:
+                rationale = plan.get("rationale")
+                if isinstance(rationale, str):
+                    crit.presale_rationale = rationale
+
         if not minimum:
             raise ValueError("Presale LLM returned no minimum_team roles; cannot proceed.")
 
@@ -161,6 +166,10 @@ class Planner:
         Deterministically build seat definitions (if not already provided) from normalized tech/features.
         May return zero seats when no canonical roles are implied.
         """
+        # Normalize empty project_type to None
+        if crit.project_type is not None and not crit.project_type.strip():
+            crit.project_type = None
+
         if crit.team_size and (crit.team_size.members or 0):
             return crit
 

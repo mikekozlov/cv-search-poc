@@ -15,7 +15,9 @@ from watchdog.observers import Observer
 
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.events import FileDetectedEvent
+from cv_search.ingestion.file_selection import select_latest_candidate_files
 from cv_search.ingestion.redis_client import RedisClient
+from cv_search.ingestion.source_identity import candidate_key_from_source_gdrive_path
 
 
 @dataclass(frozen=True)
@@ -202,9 +204,13 @@ class FileWatchService:
         if not candidates:
             return
 
+        selected = select_latest_candidate_files(candidates, self.inbox_dir)
+        if not selected:
+            return
+
         rel_paths: list[str] = []
         files_by_rel: dict[str, Path] = {}
-        for file_path in candidates:
+        for file_path in selected.values():
             try:
                 rel = file_path.relative_to(self.inbox_dir).as_posix()
             except ValueError:
@@ -252,7 +258,41 @@ class FileWatchService:
             self._coalescer.notify(path)
             return
 
+        if not self._is_latest_candidate_file(path):
+            return
+
         self._enqueue_if_new(path, source_gdrive_path=source_gdrive_path)
+
+    def _candidate_key_for_path(self, path: Path) -> str | None:
+        try:
+            rel = path.relative_to(self.inbox_dir).as_posix()
+        except ValueError:
+            return None
+        key = candidate_key_from_source_gdrive_path(rel)
+        return key or rel
+
+    def _is_latest_candidate_file(self, path: Path) -> bool:
+        candidate_key = self._candidate_key_for_path(path)
+        if not candidate_key:
+            return True
+
+        candidate_dir = self.inbox_dir / Path(candidate_key)
+        if not candidate_dir.is_dir():
+            return True
+
+        candidate_files = [
+            candidate
+            for candidate in candidate_dir.iterdir()
+            if _is_interesting_file(candidate, self.exts)
+        ]
+        if not candidate_files:
+            return False
+
+        selected = select_latest_candidate_files(candidate_files, self.inbox_dir)
+        selected_path = selected.get(candidate_key)
+        if not selected_path:
+            return False
+        return selected_path.resolve(strict=False) == path.resolve(strict=False)
 
     def _enqueue_if_new(self, path: Path, *, source_gdrive_path: str) -> None:
         signature = _signature(path)

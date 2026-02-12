@@ -7,12 +7,15 @@ from cv_search.config.settings import Settings
 from cv_search.ingestion.redis_client import RedisClient
 from cv_search.ingestion.events import TextExtractedEvent
 from cv_search.ingestion.file_watch_service import FileWatchService
-from cv_search.ingestion.source_identity import candidate_id_from_source_gdrive_path
+from cv_search.ingestion.redaction import sanitize_cv_payload
+from cv_search.ingestion.source_identity import (
+    candidate_id_from_source_gdrive_path,
+    candidate_name_from_source_gdrive_path,
+    is_probably_full_name,
+)
 from cv_search.clients.openai_client import OpenAIClient
 from cv_search.db.database import CVDatabase
 from cv_search.ingestion.cv_parser import CVParser
-from cv_search.retrieval.embedder_stub import EmbedderProtocol
-from cv_search.retrieval.local_embedder import LocalEmbedder
 
 # Constants for Redis Channels/Queues
 CHANNEL_FILE_DETECTED = "ingest:file_detected"
@@ -106,8 +109,6 @@ class ExtractorWorker:
                 break
             except Exception as e:
                 click.secho(f"Extractor Worker error: {e}", fg="red")
-                # In a real system, we might want to re-queue or DLQ here if it wasn't a data error
-                # For now, let's log and continue
 
     def _process_task(self, data: dict):
         file_path_str = data.get("file_path")
@@ -161,13 +162,11 @@ class EnricherWorker:
         redis_client: RedisClient,
         db: CVDatabase | None = None,
         client: OpenAIClient | None = None,
-        embedder: EmbedderProtocol | None = None,
         parser: CVParser | None = None,
     ):
         self.settings = settings
         self.redis = redis_client
         self.db = db or CVDatabase(settings)
-        self.embedder = embedder or LocalEmbedder()
         self.client = client or OpenAIClient(settings)
         self.parser = parser or CVParser()
 
@@ -214,29 +213,17 @@ class EnricherWorker:
         click.echo(f"Enriching candidate: {candidate_id}")
 
         try:
-            # Determine role_key from path if possible, similar to original pipeline
-            # The original pipeline used folder structure.
-            # We can try to infer it or pass it.
-            # In the original code: role_key = self._normalize_folder_name(path_parts[1])
-            # We passed source_category, but maybe not the role subfolder.
-            # Let's re-derive it from file_path for simplicity or just pass "n/a"
-
             file_path = Path(file_path_str)
-            # We need to know the inbox dir to get relative path for role
-            # But we don't have it easily here unless we pass it or config.
-            # Let's try to use source_category as a hint if it's not None
 
             role_key = ""
-            # Basic heuristic: if source_category is set, maybe that's it?
-            # Or we just let the LLM figure it out without a hint.
-            # The original code passed role_key to get_structured_cv.
 
             cv_data_dict = self.client.get_structured_cv(
                 text,
-                role_key,  # We might need to improve this
+                role_key,
                 self.settings.openai_model,
                 self.settings,
             )
+            name_hint = cv_data_dict.get("name")
 
             # Add metadata
             ingestion_time = datetime.now()
@@ -252,6 +239,12 @@ class EnricherWorker:
                 except ValueError:
                     source_gdrive_path = file_path.name
 
+            if not is_probably_full_name(name_hint):
+                fallback_name = candidate_name_from_source_gdrive_path(source_gdrive_path)
+                if fallback_name:
+                    cv_data_dict["name"] = fallback_name
+                    name_hint = fallback_name
+
             cv_data_dict["candidate_id"] = candidate_id
             cv_data_dict["last_updated"] = mod_time.isoformat()
             cv_data_dict["source_filename"] = file_path.name
@@ -264,7 +257,6 @@ class EnricherWorker:
             pipeline = CVIngestionPipeline(
                 self.db,
                 self.settings,
-                embedder=self.embedder,
                 client=self.client,
                 parser=self.parser,
             )
@@ -283,6 +275,15 @@ class EnricherWorker:
                 file_path.name, candidate_id, unmapped, cv_data_dict["ingestion_timestamp"]
             )
 
+            cv_data_dict = sanitize_cv_payload(
+                cv_data_dict,
+                candidate_id=candidate_id,
+                name_hint=name_hint,
+                filename_hint=source_gdrive_path,
+                salt=self.settings.candidate_name_salt,
+                prefix=self.settings.candidate_name_prefix,
+            )
+
             # Save JSON (optional, but good for debug)
             base_data_dir = self.settings.data_dir
             json_output_dir = base_data_dir / "ingested_cvs_json"
@@ -292,11 +293,7 @@ class EnricherWorker:
                 json.dump(cv_data_dict, f, indent=2, ensure_ascii=False)
 
             # Write to DB
-            # We need to use the pipeline logic for DB upsert.
-            # We can duplicate the logic or import CVIngestionPipeline.
-            # Importing CVIngestionPipeline might be cleaner to reuse _ingest_single_cv
             cid, vs_text, doc_payload = pipeline._ingest_single_cv(cv_data_dict)
-            embedding = pipeline.embedder.get_embeddings([vs_text])[0]
 
             self.db.upsert_candidate_doc(
                 candidate_id=cid,
@@ -304,9 +301,7 @@ class EnricherWorker:
                 experience_text=doc_payload["experience_text"],
                 tags_text=doc_payload["tags_text"],
                 last_updated=doc_payload["last_updated"],
-                location=doc_payload["location"],
                 seniority=doc_payload["seniority"],
-                embedding=embedding,
             )
 
             self.db.commit()

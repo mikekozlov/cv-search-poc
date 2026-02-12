@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 
 import click
 
@@ -10,18 +9,6 @@ from cv_search.cli.shared import load_json_file
 from cv_search.core.criteria import Criteria, TeamMember, TeamSize
 from cv_search.core.parser import parse_request
 from cv_search.search import SearchProcessor, default_run_dir
-from cv_search.retrieval.embedder_stub import DeterministicEmbedder, EmbedderProtocol
-
-
-def _build_embedder_from_env() -> EmbedderProtocol | None:
-    """
-    Allow offline/test runs to avoid downloading models by using a deterministic stub embedder.
-    Opt in via USE_DETERMINISTIC_EMBEDDER or HF_HUB_OFFLINE environment variables.
-    """
-    flag = os.environ.get("USE_DETERMINISTIC_EMBEDDER") or os.environ.get("HF_HUB_OFFLINE")
-    if flag and str(flag).lower() in {"1", "true", "yes", "on"}:
-        return DeterministicEmbedder()
-    return None
 
 
 def register(cli: click.Group) -> None:
@@ -47,53 +34,34 @@ def register(cli: click.Group) -> None:
     )
     @click.option("--topk", type=int, default=3, help="Top-K results to return")
     @click.option(
-        "--mode",
-        type=click.Choice(["lexical", "semantic", "hybrid"]),
-        default=None,
-        help="Ranking mode",
-    )
-    @click.option("--vs-topk", type=int, default=None, help="Vector-store fan-in (K)")
-    @click.option(
         "--run-dir",
         type=click.Path(file_okay=False),
         default=None,
-        help="Output folder for artifacts (default: runs/<timestamp>/)",
-    )
-    @click.option(
-        "--justify/--no-justify",
-        default=True,
-        help="Enable/disable LLM-based justification (slower).",
+        help="Output folder for artifacts (default: runs/search/<timestamp>__<uuid>/)",
     )
     @click.pass_obj
     def search_seat_cmd(
         ctx: CLIContext,
         criteria: str,
         topk: int,
-        mode: str | None,
-        vs_topk: int | None,
         run_dir: str | None,
-        justify: bool,
     ) -> None:
         """
-        Seat-aware search with strict gating, then lexical/semantic/hybrid ranking.
+        Seat-aware search with strict gating, then lexical retrieval + LLM verdict ranking.
         """
         settings = ctx.settings
         client = ctx.client
         db = ctx.db
-        embedder = _build_embedder_from_env()
 
         try:
             crit = load_json_file(criteria)
             out_dir = run_dir or default_run_dir(settings.active_runs_dir)
 
-            processor = SearchProcessor(db, client, settings, embedder=embedder)
+            processor = SearchProcessor(db, client, settings)
             payload = processor.search_for_seat(
                 criteria=crit,
                 top_k=topk,
                 run_dir=out_dir,
-                mode_override=mode,
-                vs_topk_override=vs_topk,
-                with_justification=justify,
             )
 
             top_ids = [r["candidate_id"] for r in payload["results"]]
@@ -101,7 +69,7 @@ def register(cli: click.Group) -> None:
                 json.dumps(
                     {
                         "run_dir": out_dir,
-                        "mode": mode or settings.search_mode,
+                        "mode": "llm",
                         "topK": top_ids,
                         "payload": payload,
                     },
@@ -127,15 +95,16 @@ def register(cli: click.Group) -> None:
     )
     @click.option("--topk", type=int, default=3, help="Top-K per seat")
     @click.option(
+        "--llm-pool-size",
+        type=int,
+        default=None,
+        help="Number of candidates to send to LLM for ranking",
+    )
+    @click.option(
         "--run-dir",
         type=click.Path(file_okay=False),
         default=None,
-        help="Base output folder for artifacts (default: runs/<timestamp>/)",
-    )
-    @click.option(
-        "--justify/--no-justify",
-        default=True,
-        help="Enable/disable LLM-based justification (slower).",
+        help="Base output folder for artifacts (default: runs/search/<timestamp>__<uuid>/)",
     )
     @click.pass_obj
     def project_search_cmd(
@@ -143,8 +112,8 @@ def register(cli: click.Group) -> None:
         text: str | None,
         criteria: str | None,
         topk: int,
+        llm_pool_size: int | None,
         run_dir: str | None,
-        justify: bool,
     ) -> None:
         """
         Multi-seat search:
@@ -154,14 +123,13 @@ def register(cli: click.Group) -> None:
         settings = ctx.settings
         client = ctx.client
         db = ctx.db
-        embedder = _build_embedder_from_env()
 
         if not criteria and not text:
             raise click.ClickException("Provide either --criteria or --text.")
 
         try:
             out_dir = run_dir or default_run_dir(settings.active_runs_dir)
-            processor = SearchProcessor(db, client, settings, embedder=embedder)
+            processor = SearchProcessor(db, client, settings)
 
             if criteria:
                 crit_dict = load_json_file(criteria)
@@ -187,17 +155,22 @@ def register(cli: click.Group) -> None:
                     team_size=team_size_obj,
                     minimum_team=crit_dict.get("minimum_team", []),
                     extended_team=crit_dict.get("extended_team", []),
+                    presale_rationale=crit_dict.get("presale_rationale"),
                 )
                 payload = processor.search_for_project(
                     criteria=criteria_obj,
                     top_k=topk,
                     run_dir=out_dir,
                     raw_text=None,
-                    with_justification=justify,
+                    llm_pool_size=llm_pool_size,
                 )
             else:
                 criteria_obj = parse_request(
-                    text, model=settings.openai_model, settings=settings, client=client
+                    text,
+                    model=settings.openai_model,
+                    settings=settings,
+                    client=client,
+                    run_dir=out_dir,
                 )
                 raw_text_en = getattr(criteria_obj, "_english_brief", None) or text
                 payload = processor.search_for_project(
@@ -205,7 +178,7 @@ def register(cli: click.Group) -> None:
                     top_k=topk,
                     run_dir=out_dir,
                     raw_text=raw_text_en,
-                    with_justification=justify,
+                    llm_pool_size=llm_pool_size,
                 )
 
             click.echo(json.dumps(payload, indent=2, ensure_ascii=False))

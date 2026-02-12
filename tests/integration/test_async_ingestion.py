@@ -13,7 +13,6 @@ from cv_search.ingestion.async_pipeline import (
     Watcher,
 )
 from cv_search.ingestion.parser_stub import StubCVParser
-from cv_search.retrieval.embedder_stub import DeterministicEmbedder
 from tests.integration.helpers import (
     REPO_ROOT,
     cleanup_test_state,
@@ -52,7 +51,6 @@ def test_async_pipeline_ingests_text_samples(redis_client):
     enricher = EnricherWorker(
         settings,
         redis_client,
-        embedder=DeterministicEmbedder(),
         parser=StubCVParser(),
         client=OpenAIClient(settings, backend=StubOpenAIBackend(settings)),
     )
@@ -68,10 +66,8 @@ def test_async_pipeline_ingests_text_samples(redis_client):
     db_check = CVDatabase(settings)
     rows = db_check.conn.execute("SELECT candidate_id FROM candidate").fetchall()
     assert rows, "Candidate should be ingested into Postgres."
-    docs = db_check.conn.execute(
-        "SELECT COUNT(*) AS c, COUNT(embedding) AS with_emb FROM candidate_doc"
-    ).fetchone()
-    assert docs["with_emb"] >= 1, "Embedding should be stored in Postgres."
+    docs = db_check.conn.execute("SELECT COUNT(*) AS c FROM candidate_doc").fetchone()
+    assert docs["c"] >= 1, "Candidate doc should be stored in Postgres."
 
     cand_row = db_check.conn.execute("SELECT candidate_id FROM candidate").fetchone()
     assert cand_row, "Candidate row should exist."

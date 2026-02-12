@@ -2,7 +2,6 @@
   {
     "candidate_id": "cvfe01-a1b2",
     "name": "Nora Kim",
-    "location": "USA",
     "seniority": "senior",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -30,7 +29,7 @@
         ],
         "from": "2022-03",
         "to": "2025-09",
-        "highlights": [
+        "responsibilities": [
           "Built Next.js storefront with SSR and edge caching; improved LCP by 38%.",
           "Implemented GraphQL data layer with Apollo and optimistic UI updates.",
           "Owned testing strategy with Jest and Playwright; >95% critical path coverage."
@@ -50,7 +49,7 @@
         ],
         "from": "2019-02",
         "to": "2022-02",
-        "highlights": [
+        "responsibilities": [
           "Delivered multi-tenant dashboard components consumed by 4 internal teams."
         ]
       }
@@ -80,7 +79,6 @@
   {
     "candidate_id": "cvfe02-c3d4",
     "name": "Arjun Mehta",
-    "location": "India",
     "seniority": "middle",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -103,7 +101,7 @@
         ],
         "from": "2021-01",
         "to": "2025-07",
-        "highlights": [
+        "responsibilities": [
           "Refactored forms and state to reduce bundle size by 25%.",
           "Added e2e coverage for payments flows using Cypress."
         ]
@@ -128,7 +126,6 @@
   {
     "candidate_id": "cvfe03-e5f6",
     "name": "Lucia Rossi",
-    "location": "Italy",
     "seniority": "lead",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -153,7 +150,7 @@
         ],
         "from": "2020-05",
         "to": "2025-08",
-        "highlights": [
+        "responsibilities": [
           "Created reusable component library and theming system used across 3 products.",
           "Drove a11y improvements aligned to WCAG AA (lint rules + e2e checks)."
         ]
@@ -176,7 +173,6 @@
   {
     "candidate_id": "cvfe04-g7h8",
     "name": "Mateusz Kowalski",
-    "location": "Poland",
     "seniority": "junior",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -199,7 +195,7 @@
         ],
         "from": "2023-02",
         "to": "2025-09",
-        "highlights": [
+        "responsibilities": [
           "Built SSG pages with SvelteKit; TTI improved by 30% on low-end devices.",
           "Wrote e2e tests for playback flows using Cypress."
         ]
@@ -219,7 +215,6 @@
   {
     "candidate_id": "cvfe05-i9j0",
     "name": "Sofia Martinez",
-    "location": "Spain",
     "seniority": "senior",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -247,7 +242,7 @@
         ],
         "from": "2019-09",
         "to": "2025-09",
-        "highlights": [
+        "responsibilities": [
           "Led rollout of a design system; reduced UI defects by 40%.",
           "Introduced Vitest for faster unit tests; 2x CI speedup."
         ]
@@ -273,7 +268,6 @@
   {
     "candidate_id": "cvnet01-k1l2",
     "name": "Daniel Cooper",
-    "location": "UK",
     "seniority": "senior",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -303,7 +297,7 @@
         ],
         "from": "2021-04",
         "to": "2025-09",
-        "highlights": [
+        "responsibilities": [
           "Designed idempotent payments API with gRPC; p95 latency < 60ms.",
           "Implemented outbox pattern with Kafka; ensured exactly-once semantics."
         ]
@@ -332,7 +326,6 @@
   {
     "candidate_id": "cvnet02-m3n4",
     "name": "Zahra Rahimi",
-    "location": "Germany",
     "seniority": "middle",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -358,7 +351,7 @@
         ],
         "from": "2020-06",
         "to": "2025-08",
-        "highlights": [
+        "responsibilities": [
           "Built asynchronous order ingestion with RabbitMQ and retry policies.",
           "Migrated services to Kubernetes; achieved zero-downtime deploys."
         ]
@@ -380,7 +373,6 @@
   {
     "candidate_id": "cvnet03-o5p6",
     "name": "Miguel Silva",
-    "location": "Portugal",
     "seniority": "senior",
     "last_updated": "2025-09-18",
     "role_tags": [
@@ -411,7 +403,7 @@
         ],
         "from": "2018-11",
         "to": "2025-09",
-        "highlights": [
+        "responsibilities": [
           "Rolled out OIDC/OAuth2 SSO with Azure AD; reduced support tickets by 50%.",
           "Standardized secrets management with Azure Key Vault across 20 services."
         ]

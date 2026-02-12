@@ -196,3 +196,79 @@ Rules:
 - - src/cv_search/cli/commands/ingestion.py:137
 - File: src/cv_search/cli/commands/ingestion.py:137
 - `src/cv_search/cli/commands/ingestion.py:137`
+
+---
+
+## Three-Agent Development Framework
+
+This repository uses a three-agent autonomous development framework for implementing features end-to-end. The agents are invoked via Claude Code slash commands.
+
+### Agents
+
+| Agent | Command | Purpose |
+|-------|---------|---------|
+| **Developer Agent** | `/implement-feature {plan}` | 5-step implementation from plan (UNDERSTAND -> ANALYZE -> IMPLEMENT -> VERIFY -> CONCLUDE) |
+| **Verifier Agent** | `/verify-endpoint {METHOD} {PATH}` | Standalone E2E API verification for any endpoint |
+| **Pre-PR Agent** | `/pre-pr [--skip-review] [--no-push]` | Code review, regression analysis, squash, push, GitHub PR |
+| **Resume Agent** | `/resume-feature {feature-id}` | Resume interrupted implementation from persisted state |
+
+### Typical Workflow
+
+1. **Plan** — User describes the feature; Claude enters Plan Mode and writes a plan to `.claude/plans/`
+2. **Implement** — User runs `/implement-feature .claude/plans/my-feature.md`
+   - Developer Agent parses plan, discovers patterns, implements task-by-task
+   - Runs lint + unit tests after each task
+   - Delegates E2E verification to the Verifier Agent (via `e2e-api-test` skill)
+3. **Resume** (if interrupted) — User runs `/resume-feature my-feature-id`
+   - Loads persisted state, skips completed tasks, carries forward failure history
+4. **Ship** — User runs `/pre-pr`
+   - Reviews code, analyzes regression risk, merges main, squashes, pushes, creates GitHub PR
+
+### ExecPlans vs Feature Plans
+
+| Aspect | ExecPlan (`.agent/plans/`) | Feature Plan (`.claude/plans/`) |
+|--------|---------------------------|--------------------------------|
+| **Purpose** | Living design document for complex features | Terse, machine-parsable task list |
+| **Consumer** | Any agent or human | `/implement-feature` Developer Agent |
+| **Format** | Free-form with required sections per `.agent/PLANS.md` | Structured `## Implementation Tasks` with `TASK-ID: desc \| files: ... \| done_when: ...` |
+| **When to use** | Large design work, architectural decisions | Features implemented via `/implement-feature` |
+| **Coexistence** | Both can exist for the same feature | Feature Plan references ExecPlan if one exists |
+
+### Verification Profiles
+
+The Developer Agent classifies each feature into a verification profile that determines which checks to run:
+
+```
+Does the feature add/modify a FastAPI router endpoint?
+  NO  -> unit-only
+  YES -> Does the endpoint route through SearchProcessor/Planner (which call OpenAI)?
+    NO  -> e2e-light
+    YES -> Does the endpoint write to search_run or modify candidate data?
+      NO  -> e2e-full
+      YES -> e2e-mutation
+```
+
+| Profile | What runs | Stub mode | Example endpoints |
+|---------|-----------|-----------|-------------------|
+| **unit-only** | Lint + unit tests | N/A | Database methods, utility functions |
+| **e2e-light** | Server + call + verify response | None | `GET /health`, `GET /api/v1/runs/` |
+| **e2e-full** | Server + call + verify response | `USE_OPENAI_STUB=1` | `POST /api/v1/planner/parse-brief` |
+| **e2e-mutation** | Server + call + verify response + verify DB | `USE_OPENAI_STUB=1` | `POST /api/v1/search/seat`, `POST /api/v1/search/project` |
+
+### State Persistence
+
+Feature state is persisted at `$env:TEMP\cvsearch-feature-state\{feature-id}.json` to survive context compaction and session restarts. Key features:
+
+- **Task-level tracking**: Each task has status (pending/in-progress/completed), attempt count, and last failure signature
+- **Failure history**: All failure signatures are recorded to enable duplicate failure detection
+- **Duplicate failure detection**: If the same error signature appears twice consecutively, the agent stops immediately instead of burning retries on the same misidentified root cause
+- **Clean exit**: State file is deleted on successful completion; preserved on failure for `/resume-feature`
+
+### Integration with Existing Automation
+
+The three-agent framework layers on top of existing automation:
+
+- **`stop-verify.ps1`** — Unchanged. Remains the final safety net (stop hook)
+- **`verify-app` subagent** — Unchanged. Complements the Verifier Agent for broader verification
+- **`verify-fast.ps1` / `verify.ps1`** — Called by the agents as lint/test steps
+- **ExecPlan system** — Unchanged. Feature Plans coexist with ExecPlans

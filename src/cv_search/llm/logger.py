@@ -57,6 +57,21 @@ def _format_json_block(data: Any) -> str:
     return "```json\n" + json.dumps(data, indent=2, ensure_ascii=False) + "\n```\n\n"
 
 
+def _extract_rationale(content: str | None) -> str | None:
+    if not content:
+        return None
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    rationale = payload.get("rationale")
+    if isinstance(rationale, str) and rationale.strip():
+        return rationale.strip()
+    return None
+
+
 def _format_messages(messages: list[dict]) -> str:
     if not messages:
         return ""
@@ -79,6 +94,10 @@ def _build_entry(entry: dict[str, Any]) -> str:
         f"- Provider: {entry['provider']}",
         f"- Model: {entry['model']}",
     ]
+    if entry.get("duration_ms") is not None:
+        duration_ms = entry["duration_ms"]
+        duration_sec = duration_ms / 1000.0
+        metadata.append(f"- Duration: {duration_sec:.2f}s ({duration_ms}ms)")
     if entry.get("run_dir"):
         metadata.append(f"- Run Directory: {entry['run_dir']}")
     meta = entry.get("meta") or {}
@@ -90,6 +109,8 @@ def _build_entry(entry: dict[str, Any]) -> str:
         "Response",
         "```json\n" + entry["response"]["content"].strip() + "\n```",
     )
+    response_rationale = _extract_rationale(entry["response"]["content"])
+    rationale_section = _format_section("Response Rationale", response_rationale)
     pieces = [header, "\n".join(metadata) + "\n\n"]
     if meta_block:
         pieces.append(_format_section("Meta", meta_block))
@@ -97,6 +118,8 @@ def _build_entry(entry: dict[str, Any]) -> str:
         pieces.append(request_section)
     if response_section:
         pieces.append(response_section)
+    if rationale_section:
+        pieces.append(rationale_section)
     if usage_block:
         pieces.append(_format_section("Usage", usage_block))
     pieces.append("---\n\n")
@@ -119,6 +142,7 @@ def log_chat(
     provider: str,
     usage: dict | None = None,
     meta: dict | None = None,
+    duration_ms: int | None = None,
 ) -> None:
     entry = {
         "ts": datetime.now(timezone.utc).isoformat(),
@@ -128,6 +152,7 @@ def log_chat(
         "request": {"messages": messages},
         "response": {"content": response_content},
         "usage": usage,
+        "duration_ms": duration_ms,
         "run_dir": _RUN_DIR.get(),
         "id": str(uuid.uuid4()),
     }

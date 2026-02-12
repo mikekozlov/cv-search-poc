@@ -9,22 +9,25 @@ from pptx.text.text import _Paragraph
 
 class CVParser:
     """
-    Handles the extraction of raw text from .pptx CV files.
+    Handles the extraction of raw text from .pptx or .txt CV files.
     """
 
     def extract_text(self, file_path: Path) -> str:
         """
-        Opens a .pptx file and extracts all text content, preserving
-        paragraphs with newline separators.
+        Opens a .pptx or .txt file and extracts all text content, preserving
+        paragraphs with newline separators for .pptx.
 
         Args:
-            file_path: The Path object pointing to the .pptx file.
+            file_path: The Path object pointing to the .pptx or .txt file.
 
         Returns:
             A single string containing all extracted text.
         """
         if not file_path.exists():
             raise FileNotFoundError(f"File not found at: {file_path}")
+
+        if file_path.suffix.lower() == ".txt":
+            return file_path.read_text(encoding="utf-8", errors="replace").strip()
 
         try:
             prs = Presentation(file_path)

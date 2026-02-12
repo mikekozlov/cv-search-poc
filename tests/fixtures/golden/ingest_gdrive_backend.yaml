@@ -1,5 +1,4 @@
 name: "Stub Backend"
-location: "Testville"
 seniority: "senior"
 role_tags:
   - "backend_engineer"

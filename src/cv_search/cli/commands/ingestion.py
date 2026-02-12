@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from pathlib import Path
 from typing import Any, Dict
 
 import click
@@ -56,6 +57,28 @@ def _print_gdrive_report(report: Dict[str, Any]) -> None:
 
     click.echo(f"\nDebug JSON files saved in: {json_output_dir}")
     click.secho(f"\n? GDrive Ingestion Complete: {processed_count} CV(s) upserted.", fg="green")
+
+
+def _print_json_report(report: Dict[str, Any]) -> None:
+    status = report.get("status")
+    processed_count = report.get("processed_count", 0)
+    failed_files = report.get("failed_files", [])
+    json_dir = report.get("json_dir", "data/ingested_cvs_json")
+
+    if status == "no_json_dir":
+        click.secho(f"\n? JSON directory not found: {json_dir}", fg="red")
+        return
+
+    if status in {"no_files", "no_valid_payloads"}:
+        click.secho(f"\n? No JSON CVs to ingest from {json_dir}.", fg="yellow")
+
+    if failed_files:
+        click.secho("\n--- JSON Parse Failures ---", fg="red")
+        for file_path in failed_files:
+            click.echo(f"  - {file_path}")
+
+    click.echo(f"\nJSON source: {json_dir}")
+    click.secho(f"\n? JSON Ingestion Complete: {processed_count} CV(s) upserted.", fg="green")
 
 
 def register(cli: click.Group) -> None:
@@ -151,5 +174,57 @@ def register(cli: click.Group) -> None:
 
         except Exception as exc:  # noqa: BLE001
             click.secho(f"? FAILED during database ingestion: {exc}", fg="red")
+        finally:
+            db.close()
+
+    @cli.command("ingest-json")
+    @click.option(
+        "--json-dir",
+        "json_dir",
+        type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
+        required=False,
+        help="Directory containing parsed CV JSON files (default: data/ingested_cvs_json).",
+    )
+    @click.option(
+        "--file",
+        "single_file",
+        type=str,
+        required=False,
+        help="Process only this JSON filename (basename with extension).",
+    )
+    @click.option(
+        "--candidate-id",
+        "candidate_id",
+        type=str,
+        required=False,
+        help="Process only this candidate_id (defaults to filename stem).",
+    )
+    @click.pass_obj
+    def ingest_json_cmd(
+        ctx: CLIContext,
+        json_dir: Path | None,
+        single_file: str | None,
+        candidate_id: str | None,
+    ) -> None:
+        """
+        Ingest parsed CV JSON files into the database without re-parsing PPTX files.
+
+        This command expects JSON payloads like those written to data/ingested_cvs_json
+        by ingest-gdrive or the async ingestion pipeline.
+        """
+        settings = ctx.settings
+        db = ctx.db
+
+        try:
+            pipeline = CVIngestionPipeline(db, settings)
+            report = pipeline.run_json_ingestion(
+                json_dir=json_dir,
+                target_filename=single_file,
+                candidate_id=candidate_id,
+            )
+            _print_json_report(report)
+
+        except Exception as exc:  # noqa: BLE001
+            click.secho(f"? FAILED during JSON ingestion: {exc}", fg="red")
         finally:
             db.close()

@@ -1,0 +1,7 @@
+[theme]
+# Force light mode to prevent OS/browser dark mode from affecting the UI
+base = "light"
+primaryColor = "#2b6fe6"
+backgroundColor = "#f3f6fb"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#1f2a44"
