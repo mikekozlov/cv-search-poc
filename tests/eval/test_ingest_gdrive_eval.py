@@ -76,7 +76,8 @@ def test_ingest_gdrive_eval_backend(monkeypatch) -> None:
     pptx_path = helpers.make_inbox_pptx_placeholder(
         settings, role_folder="backend_engineer", filename="test.pptx"
     )
-    candidate_id = helpers.pptx_candidate_id(pptx_path.name)
+    relative_source_path = pptx_path.relative_to(settings.gdrive_local_dest_dir).as_posix()
+    candidate_id = helpers.pptx_candidate_id(relative_source_path)
 
     helpers.run_cli(["init-db"], env)
     helpers.run_cli(["ingest-gdrive", "--file", pptx_path.name], env)

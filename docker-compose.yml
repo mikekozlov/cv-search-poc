@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: cvsearch-pg
+    environment:
+      POSTGRES_USER: ${DB_USER:-cvsearch}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cvsearch}
+      POSTGRES_DB: ${DB_NAME:-cvsearch}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cvsearch} -d ${DB_NAME:-cvsearch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  api:
+    build: .
+    container_name: cvsearch-api
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      DB_URL: "postgresql://${DB_USER:-cvsearch}:${DB_PASSWORD:-cvsearch}@postgres:5432/${DB_NAME:-cvsearch}"
+      USE_AZURE_OPENAI: ${USE_AZURE_OPENAI:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      AZURE_ENDPOINT: ${AZURE_ENDPOINT:-}
+      AZURE_API_VERSION: ${AZURE_API_VERSION:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      API_KEY: ${API_KEY:-}
+      API_CORS_ORIGINS: ${API_CORS_ORIGINS:-*}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./logs:/app/logs
+      - ./runs:/app/runs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+volumes:
+  pgdata:

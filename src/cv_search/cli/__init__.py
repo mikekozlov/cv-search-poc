@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import click
 
 from cv_search.cli.context import CLIContext, build_context
@@ -28,11 +30,20 @@ def _register_commands(cli_group: click.Group) -> None:
         module.register(cli_group)
 
 
+def _configure_unicode_output() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+
+
 @click.group()
 @click.option("--db-url", type=str, default=None, help="Override Postgres DSN for this session.")
 @click.pass_context
 def cli(ctx: click.Context, db_url: str | None) -> None:
     """cv-search CLI."""
+    _configure_unicode_output()
     ctx.obj = build_context(db_url)
 
 

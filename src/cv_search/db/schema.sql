@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS candidate (
                                          candidate_id TEXT PRIMARY KEY,
                                          name         TEXT,
-                                         location     TEXT,
                                          seniority    TEXT,
                                          last_updated TEXT,
                                          source_filename TEXT,
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS experience (
                                           responsibilities_text TEXT,
                                           domain_tags_csv  TEXT,  -- was domain_tags
                                           tech_tags_csv    TEXT,  -- was tech
-                                          highlights       TEXT,
                                           FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
     );
 
@@ -71,7 +69,6 @@ CREATE TABLE IF NOT EXISTS candidate_doc (
                                              experience_text TEXT,
                                              tags_text       TEXT,
                                              last_updated    TEXT,   -- optional unindexed metadata for boosts
-                                             location        TEXT,
                                              seniority       TEXT,
                                              FOREIGN KEY(candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
     );
@@ -79,11 +76,42 @@ CREATE TABLE IF NOT EXISTS candidate_doc (
 -- REMOVED: embedding_doc table
 -- This table is no longer needed as embeddings are stored in the FAISS file.
 
--- App-level configuration (e.g., vector_store_id)
-CREATE TABLE IF NOT EXISTS app_config (
-                                          key   TEXT PRIMARY KEY,
-                                          value TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS search_run (
+    run_id TEXT PRIMARY KEY,
+    run_kind TEXT NOT NULL,
+    run_dir TEXT,
+    user_email TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status TEXT NOT NULL DEFAULT 'running',
+    completed_at TEXT,
+    duration_ms INTEGER,
+    result_count INTEGER,
+    error_type TEXT,
+    error_message TEXT,
+    error_stage TEXT,
+    error_traceback TEXT,
+    criteria_json TEXT,
+    raw_text TEXT,
+    top_k INTEGER,
+    seat_count INTEGER,
+    note TEXT,
+    feedback_sentiment TEXT CHECK (feedback_sentiment IN ('like','dislike')),
+    feedback_comment TEXT,
+    feedback_submitted_at TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_search_run_created_at ON search_run(created_at);
+CREATE INDEX IF NOT EXISTS idx_search_run_feedback_at ON search_run(feedback_submitted_at);
+
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'running';
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS completed_at TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS duration_ms INTEGER;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS result_count INTEGER;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_type TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_message TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_stage TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_traceback TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS user_email TEXT;
 
 -- REMOVED: vs_file_map table
 -- This table is no longer needed as it was specific to the OpenAI Vector Store.

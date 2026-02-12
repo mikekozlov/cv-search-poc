@@ -18,9 +18,6 @@ def test_cli_ingest_and_search_backend():
             "data/test/criteria.json",
             "--topk",
             "3",
-            "--mode",
-            "hybrid",
-            "--no-justify",
         ],
         env,
     )

@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 
 from cv_search.config.settings import Settings
 from cv_search.db.database import CVDatabase
-from main import cli
+from cv_search.ingestion.source_identity import candidate_id_from_source_gdrive_path
+from cv_search.cli import main as cli
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEST_ENV_FILE = REPO_ROOT / ".env.test"
@@ -120,12 +121,9 @@ def make_inbox_pptx_placeholder(
     return pptx_path
 
 
-def pptx_candidate_id(filename: str) -> str:
-    """Mimic pipeline candidate_id derivation from filename only."""
-    import hashlib
-
-    file_hash = hashlib.md5(filename.encode()).hexdigest()
-    return f"pptx-{file_hash[:10]}"
+def pptx_candidate_id(source_gdrive_path: str) -> str:
+    """Mimic pipeline candidate_id derivation from relative source path."""
+    return candidate_id_from_source_gdrive_path(source_gdrive_path)
 
 
 def load_ingested_json(settings: Settings, candidate_id: str) -> dict:

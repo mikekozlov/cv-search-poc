@@ -44,7 +44,10 @@
     "javase",
     "jdk",
     "jre",
-    "jvm"
+    "jvm",
+    "java reflection api",
+    "java servlet api",
+    "java microservices"
   ],
   "c": [
     "ansi c",
@@ -53,7 +56,11 @@
     "c language",
     "c-language",
     "iso c",
-    "iso-c"
+    "iso-c",
+    "c/c++",
+    "c# core",
+    "c++ cli",
+    "c-treeace db"
   ],
   "cpp": [
     "c plus plus",
@@ -199,7 +206,18 @@
     ".net 5.0",
     ".net framework 4.5",
     "diagrams.net",
-    ".net libraries"
+    ".net libraries",
+    ".net 6.0",
+    ".net 7.0",
+    ".net framework 1.1",
+    ".net framework 2.0",
+    ".net framework 3.5",
+    ".net framework 4.0",
+    ".net framework 4.6",
+    ".net framework 4.7",
+    "ado .net",
+    "mef",
+    "linqpad"
   ],
   "masstransit": [
     "masstransit",
@@ -253,7 +271,11 @@
     "vanilla javascript",
     "vanilla js",
     "vanilla-javascript",
-    "vanilla-js"
+    "vanilla-js",
+    "ecmascript 6",
+    "js es5",
+    "js es6",
+    "native javascript"
   ],
   "typescript": [
     "ts",
@@ -323,7 +345,8 @@
     "kotlin jvm",
     "kotlin language",
     "kotlin-jvm",
-    "kotlin-language"
+    "kotlin-language",
+    "kotlin multiplatform mobile (kmm)"
   ],
   "swift": [
     "swift",
@@ -411,7 +434,16 @@
     "reactjs.org",
     "reactjsorg",
     "react ts",
-    "react typescript"
+    "react typescript",
+    "react-virtualized",
+    "react final form",
+    "react admin",
+    "react flow",
+    "react beautiful dnd",
+    "react mui",
+    "react hook form",
+    "react query",
+    "react testing library"
   ],
   "nextjs": [
     "next js",
@@ -431,7 +463,8 @@
     "redux-saga",
     "redux-thunk",
     "redux-toolkit",
-    "rtk"
+    "rtk",
+    "react redux"
   ],
   "angular": [
     "angular",
@@ -459,7 +492,9 @@
     "angular 5",
     "angular 7",
     "angular 10+",
-    "angular 15+"
+    "angular 15+",
+    "angular universal",
+    "angular material"
   ],
   "angularjs": [
     "angular 1 x",
@@ -481,7 +516,8 @@
     "ng-1x",
     "ng1",
     "angular js",
-    "angular.js"
+    "angular.js",
+    "angularjs 1.x"
   ],
   "vue": [
     "vue",
@@ -496,7 +532,9 @@
     "vuejs org",
     "vuejs-org",
     "vuejs.org",
-    "vuejsorg"
+    "vuejsorg",
+    "vue.js 2",
+    "vue.js 3"
   ],
   "nuxt": [
     "nuxt",
@@ -554,7 +592,8 @@
     "jquery-js",
     "jquery-ui",
     "jquery.js",
-    "jqueryjs"
+    "jqueryjs",
+    "jquery mobile"
   ],
   "lit": [
     "lit",
@@ -690,7 +729,9 @@
     "django",
     "django rest framework",
     "django-rest-framework",
-    "drf"
+    "drf",
+    "django channels",
+    "django rest"
   ],
   "fastapi": [
     "fast api",
@@ -720,7 +761,19 @@
   ],
   "spring": [
     "spring",
-    "spring 1.3"
+    "spring 1.3",
+    "spring mvc",
+    "spring data jpa",
+    "spring aop",
+    "spring integration",
+    "spring jdbc",
+    "spring data",
+    "spring cloud",
+    "spring core",
+    "spring security",
+    "spring webflux",
+    "spring web flux",
+    "spring webmvc"
   ],
   "spring_boot": [
     "spring boot",
@@ -753,7 +806,8 @@
     "elixir-phoenix",
     "phoenix",
     "phoenix framework",
-    "phoenix-framework"
+    "phoenix-framework",
+    "phoenix liveview"
   ],
   "gin": [
     "gin",
@@ -823,7 +877,8 @@
     "asp.net mvc 5",
     "asp.net zero",
     "asp.net mvc core",
-    "web.api"
+    "web.api",
+    "asp .net web api"
   ],
   "aspnet_core": [
     "asp  net core",
@@ -866,7 +921,11 @@
     "asp.net core 6",
     "asp.net core 7",
     "asp.net core 8",
-    "asp.net core 3.1"
+    "asp.net core 3.1",
+    "asp.net core (web api)",
+    "asp.net core 3.0",
+    "asp.net core identity (jwtx)",
+    "exception handling middleware"
   ],
   "ktor": [
     "ktor",
@@ -911,7 +970,8 @@
     "ibm-websphere",
     "websphere",
     "websphere application server",
-    "websphere-application-server"
+    "websphere-application-server",
+    "websphere application server nd"
   ],
   "android": [
     "android",
@@ -922,7 +982,12 @@
     "jetpack",
     "native android",
     "native-android",
-    "android 2.2/2.3"
+    "android 2.2/2.3",
+    "webchromeclient",
+    "android auto",
+    "android jni",
+    "android studio",
+    "android ui"
   ],
   "jetpack_compose": [
     "android compose",
@@ -999,7 +1064,9 @@
   "ionic": [
     "ionic",
     "ionic framework",
-    "ionic-framework"
+    "ionic-framework",
+    "ionic native custom plugin",
+    "ionic deploy"
   ],
   "capacitor": [
     "capacitor",
@@ -1014,7 +1081,8 @@
   ],
   "html": [
     "html",
-    "html5"
+    "html5",
+    "html/css"
   ],
   "css": [
     "cascading style sheets",
@@ -1023,7 +1091,8 @@
     "css3"
   ],
   "sass": [
-    "sass"
+    "sass",
+    "sass/scss"
   ],
   "scss": [
     "scss"
@@ -1065,7 +1134,8 @@
   "pl_sql": [
     "pl sql",
     "pl-sql",
-    "pl/sql"
+    "pl/sql",
+    "pl/sql developer"
   ],
   "postgresql": [
     "pgsql",
@@ -1077,7 +1147,8 @@
     "postgresql db",
     "postgresql-db",
     "psql",
-    "aws postgresql"
+    "aws postgresql",
+    "pl/pgsql"
   ],
   "mysql": [
     "my sql",
@@ -1086,7 +1157,8 @@
     "mysql server",
     "mysql-server",
     "sql/sp (mysql)",
-    "hmysql"
+    "hmysql",
+    "mysql workbench"
   ],
   "mariadb": [
     "maria db",
@@ -1127,7 +1199,14 @@
     "ms sql server 2005",
     "ms sql server 2008",
     "ms sql server 2017",
-    "sql server 2016"
+    "sql server 2016",
+    "sql server 2000",
+    "sql server 2005",
+    "sql server 2012",
+    "ms sql 2000",
+    "ms sql 2005",
+    "ms sql 2008",
+    "sql server profiler"
   ],
   "sql_stored_procedures": [
     "sql (stored procedures)",
@@ -1154,7 +1233,39 @@
     "oracle-rdbms",
     "oracledb",
     "oracle 11",
-    "oracle 10.1 - 11.2"
+    "oracle 10.1 - 11.2",
+    "oracle server",
+    "oracle sql",
+    "oracle 11g",
+    "oracle xe",
+    "oracle solaris",
+    "oracle applications",
+    "oracle erp",
+    "oracle adf",
+    "oracle applications r11",
+    "oracle atg",
+    "oracle bpm suite 11g",
+    "oracle e-business suite 11i",
+    "oracle e-business suite r11i",
+    "oracle e-business suite r12",
+    "oracle endeca",
+    "oracle financials",
+    "oracle financials cloud",
+    "oracle financials r11i",
+    "oracle financials r12",
+    "oracle fusion cloud",
+    "oracle gl r11",
+    "oracle retail analytic",
+    "oracle retail supply chain",
+    "oracle service bus",
+    "oracle service bus 11g",
+    "oracle soa suite",
+    "oracle soa suite 11g",
+    "oebs 11i",
+    "oebs r11i",
+    "oebs r12",
+    "hyperion planning",
+    "hyperion fm"
   ],
   "sqlite": [
     "sqlite",
@@ -1293,7 +1404,8 @@
     "elasticsearch",
     "elasticsearch stack",
     "elasticsearch-stack",
-    "elk"
+    "elk",
+    "elasticsearch apm"
   ],
   "opensearch": [
     "amazon opensearch service",
@@ -1418,7 +1530,8 @@
     "spark-core",
     "spark-mllib",
     "spark-sql",
-    "spark-streaming"
+    "spark-streaming",
+    "spark java microservices"
   ],
   "pyspark": [
     "py spark",
@@ -1479,7 +1592,8 @@
     "apache-hadoop",
     "hadoop",
     "hadoop ecosystem",
-    "hadoop-ecosystem"
+    "hadoop-ecosystem",
+    "hadoop mr"
   ],
   "hdfs": [
     "hadoop distributed file system",
@@ -1606,7 +1720,8 @@
   ],
   "pytorch": [
     "pytorch",
-    "torch"
+    "torch",
+    "pytorch profiler"
   ],
   "tensorflow": [
     "tensorflow",
@@ -1748,7 +1863,11 @@
     "restful",
     "restful api",
     "restful-api",
-    "restapi"
+    "restapi",
+    "rest hooks",
+    "rest json api",
+    "rest api (httpclient, flurl)",
+    "restful services"
   ],
   "openapi": [
     "openapi",
@@ -1756,7 +1875,9 @@
     "swagger spec",
     "swagger ui",
     "swagger-spec",
-    "swagger-ui"
+    "swagger-ui",
+    "openapi annotations",
+    "openapi annotations for java"
   ],
   "grpc": [
     "g rpc",
@@ -1798,7 +1919,30 @@
     "aws cloud",
     "aws-cloud",
     "aws sdk",
-    "aws security"
+    "aws security",
+    "aws services",
+    "aws data pipeline",
+    "aws pinpoint",
+    "aws amplify",
+    "aws codebuild",
+    "aws codedeploy",
+    "aws dms",
+    "aws msk",
+    "aws sdn",
+    "amazon music",
+    "amazon ec2 container service",
+    "amazon mws api",
+    "amazon elasticache",
+    "amazon aws",
+    "amazon alexa",
+    "aws aurora postgresql",
+    "aws aurora mysql",
+    "aws well-architected framework",
+    "amazon maps",
+    "amazon alexa skills kit",
+    "amazon advertisement api",
+    "alexa apl",
+    "alexa voice service"
   ],
   "aws_ec2": [
     "amazon ec2",
@@ -1817,7 +1961,8 @@
     "s3",
     "simple storage service",
     "simple-storage-service",
-    "amazon s3 bucket"
+    "amazon s3 bucket",
+    "aws bucket"
   ],
   "aws_rds": [
     "amazon rds",
@@ -1828,7 +1973,8 @@
     "relational database service",
     "relational-database-service",
     "aws rds (mysql)",
-    "aws rdb"
+    "aws rdb",
+    "aws rds for postgresql"
   ],
   "aws_aurora": [
     "amazon aurora",
@@ -1998,7 +2144,17 @@
     "azure web services",
     "azure portal",
     "azure (database, services, ci)",
-    "azure sdk"
+    "azure sdk",
+    "azure analytics",
+    "azure services",
+    "azure infrastructure",
+    "azure app configuration",
+    "azure container registry",
+    "azure media services",
+    "azure cdn",
+    "azure data factory",
+    "azure service fabric",
+    "azure virtual machines"
   ],
   "azure_aks": [
     "aks",
@@ -2018,7 +2174,9 @@
     "azure app services",
     "azure-app-service",
     "web apps",
-    "web-apps"
+    "web-apps",
+    "azure web apps",
+    "azure web jobs"
   ],
   "azure_functions": [
     "azure functions",
@@ -2028,7 +2186,10 @@
     "functions-as-a-service",
     "cosmos db functions",
     "cosmosdb functions",
-    "function apps"
+    "function apps",
+    "azure function",
+    "azure function app",
+    "azure durable functions"
   ],
   "azure_cosmos_db": [
     "azure cosmos db",
@@ -2045,7 +2206,8 @@
     "service-bus",
     "service-bus-queue",
     "azure service-bus",
-    "servicebus"
+    "servicebus",
+    "service bus explorer"
   ],
   "azure_event_hubs": [
     "azure event hubs",
@@ -2067,7 +2229,8 @@
     "application insights",
     "application-insights",
     "azure application insights",
-    "azure-application-insights"
+    "azure-application-insights",
+    "azure app insights"
   ],
   "azure_ad": [
     "aad",
@@ -2078,7 +2241,8 @@
     "entra id",
     "entra-id",
     "microsoft entra id",
-    "microsoft-entra-id"
+    "microsoft-entra-id",
+    "azure b2c"
   ],
   "azure_synapse": [
     "azure synapse",
@@ -2107,7 +2271,14 @@
     "azure queue storage",
     "table storage",
     "azure table storage",
-    "azure blob"
+    "azure blob",
+    "azure storage account",
+    "azure storage accounts",
+    "azure queue",
+    "azure queues",
+    "azure queue messages",
+    "azure tables",
+    "azure storage explorer"
   ],
   "azure_sql": [
     "azure sql",
@@ -2118,7 +2289,9 @@
     "azure-sql-db",
     "sql azure",
     "sql-azure",
-    "azure database"
+    "azure database",
+    "azure relational databases",
+    "azure sql database elastic pool"
   ],
   "azure_devops": [
     "azure devops",
@@ -2143,7 +2316,21 @@
     "google cloud platform",
     "google-cloud",
     "google-cloud-platform",
-    "google cloud (gcp)"
+    "google cloud (gcp)",
+    "google cloud messaging",
+    "gcp pubsub",
+    "gcp-pubsub",
+    "google pubsub",
+    "google-pubsub",
+    "pub/sub",
+    "pubsub",
+    "gcp pub/sub",
+    "apache beam dataflow",
+    "apache-beam-dataflow",
+    "dataflow",
+    "gcp dataflow",
+    "gcp-dataflow",
+    "google data flow"
   ],
   "gcp_compute_engine": [
     "compute engine",
@@ -2192,23 +2379,6 @@
     "google cloud storage",
     "gcp storage"
   ],
-  "gcp_pubsub": [
-    "gcp pubsub",
-    "gcp-pubsub",
-    "google pubsub",
-    "google-pubsub",
-    "pub/sub",
-    "pubsub",
-    "gcp pub/sub"
-  ],
-  "gcp_dataflow": [
-    "apache beam dataflow",
-    "apache-beam-dataflow",
-    "dataflow",
-    "gcp dataflow",
-    "gcp-dataflow",
-    "google data flow"
-  ],
   "gcp_dataproc": [
     "dataproc",
     "gcp dataproc",
@@ -2241,9 +2411,7 @@
     "docker-compose",
     "docker-desktop",
     "docker-engine",
-    "dockerized"
-  ],
-  "podman": [
+    "dockerized",
     "podman"
   ],
   "kubernetes": [
@@ -2375,7 +2543,8 @@
     "jenkins pipelines",
     "jenkins-ci",
     "jenkins-pipelines",
-    "jenkinsfile"
+    "jenkinsfile",
+    "jenkins pipeline"
   ],
   "github_actions": [
     "actions",
@@ -2445,7 +2614,8 @@
     "prometheus",
     "prometheus monitoring",
     "prometheus-monitoring",
-    "promql"
+    "promql",
+    "prometheus operator"
   ],
   "grafana": [
     "grafana",
@@ -2702,7 +2872,10 @@
     "internet information services",
     "internet-information-services",
     "microsoft iis",
-    "microsoft-iis"
+    "microsoft-iis",
+    "iis 6",
+    "iis 7",
+    "iis 8"
   ],
   "haproxy": [
     "ha proxy",
@@ -2738,7 +2911,8 @@
   "ant": [
     "ant",
     "apache ant",
-    "apache-ant"
+    "apache-ant",
+    "ant design"
   ],
   "npm": [
     "node package manager",
@@ -2781,7 +2955,8 @@
   "make": [
     "gnu make",
     "gnu-make",
-    "make"
+    "make",
+    "make (integromat)"
   ],
   "cmake": [
     "cmake",
@@ -2806,14 +2981,18 @@
   "git": [
     "git",
     "git scm",
-    "git-scm"
+    "git-scm",
+    "git (bitbucket)",
+    "git (github)"
   ],
   "github": [
     "github",
     "github com",
     "github-com",
     "github.com",
-    "githubcom"
+    "githubcom",
+    "github desktop",
+    "github flows"
   ],
   "gitlab": [
     "gitlab",
@@ -2827,7 +3006,8 @@
     "bitbucket org",
     "bitbucket-org",
     "bitbucket.org",
-    "bitbucketorg"
+    "bitbucketorg",
+    "bitbucket pipeline"
   ],
   "svn": [
     "apache subversion",
@@ -2849,7 +3029,8 @@
   "jira": [
     "atlassian jira",
     "atlassian-jira",
-    "jira"
+    "jira",
+    "jira (xray)"
   ],
   "trello": [
     "trello",
@@ -2920,7 +3101,15 @@
     "power bi",
     "power-bi",
     "powerbi",
-    "power bi platform"
+    "power bi platform",
+    "power apps",
+    "power automate",
+    "power bi dataflow",
+    "power query",
+    "powerquery",
+    "m language",
+    "m (power query)",
+    "m"
   ],
   "tableau": [
     "tableau",
@@ -2935,7 +3124,8 @@
     "google-looker",
     "looker",
     "looker bi",
-    "looker-bi"
+    "looker-bi",
+    "look er"
   ],
   "superset": [
     "apache superset",
@@ -3017,12 +3207,14 @@
     "ms-test",
     "mstest",
     "visual studio test",
-    "visual-studio-test"
+    "visual-studio-test",
+    "msunit"
   ],
   "nunit": [
     "nunit",
     "nunit test",
-    "nunit-test"
+    "nunit-test",
+    "nunit reports"
   ],
   "xunit": [
     "xunit",
@@ -3051,7 +3243,8 @@
     "cypress io",
     "cypress-io",
     "cypress.io",
-    "cypressio"
+    "cypressio",
+    "cypress tests"
   ],
   "playwright": [
     "microsoft playwright",
@@ -3122,7 +3315,11 @@
     "linux",
     "linux os",
     "linux-os",
-    "linux 2.6"
+    "linux 2.6",
+    "linux device driver",
+    "linux kernel 2.6",
+    "linux ubuntu",
+    "linux (yocto)"
   ],
   "ubuntu": [
     "ubuntu",
@@ -3171,7 +3368,8 @@
     "suse linux",
     "suse linux enterprise",
     "suse-linux",
-    "suse-linux-enterprise"
+    "suse-linux-enterprise",
+    "suse linux enterprise 11"
   ],
   "alpine_linux": [
     "alpine",
@@ -3191,7 +3389,12 @@
     "windows 10",
     "windows 11",
     "win10",
-    "win 10"
+    "win 10",
+    "windows embedded",
+    "windows media foundation",
+    "windows server 2008",
+    "windows server 2012",
+    "windows services"
   ],
   "macos": [
     "mac os",
@@ -3245,7 +3448,8 @@
     "gpt 4o",
     "gpt-4o-mini",
     "o1",
-    "o1-mini"
+    "o1-mini",
+    "openai gpt4"
   ],
   "azure_openai": [
     "aoai",
@@ -3752,7 +3956,12 @@
   ],
   "api": [
     "api",
-    "apis"
+    "apis",
+    "api documentation",
+    "api documentation & testing",
+    "api test systems",
+    "api testing",
+    "api testing (graphql)"
   ],
   "authentication": [
     "authentication",
@@ -3772,7 +3981,8 @@
   "bitrix": [
     "bitrix",
     "bitrix24",
-    "bitrix 24"
+    "bitrix 24",
+    "bitrix cms"
   ],
   "bloc": [
     "bloc"
@@ -3785,11 +3995,18 @@
     "sap business objects",
     "businessobjects",
     "business objects 3.1",
-    "business objects 4.1"
+    "business objects 4.1",
+    "business objects enterprise 3.1 - 4.2",
+    "bobj data services 3.2 - 4.3",
+    "bobj data services 4.2",
+    "bobj data integrator"
   ],
   "ci_cd": [
     "ci/cd",
-    "ci cd"
+    "ci cd",
+    "ci/cd pipelines",
+    "cd/ci",
+    "ci"
   ],
   "codemagic": [
     "codemagic"
@@ -3805,14 +4022,12 @@
   ],
   "cucumber": [
     "cucumber",
-    "cucumber bdd"
+    "cucumber bdd",
+    "cucumber js"
   ],
   "data_lake": [
     "data lake",
     "data lakes"
-  ],
-  "data_mining": [
-    "data mining"
   ],
   "data_modeling": [
     "data modeling",
@@ -3834,7 +4049,9 @@
   ],
   "encryption": [
     "encryption",
-    "cryptography"
+    "cryptography",
+    "digital signature",
+    "x509 certificates"
   ],
   "excel": [
     "excel",
@@ -3849,7 +4066,27 @@
     "firebase cloud messaging",
     "fcm",
     "firebase realtime database",
-    "realtime database"
+    "realtime database",
+    "firebase platform",
+    "firebase push notifications",
+    "firebase remote notifications",
+    "firebase functions",
+    "firebase cloud functions",
+    "firebase messaging",
+    "firebase remote config",
+    "firebase a/b tests",
+    "firebase realtime db",
+    "firebase crashlytics",
+    "firebase analytics",
+    "firebase function",
+    "firebase authentication",
+    "firebase storage",
+    "firebase firestore",
+    "firebase app distribution",
+    "firebase notifications",
+    "firebase service",
+    "firebaseauth",
+    "google firebase"
   ],
   "app_flavors": [
     "flavors",
@@ -3902,7 +4139,11 @@
   "business_intelligence": [
     "business intelligence",
     "bi tools",
-    "internal bi tools"
+    "internal bi tools",
+    "business glossary",
+    "business intelligence tools",
+    "business central",
+    "business process automation"
   ],
   "jinja": [
     "jinja",
@@ -3940,7 +4181,14 @@
   "ms_office": [
     "ms office",
     "microsoft office",
-    "office suite"
+    "office suite",
+    "ms word",
+    "ms powerpoint",
+    "microsoft word",
+    "microsoft powerpoint",
+    "microsoft excel 2010",
+    "office 365",
+    "office 360"
   ],
   "notion": [
     "notion"
@@ -3965,17 +4213,11 @@
     "oracle data warehouse builder"
   ],
   "paypal": [
-    "paypal"
+    "paypal",
+    "paypal api"
   ],
   "polars": [
     "polars"
-  ],
-  "power_query": [
-    "power query",
-    "powerquery",
-    "m language",
-    "m (power query)",
-    "m"
   ],
   "erp": [
     "erp",
@@ -3983,7 +4225,8 @@
   ],
   "rdbms": [
     "rdbms",
-    "relational database"
+    "relational database",
+    "rdbms / db"
   ],
   "riverpod": [
     "riverpod"
@@ -4058,7 +4301,8 @@
   ],
   "sonarqube": [
     "sonarqube",
-    "sonar qube"
+    "sonar qube",
+    "sonarlint"
   ],
   "message_brokers": [
     "message broker",
@@ -4069,7 +4313,8 @@
     "ai",
     "artificial intelligence",
     "ai resources",
-    "ai resource"
+    "ai resource",
+    "ai tools"
   ],
   "entity_framework": [
     "entity framework",
@@ -4078,7 +4323,11 @@
     "entity framework core",
     "efcore",
     "entity_framework",
-    "entityframework"
+    "entityframework",
+    "entity framework 6",
+    "ef6",
+    "entityframework.plus",
+    "efcore.bulkextensions"
   ],
   "microservices": [
     "microservices",
@@ -4089,7 +4338,8 @@
   "serverless": [
     "serverless",
     "serverless architecture",
-    "aws serverless"
+    "aws serverless",
+    "serverless framework"
   ],
   "installshield": [
     "installshield",
@@ -4101,7 +4351,20 @@
     "visual_studio",
     "visual studio 6.0",
     "visual studio 12",
-    "visual studio 2010"
+    "visual studio 2010",
+    "visual studio 6",
+    "visual studio 2005",
+    "visual studio 2008",
+    "visual studio 2017",
+    "visual studio 2019",
+    "vs studio 2017 pro",
+    "vs studio 2019",
+    "vs studio 2019 pro",
+    "msbuild",
+    "resharper",
+    "visual basic",
+    "visual c++",
+    "visual studio code"
   ],
   "jetbrains_rider": [
     "jetbrains rider",
@@ -4111,7 +4374,8 @@
   ],
   "wpf": [
     "wpf",
-    "windows presentation foundation"
+    "windows presentation foundation",
+    "wpf mvvm"
   ],
   "winforms": [
     "winforms",
@@ -4121,7 +4385,8 @@
   "ssrs": [
     "ssrs",
     "sql server reporting services",
-    "sql server reporting service"
+    "sql server reporting service",
+    "ssrs reports"
   ],
   "wix_toolset": [
     "wix",
@@ -4167,7 +4432,9 @@
     "mobile applications",
     "mobile apps",
     "mobile application",
-    "mobile_apps"
+    "mobile_apps",
+    "mobile testing",
+    "ios sdk"
   ],
   "ibm_dsx": [
     "dsx",
@@ -4178,12 +4445,15 @@
   "json": [
     "json",
     "json format",
-    "javascript object notation"
+    "javascript object notation",
+    "json api",
+    "json_serializable"
   ],
   "azure_event_grid": [
     "event grid",
     "azure event grid",
-    "azure_event_grid"
+    "azure_event_grid",
+    "azure eventgrid"
   ],
   "azure_web_pubsub": [
     "web pubsub",
@@ -4216,31 +4486,24 @@
   ],
   "devops": [
     "devops",
-    "dev ops"
+    "dev ops",
+    "cloud solution deployment"
   ],
   "xero": [
     "xero"
-  ],
-  "gis_geocad": [
-    "gis geocad"
   ],
   "offer_order_management_platform": [
     "offer&order management platform"
   ],
   "storage": [
-    "storage"
+    "storage",
+    "storage accounts"
   ],
   "ldb": [
     "ldb"
   ],
-  "wpf_mvvm": [
-    "wpf mvvm"
-  ],
   "multimedia": [
     "multimedia"
-  ],
-  "ant_design": [
-    "ant design"
   ],
   "zlib": [
     "zlib"
@@ -4255,7 +4518,8 @@
     "sapoffice"
   ],
   "ar": [
-    "ar"
+    "ar",
+    "ar transactions"
   ],
   "phage_purification": [
     "phage purification"
@@ -4266,38 +4530,23 @@
   "clusterprofiler": [
     "clusterprofiler"
   ],
-  "ai_tools": [
-    "ai tools"
-  ],
-  "phoenix_liveview": [
-    "phoenix liveview"
-  ],
-  "microsoft_power_apps": [
-    "microsoft power apps"
-  ],
   "i5": [
     "i5"
   ],
   "webform": [
     "webform"
   ],
-  "social_auth": [
-    "social auth"
-  ],
-  "open_source_llms": [
-    "open source llms"
-  ],
-  "oracle_financials": [
-    "oracle financials"
-  ],
   "dapper": [
-    "dapper"
+    "dapper",
+    "dapper orm"
   ],
   "cloudtrail": [
     "cloudtrail"
   ],
   "bluetooth": [
-    "bluetooth"
+    "bluetooth",
+    "bluetooth le",
+    "bluetooth modules"
   ],
   "zx": [
     "zx"
@@ -4311,18 +4560,6 @@
   "atmega128": [
     "atmega128"
   ],
-  "apache_hudi": [
-    "apache hudi"
-  ],
-  "business_glossary": [
-    "business glossary"
-  ],
-  "voice_assistant": [
-    "voice assistant"
-  ],
-  "power_apps": [
-    "power apps"
-  ],
   "phpmyadmin": [
     "phpmyadmin"
   ],
@@ -4331,9 +4568,6 @@
   ],
   "reporting": [
     "reporting"
-  ],
-  "data_catalog": [
-    "data catalog"
   ],
   "gnu_chain": [
     "gnu chain"
@@ -4344,17 +4578,11 @@
   "qwt": [
     "qwt"
   ],
-  "rpc_logging": [
-    "rpc logging"
-  ],
   "aif": [
     "aif"
   ],
   "reports": [
     "reports"
-  ],
-  "cucumber_js": [
-    "cucumber js"
   ],
   "surveys": [
     "surveys"
@@ -4369,7 +4597,8 @@
     "adf"
   ],
   "database_testing": [
-    "database testing"
+    "database testing",
+    "database tests"
   ],
   "soup": [
     "soup"
@@ -4386,26 +4615,15 @@
   "micro_frontends_architecture": [
     "micro frontends architecture"
   ],
-  "salesforce_dx": [
-    "salesforce dx"
-  ],
   "upnp": [
     "upnp"
-  ],
-  "sap_btp": [
-    "sap btp"
   ],
   "webui": [
     "webui"
   ],
   "bi": [
-    "bi"
-  ],
-  "android_auto": [
-    "android auto"
-  ],
-  "spark_java_microservices": [
-    "spark java microservices"
+    "bi",
+    "bi dashboard"
   ],
   "dynpro_abap": [
     "dynpro abap"
@@ -4425,32 +4643,18 @@
   "opencsv": [
     "opencsv"
   ],
-  "firebase_push_notifications": [
-    "firebase push notifications"
-  ],
   "sftp": [
     "sftp"
-  ],
-  "twitter_bootstrap_3": [
-    "twitter bootstrap 3"
   ],
   "wireshark": [
     "wireshark"
   ],
-  "ionic_native_custom_plugin": [
-    "ionic native custom plugin"
-  ],
   "assembler": [
-    "assembler"
-  ],
-  "soa_practice": [
-    "soa practice"
-  ],
-  "cypress_tests": [
-    "cypress tests"
-  ],
-  "btp_event_mesh": [
-    "btp event mesh"
+    "assembler",
+    "assembler (arm)",
+    "assembler (arm stm32)",
+    "assembler (hlasm)",
+    "assembler (x86)"
   ],
   "qt_creator": [
     "qt creator"
@@ -4504,14 +4708,8 @@
   "axis_cameras": [
     "axis cameras"
   ],
-  "networking_l2_l3": [
-    "networking (l2/l3)"
-  ],
   "mkv": [
     "mkv"
-  ],
-  "batch_calls": [
-    "batch calls"
   ],
   "visual_basic_scripting": [
     "visual basic scripting"
@@ -4525,17 +4723,8 @@
   "rfc": [
     "rfc"
   ],
-  "ci_cd_pipelines": [
-    "ci/cd pipelines"
-  ],
   "wamp": [
     "wamp"
-  ],
-  "github_desktop": [
-    "github desktop"
-  ],
-  "open_filtration_method": [
-    "open filtration method"
   ],
   "chrome_extension": [
     "chrome extension"
@@ -4543,29 +4732,17 @@
   "dio": [
     "dio"
   ],
-  "bobj_data_services_3_2_4_3": [
-    "bobj data services 3.2 - 4.3"
-  ],
   "zapier": [
     "zapier"
   ],
   "handlebars": [
     "handlebars"
   ],
-  "oracle_retail_supply_chain": [
-    "oracle retail supply chain"
-  ],
   "gbg": [
     "gbg"
   ],
   "rsb": [
     "rsb"
-  ],
-  "native_javascript": [
-    "native javascript"
-  ],
-  "firebase_functions": [
-    "firebase functions"
   ],
   "mfc": [
     "mfc"
@@ -4576,21 +4753,11 @@
   "wms": [
     "wms"
   ],
-  "visual_studio_code": [
-    "visual studio code"
-  ],
   "gtest": [
     "gtest"
   ],
-  "material_ui": [
-    "material ui",
-    "material-ui"
-  ],
   "linqtoxrm": [
     "linqtoxrm"
-  ],
-  "ibm_db2_udb_9_7": [
-    "ibm db2 udb 9.7"
   ],
   "vat": [
     "vat"
@@ -4609,9 +4776,6 @@
     "aws step functions",
     "aws step function"
   ],
-  "serverless_framework": [
-    "serverless framework"
-  ],
   "log4j": [
     "log4j"
   ],
@@ -4625,19 +4789,16 @@
     "mapstruct"
   ],
   "rpg": [
-    "rpg"
-  ],
-  "integration_tests": [
-    "integration tests"
+    "rpg",
+    "rpg free form",
+    "rpg iii",
+    "rpg iv"
   ],
   "rdkit": [
     "rdkit"
   ],
   "wily_introscope": [
     "wily introscope"
-  ],
-  "video_audio_codec": [
-    "video/audio codec"
   ],
   "backstage": [
     "backstage"
@@ -4654,26 +4815,11 @@
   "vbs": [
     "vbs"
   ],
-  "sap_java": [
-    "sap java"
-  ],
-  "spring_mvc": [
-    "spring mvc"
-  ],
   "qa": [
     "qa"
   ],
-  "firebase_remote_notifications": [
-    "firebase remote notifications"
-  ],
   "extjs": [
     "extjs"
-  ],
-  "itsm_maximo": [
-    "itsm-maximo"
-  ],
-  "responsive_framework": [
-    "responsive framework"
   ],
   "bex_query_designer": [
     "bex query designer"
@@ -4687,17 +4833,12 @@
   "memcache": [
     "memcache"
   ],
-  "oracle_soa_suite_11g": [
-    "oracle soa suite 11g"
-  ],
   "togaf": [
     "togaf"
   ],
-  "ibm_os_400": [
-    "ibm os/400"
-  ],
   "sms": [
-    "sms"
+    "sms",
+    "sms tools"
   ],
   "actionbarsherlock": [
     "actionbarsherlock"
@@ -4717,17 +4858,8 @@
   "fhir": [
     "fhir"
   ],
-  "camunda_modeler": [
-    "camunda modeler"
-  ],
-  "google_firebase": [
-    "google firebase"
-  ],
   "atomic_design": [
     "atomic design"
-  ],
-  "ms_word": [
-    "ms word"
   ],
   "valgrind": [
     "valgrind"
@@ -4747,12 +4879,6 @@
   "recharts": [
     "recharts"
   ],
-  "seo_tools": [
-    "seo tools"
-  ],
-  "social_networks": [
-    "social networks"
-  ],
   "sadl": [
     "sadl"
   ],
@@ -4761,12 +4887,6 @@
   ],
   "torchrun": [
     "torchrun"
-  ],
-  "xml_stream": [
-    "xml-stream"
-  ],
-  "iar_j_link_ultra": [
-    "iar j-link ultra"
   ],
   "midas": [
     "midas"
@@ -4777,9 +4897,6 @@
   "stm32": [
     "stm32"
   ],
-  "ecmascript_6": [
-    "ecmascript 6"
-  ],
   "qxdm": [
     "qxdm"
   ],
@@ -4787,23 +4904,12 @@
     "retrofit",
     "retrofit 2"
   ],
-  "react_virtualized": [
-    "react-virtualized"
-  ],
   "wda": [
     "wda"
   ],
-  "cloud_flow": [
-    "cloud flow"
-  ],
-  "axon_framework": [
-    "axon framework"
-  ],
   "qualcomm": [
-    "qualcomm"
-  ],
-  "identity_framework": [
-    "identity framework"
+    "qualcomm",
+    "qualcomm aptx"
   ],
   "mentoring": [
     "mentoring"
@@ -4818,13 +4924,16 @@
     "rdp"
   ],
   "identity": [
-    "identity"
+    "identity",
+    "identity framework",
+    "identityserver4",
+    "identityserver",
+    "identity server",
+    "identityserver 4",
+    "duende identityserver"
   ],
   "gwt": [
     "gwt"
-  ],
-  "microsoft_clarity": [
-    "microsoft clarity"
   ],
   "secure_storage": [
     "secure storage"
@@ -4834,11 +4943,6 @@
   ],
   "zustand": [
     "zustand"
-  ],
-  "identity_server": [
-    "identityserver4",
-    "identityserver",
-    "identity server"
   ],
   "vuex": [
     "vuex"
@@ -4854,9 +4958,6 @@
   ],
   "metio_api": [
     "metio api"
-  ],
-  "alexa_apl": [
-    "alexa apl"
   ],
   "cart_api": [
     "cart api"
@@ -4879,30 +4980,22 @@
   "rtp": [
     "rtp"
   ],
-  "data_integration": [
-    "data integration"
-  ],
-  "microsoft_excel_2010": [
-    "microsoft excel 2010"
-  ],
-  "aws_codedeploy": [
-    "aws codedeploy"
-  ],
   "protocol_review": [
     "protocol review"
   ],
   "ivy": [
     "ivy"
   ],
-  "openai_gpt4": [
-    "openai gpt4"
-  ],
   "xrm_toolbox": [
     "xrm toolbox"
   ],
   "sap_hana": [
     "sap hana",
-    "sap hana 2.0"
+    "sap hana 2.0",
+    "hana xs",
+    "hana sdi",
+    "hana procedures",
+    "hana olap"
   ],
   "ui_testing": [
     "ui testing"
@@ -4919,35 +5012,22 @@
   "swd": [
     "swd"
   ],
-  "spring_data_jpa": [
-    "spring data jpa"
-  ],
   "ksh": [
     "ksh"
   ],
   "tdd": [
-    "tdd"
-  ],
-  "camunda_bpm": [
-    "camunda bpm"
-  ],
-  "firebase_cloud_functions": [
-    "firebase cloud functions"
+    "tdd",
+    "test-driven development"
   ],
   "system_architecture": [
-    "system architecture"
+    "system architecture",
+    "system design"
   ],
   "qemu": [
     "qemu"
   ],
-  "amazon_music": [
-    "amazon music"
-  ],
   "pagerslidingtabstrip_library": [
     "pagerslidingtabstrip library"
-  ],
-  "firebase_messaging": [
-    "firebase messaging"
   ],
   "linkedin": [
     "linkedin"
@@ -4956,25 +5036,15 @@
     "report builder 3"
   ],
   "monitoring": [
-    "monitoring"
-  ],
-  "webflow_interactions": [
-    "webflow interactions"
+    "monitoring",
+    "logging",
+    "logging and monitoring"
   ],
   "beyond_compare": [
     "beyond compare"
   ],
-  "vmware_vsphere": [
-    "vmware vsphere"
-  ],
   "pika": [
     "pika"
-  ],
-  "google_play_services": [
-    "google play services"
-  ],
-  "spring_aop": [
-    "spring aop"
   ],
   "geolocation_apis": [
     "geolocation apis"
@@ -4998,13 +5068,13 @@
     "smart-forms"
   ],
   "iar": [
-    "iar"
+    "iar",
+    "iar j-link ultra",
+    "iar embedded workbench",
+    "iar j-link"
   ],
   "nrf52840_dongle": [
     "nrf52840 dongle"
-  ],
-  "sap_gateway_2_0": [
-    "sap gateway 2.0"
   ],
   "cvs": [
     "cvs"
@@ -5018,9 +5088,6 @@
   "koin": [
     "koin"
   ],
-  "sap_bw_3_0_sap_nw_7_0_ehp1": [
-    "sap bw 3.0 - sap nw 7.0 ehp1"
-  ],
   "curl": [
     "curl"
   ],
@@ -5028,13 +5095,13 @@
     "nakisa"
   ],
   "agile": [
-    "agile"
-  ],
-  "hosting_and_virtualization_platforms": [
-    "hosting and virtualization platforms"
+    "agile",
+    "pair programming",
+    "agile metrics"
   ],
   "z_wave": [
-    "z-wave"
+    "z-wave",
+    "z-wave modules"
   ],
   "vaadin": [
     "vaadin"
@@ -5043,28 +5110,17 @@
     "anzoagraph db"
   ],
   "liquid": [
-    "liquid"
+    "liquid",
+    "dotliquid"
   ],
   "apigee": [
     "apigee"
   ],
-  "ibm_rational_telelogic": [
-    "ibm rational telelogic"
-  ],
-  "asp_mvc": [
-    "asp mvc"
-  ],
   "nbomber": [
     "nbomber"
   ],
-  "js_es5": [
-    "js es5"
-  ],
   "openfi": [
     "openfi"
-  ],
-  "visual_c": [
-    "visual c++"
   ],
   "protobuf": [
     "protobuf"
@@ -5081,9 +5137,6 @@
   "db": [
     "db"
   ],
-  "storage_accounts": [
-    "storage accounts"
-  ],
   "amcharts": [
     "amcharts"
   ],
@@ -5095,15 +5148,6 @@
   ],
   "bpm": [
     "bpm"
-  ],
-  "com_dcom": [
-    "com/dcom"
-  ],
-  "data_science_pipelines": [
-    "data science pipelines"
-  ],
-  "apache_thrift": [
-    "apache thrift"
   ],
   "icop_vsx_6119": [
     "icop vsx-6119"
@@ -5120,7 +5164,8 @@
   "ble": [
     "ble",
     "ble 4",
-    "ble 5"
+    "ble 5",
+    "ble-mesh"
   ],
   "devsecops": [
     "devsecops"
@@ -5128,23 +5173,11 @@
   "arduino": [
     "arduino"
   ],
-  "microsoft_analysis_services": [
-    "microsoft analysis services"
-  ],
-  "spring_data": [
-    "spring data"
-  ],
   "highchart": [
     "highchart"
   ],
-  "sap_hana_studio_modelling": [
-    "sap hana studio - modelling"
-  ],
   "perfview": [
     "perfview"
-  ],
-  "firebaseauth": [
-    "firebaseauth"
   ],
   "wized": [
     "wized"
@@ -5152,14 +5185,8 @@
   "adsense": [
     "adsense"
   ],
-  "google_pay": [
-    "google pay"
-  ],
   "proxyquire": [
     "proxyquire"
-  ],
-  "json_api": [
-    "json api"
   ],
   "scipy": [
     "scipy"
@@ -5178,7 +5205,8 @@
   ],
   "google_maps": [
     "google maps api",
-    "google maps"
+    "google maps",
+    "gmap.net"
   ],
   "kubespray": [
     "kubespray"
@@ -5220,32 +5248,21 @@
   "cst": [
     "cst"
   ],
-  "user_interface": [
-    "user interface"
-  ],
   "cloudsql": [
     "cloudsql"
   ],
   "scientific_writing": [
     "scientific writing"
   ],
-  "apache_poi": [
-    "apache poi"
-  ],
   "hamcrest": [
     "hamcrest"
   ],
   "push_notifications": [
-    "push notifications"
+    "push notifications",
+    "notifications"
   ],
   "xquery": [
     "xquery"
-  ],
-  "bw_workbench": [
-    "bw workbench"
-  ],
-  "eclipse_adt": [
-    "eclipse adt"
   ],
   "framer": [
     "framer"
@@ -5282,17 +5299,18 @@
   "kdevelop": [
     "kdevelop"
   ],
-  "database_tests": [
-    "database tests"
-  ],
   "null_safety": [
     "null safety"
   ],
   "rest_apis": [
-    "rest apis"
+    "rest apis",
+    "restful apis",
+    "api services",
+    "endpoints"
   ],
   "mvc": [
-    "mvc"
+    "mvc",
+    "mvc (razor pages)"
   ],
   "guice": [
     "guice"
@@ -5312,9 +5330,6 @@
   "owasp": [
     "owasp"
   ],
-  "firebase_remote_config": [
-    "firebase remote config"
-  ],
   "uniorg_udina_commerce_2_0": [
     "uniorg udina commerce 2.0"
   ],
@@ -5323,12 +5338,6 @@
   ],
   "lal_test": [
     "lal test"
-  ],
-  "aldon_lmi": [
-    "aldon lmi"
-  ],
-  "bluetooth_modules": [
-    "bluetooth modules"
   ],
   "scm": [
     "scm"
@@ -5339,9 +5348,6 @@
   "bigcommerce_api": [
     "bigcommerce api"
   ],
-  "telegram_apis": [
-    "telegram apis"
-  ],
   "powerpoint": [
     "powerpoint"
   ],
@@ -5350,12 +5356,6 @@
   ],
   "clle": [
     "clle"
-  ],
-  "twitter_sdk": [
-    "twitter sdk"
-  ],
-  "fluent_api_validation": [
-    "fluent api validation"
   ],
   "rxswift": [
     "rxswift"
@@ -5371,12 +5371,6 @@
   ],
   "grunt": [
     "grunt"
-  ],
-  "ms_teams": [
-    "ms teams"
-  ],
-  "spring_integration": [
-    "spring integration"
   ],
   "closed_membrane_filtration": [
     "closed membrane filtration"
@@ -5394,17 +5388,8 @@
   "vector_embeddings": [
     "vector embeddings"
   ],
-  "spring_cloud": [
-    "spring cloud"
-  ],
-  "sap_basis_4_6c_sap_netweaver_7_5": [
-    "sap basis 4.6c – sap netweaver 7.5"
-  ],
   "trawelwits_api": [
     "trawelwits api"
-  ],
-  "sap_netweaver_ep": [
-    "sap netweaver ep"
   ],
   "plotly": [
     "plotly"
@@ -5414,9 +5399,6 @@
   ],
   "qualtrics": [
     "qualtrics"
-  ],
-  "solidgate_api": [
-    "solidgate api"
   ],
   "postcss": [
     "postcss"
@@ -5428,35 +5410,14 @@
   "kin_blockchain": [
     "kin blockchain"
   ],
-  "hubspot_api": [
-    "hubspot api"
-  ],
   "landed_cost_allocation": [
     "landed cost allocation"
-  ],
-  "office_365": [
-    "office 365"
-  ],
-  "aws_aurora_postgresql": [
-    "aws aurora postgresql"
   ],
   "des": [
     "des"
   ],
-  "microsoft_word": [
-    "microsoft word"
-  ],
   "ctrader": [
     "ctrader"
-  ],
-  "api_testing_graphql": [
-    "api testing (graphql)"
-  ],
-  "pytorch_profiler": [
-    "pytorch profiler"
-  ],
-  "aldon_cms": [
-    "aldon cms"
   ],
   "dataverse": [
     "dataverse"
@@ -5464,14 +5425,8 @@
   "vitamio_bundle": [
     "vitamio bundle"
   ],
-  "react_final_form": [
-    "react final form"
-  ],
   "storekit": [
     "storekit"
-  ],
-  "elasticsearch_apm": [
-    "elasticsearch apm"
   ],
   "aix_5l": [
     "aix 5l"
@@ -5497,9 +5452,6 @@
   "core_services": [
     "core services"
   ],
-  "rpg_iv": [
-    "rpg iv"
-  ],
   "glacier": [
     "glacier"
   ],
@@ -5518,12 +5470,6 @@
   "appcenter": [
     "appcenter"
   ],
-  "google_navigation_services": [
-    "google navigation services"
-  ],
-  "restful_services": [
-    "restful services"
-  ],
   "imagemagick": [
     "imagemagick"
   ],
@@ -5531,16 +5477,10 @@
     "ejb3"
   ],
   "async": [
-    "async"
-  ],
-  "semantic_modeling": [
-    "semantic modeling"
-  ],
-  "ms_powerpoint": [
-    "ms powerpoint"
-  ],
-  "git_github": [
-    "git (github)"
+    "async",
+    "background synchronization",
+    "asynchronous programming",
+    "asyncio"
   ],
   "espresso": [
     "espresso"
@@ -5563,9 +5503,6 @@
   "onvif": [
     "onvif"
   ],
-  "oracle_endeca": [
-    "oracle endeca"
-  ],
   "mangopay": [
     "mangopay"
   ],
@@ -5576,7 +5513,8 @@
     "sox"
   ],
   "wcf": [
-    "wcf"
+    "wcf",
+    "wcf duplex"
   ],
   "datastage": [
     "datastage"
@@ -5584,14 +5522,9 @@
   "gstreamer": [
     "gstreamer"
   ],
-  "asyncio": [
-    "asyncio"
-  ],
   "usb": [
-    "usb"
-  ],
-  "oracle_retail_analytic": [
-    "oracle retail analytic"
+    "usb",
+    "usb device drivers"
   ],
   "crashlytics": [
     "crashlytics"
@@ -5599,20 +5532,15 @@
   "jslint": [
     "jslint"
   ],
-  "ibm_filenet": [
-    "ibm filenet"
-  ],
   "opengrok": [
     "opengrok"
   ],
   "tpl": [
-    "tpl"
+    "tpl",
+    "tpl dataflow"
   ],
   "i2c": [
     "i2c"
-  ],
-  "microsoft_dataverse": [
-    "microsoft dataverse"
   ],
   "ebay_api": [
     "ebay api"
@@ -5629,17 +5557,11 @@
   "vba": [
     "vba"
   ],
-  "hyperion_planning": [
-    "hyperion planning"
-  ],
   "document_ai": [
     "document.ai"
   ],
   "configfs": [
     "configfs"
-  ],
-  "vb_scripts": [
-    "vb scripts"
   ],
   "ebtax": [
     "ebtax"
@@ -5653,9 +5575,6 @@
   "bdc": [
     "bdc"
   ],
-  "google_console_apis": [
-    "google console apis"
-  ],
   "iaas": [
     "iaas"
   ],
@@ -5668,12 +5587,6 @@
   "icecat": [
     "icecat"
   ],
-  "qualcomm_aptx": [
-    "qualcomm aptx"
-  ],
-  "enterprise_data_glossary": [
-    "enterprise data glossary"
-  ],
   "livy": [
     "livy"
   ],
@@ -5681,22 +5594,18 @@
     "brm"
   ],
   "instagram": [
-    "instagram"
+    "instagram",
+    "instagram api"
   ],
   "vb": [
-    "vb"
-  ],
-  "sms_tools": [
-    "sms tools"
+    "vb",
+    "vb scripts"
   ],
   "e2e_and_unit_tests": [
     "e2e and unit tests"
   ],
   "mule": [
     "mule"
-  ],
-  "rdbms_db": [
-    "rdbms / db"
   ],
   "camtasia": [
     "camtasia"
@@ -5707,20 +5616,12 @@
   "fbi": [
     "fbi"
   ],
-  "oracle_service_bus_11g": [
-    "oracle service bus 11g"
-  ],
-  "video_streaming": [
-    "video streaming"
-  ],
   "idocs": [
     "idocs"
   ],
-  "linux_yocto": [
-    "linux (yocto)"
-  ],
   "rpc": [
-    "rpc"
+    "rpc",
+    "rpc logging"
   ],
   "ivr": [
     "ivr"
@@ -5755,20 +5656,11 @@
   "nx": [
     "nx"
   ],
-  "openapi_annotations_for_java": [
-    "openapi annotations for java"
-  ],
   "smacss": [
     "smacss"
   ],
-  "spring_webmvc": [
-    "spring webmvc"
-  ],
   "phpunit": [
     "phpunit"
-  ],
-  "windows_server_2008": [
-    "windows server 2008"
   ],
   "temporal_io": [
     "temporal io"
@@ -5782,15 +5674,13 @@
   "clinical_research": [
     "clinical research"
   ],
-  "jenkins_pipeline": [
-    "jenkins pipeline"
-  ],
   "rexx": [
     "rexx"
   ],
   "batch": [
     "batch",
-    "aws batch"
+    "aws batch",
+    "batch calls"
   ],
   "mamp": [
     "mamp"
@@ -5804,26 +5694,18 @@
   "contacts_import": [
     "contacts import"
   ],
-  "s_4hana_1610": [
-    "s/4hana 1610"
-  ],
-  "data_jpa": [
-    "data jpa"
-  ],
   "infopath": [
     "infopath"
   ],
   "ag_grid": [
-    "ag-grid"
+    "ag-grid",
+    "ag grid"
   ],
   "xdebug": [
     "xdebug"
   ],
   "kanban": [
     "kanban"
-  ],
-  "user_verify": [
-    "user verify"
   ],
   "equation": [
     "equation"
@@ -5833,9 +5715,6 @@
   ],
   "gson": [
     "gson"
-  ],
-  "oracle_fusion_cloud": [
-    "oracle fusion cloud"
   ],
   "sessionstorage": [
     "sessionstorage"
@@ -5849,23 +5728,11 @@
   "ddic": [
     "ddic"
   ],
-  "web_application": [
-    "web application"
-  ],
   "lsmw": [
     "lsmw"
   ],
-  "data_visualization": [
-    "data visualization"
-  ],
   "provider": [
     "provider"
-  ],
-  "sap_router": [
-    "sap router"
-  ],
-  "json_serializable": [
-    "json_serializable"
   ],
   "tts": [
     "tts"
@@ -5876,50 +5743,29 @@
   "qcc51xx": [
     "qcc51xx"
   ],
-  "sap_hybris": [
-    "sap hybris"
-  ],
   "arm9_atmel": [
     "arm9 (atmel)"
   ],
   "pdf_reports": [
-    "pdf reports"
-  ],
-  "jquery_mobile": [
-    "jquery mobile"
+    "pdf reports",
+    "pdftrone",
+    "selectpdf",
+    "wkhtmltopdf.core"
   ],
   "po": [
     "po"
   ],
-  "audio_video_encoding": [
-    "audio video encoding"
-  ],
-  "tcp_ip_socket": [
-    "tcp/ip socket"
-  ],
   "stylus": [
     "stylus"
   ],
-  "fiori_3_0": [
-    "fiori 3.0"
-  ],
   "self_hosted_runners": [
     "self-hosted runners"
-  ],
-  "data_governance": [
-    "data governance"
   ],
   "casperjs": [
     "casperjs"
   ],
   "emfile_efs": [
     "emfile efs"
-  ],
-  "microsoft_365": [
-    "microsoft 365"
-  ],
-  "angularjs_1_x": [
-    "angularjs 1.x"
   ],
   "mnesia": [
     "mnesia"
@@ -5929,12 +5775,6 @@
   ],
   "image_processing": [
     "image processing"
-  ],
-  "mri_siemens_1_5t": [
-    "mri siemens 1.5t"
-  ],
-  "voice_codec": [
-    "voice codec"
   ],
   "opm": [
     "opm"
@@ -5946,7 +5786,8 @@
     "flows"
   ],
   "jca_jce": [
-    "jca/jce"
+    "jca/jce",
+    "jca/jce extensions"
   ],
   "win32api": [
     "win32api"
@@ -5958,10 +5799,8 @@
     "gherkin"
   ],
   "solidgate": [
-    "solidgate"
-  ],
-  "android_studio": [
-    "android studio"
+    "solidgate",
+    "solidgate api"
   ],
   "ssas": [
     "ssas"
@@ -5972,17 +5811,8 @@
   "pagerduty": [
     "pagerduty"
   ],
-  "sybase_sql_anywhere": [
-    "sybase sql anywhere"
-  ],
   "ajax": [
     "ajax"
-  ],
-  "oracle_server": [
-    "oracle server"
-  ],
-  "analytics_services": [
-    "analytics (services)"
   ],
   "om": [
     "om"
@@ -5993,14 +5823,8 @@
   "walmart_api": [
     "walmart api"
   ],
-  "google_bots": [
-    "google bots"
-  ],
   "gitops": [
     "gitops"
-  ],
-  "oracle_adf": [
-    "oracle adf"
   ],
   "waterfall": [
     "waterfall"
@@ -6017,23 +5841,17 @@
   "teletype": [
     "teletype"
   ],
-  "make_integromat": [
-    "make (integromat)"
-  ],
-  "sap_bo": [
-    "sap bo"
-  ],
   "payment_system": [
-    "payment system"
+    "payment system",
+    "payments",
+    "pos"
   ],
   "sierra_wireless_open_at": [
     "sierra wireless open at"
   ],
   "hubspot": [
-    "hubspot"
-  ],
-  "google_vision": [
-    "google vision"
+    "hubspot",
+    "hubspot api"
   ],
   "uwsgi": [
     "uwsgi"
@@ -6065,9 +5883,6 @@
   "fakeiteasy": [
     "fakeiteasy"
   ],
-  "dapper_orm": [
-    "dapper orm"
-  ],
   "heidelpay_api": [
     "heidelpay api"
   ],
@@ -6081,10 +5896,8 @@
     "fullcontact api"
   ],
   "ms_access": [
-    "ms access"
-  ],
-  "iar_embedded_workbench": [
-    "iar embedded workbench"
+    "ms access",
+    "ms access 2008"
   ],
   "e2gen": [
     "e2gen"
@@ -6092,20 +5905,8 @@
   "lamp": [
     "lamp"
   ],
-  "adobe_creative_suite": [
-    "adobe creative suite"
-  ],
   "citus": [
     "citus"
-  ],
-  "mysql_workbench": [
-    "mysql workbench"
-  ],
-  "vue_js_2": [
-    "vue.js 2"
-  ],
-  "java_reflection_api": [
-    "java reflection api"
   ],
   "solo": [
     "solo"
@@ -6114,16 +5915,14 @@
     "telerik"
   ],
   "eclipse": [
-    "eclipse"
+    "eclipse",
+    "eclipse adt"
   ],
   "pxp": [
     "pxp"
   ],
   "aiosmtplib": [
     "aiosmtplib"
-  ],
-  "mvc_razor_pages": [
-    "mvc (razor pages)"
   ],
   "canva": [
     "canva"
@@ -6138,10 +5937,9 @@
     "srest"
   ],
   "mri": [
-    "mri"
-  ],
-  "karma_tests": [
-    "karma tests"
+    "mri",
+    "mri siemens 1.5t",
+    "mri siemens 3.0t"
   ],
   "jsdom": [
     "jsdom"
@@ -6158,15 +5956,13 @@
   "loopback": [
     "loopback"
   ],
-  "oracle_e_business_suite_11i": [
-    "oracle e-business suite 11i"
-  ],
   "elma_designer": [
     "elma designer"
   ],
   "codepipeline": [
     "codepipeline",
-    "aws codepipeline"
+    "aws codepipeline",
+    "aws pipelines"
   ],
   "doctrine_2": [
     "doctrine 2"
@@ -6175,7 +5971,8 @@
     "pa"
   ],
   "com": [
-    "com"
+    "com",
+    "com/dcom"
   ],
   "polyacrylamide_gel_electrophoresis": [
     "polyacrylamide gel electrophoresis"
@@ -6183,26 +5980,14 @@
   "kondor": [
     "kondor+"
   ],
-  "hana_xs": [
-    "hana xs"
-  ],
   "sourcesafe": [
     "sourcesafe"
-  ],
-  "c_c": [
-    "c/c++"
   ],
   "cross_platform_compiler": [
     "cross-platform compiler"
   ],
   "square": [
     "square"
-  ],
-  "twitter_auth": [
-    "twitter auth"
-  ],
-  "quasar_framework": [
-    "quasar framework"
   ],
   "fiddler": [
     "fiddler"
@@ -6214,14 +5999,8 @@
   "process_assessment_frameworks": [
     "process assessment frameworks"
   ],
-  "spring_jdbc": [
-    "spring jdbc"
-  ],
   "okhttp": [
     "okhttp"
-  ],
-  "ms_sharepoint": [
-    "ms sharepoint"
   ],
   "jackson": [
     "jackson"
@@ -6235,14 +6014,12 @@
   "elm": [
     "elm"
   ],
-  "angular_universal": [
-    "angular universal"
-  ],
   "otto": [
     "otto"
   ],
   "nrf52": [
-    "nrf52"
+    "nrf52",
+    "nrf52 beacon"
   ],
   "phage_titration": [
     "phage titration"
@@ -6250,11 +6027,11 @@
   "msal": [
     "msal"
   ],
-  "ct_toshiba_16_slice": [
-    "ct toshiba 16-slice"
-  ],
   "xml": [
-    "xml"
+    "xml",
+    "xml-stream",
+    "xml/xpath",
+    "xslt"
   ],
   "interprocess_communication": [
     "interprocess communication"
@@ -6287,9 +6064,6 @@
   "servicestack": [
     "servicestack"
   ],
-  "arm_jtag": [
-    "arm-jtag"
-  ],
   "gprs": [
     "gprs"
   ],
@@ -6306,16 +6080,15 @@
     "prospector"
   ],
   "quartz": [
-    "quartz"
+    "quartz",
+    "quartz.net",
+    "abp.quartz"
   ],
   "bert": [
     "bert"
   ],
   "dhtmlx": [
     "dhtmlx"
-  ],
-  "cloud_messaging": [
-    "cloud messaging"
   ],
   "volley": [
     "volley"
@@ -6325,12 +6098,6 @@
   ],
   "rxjs": [
     "rxjs"
-  ],
-  "cd_ci": [
-    "cd/ci"
-  ],
-  "java_servlet_api": [
-    "java servlet api"
   ],
   "sun_solaris": [
     "sun solaris"
@@ -6347,31 +6114,37 @@
   "alembic": [
     "alembic"
   ],
-  "google_ad_manager": [
-    "google ad manager"
-  ],
-  "sap_bpc_5_1_10": [
-    "sap bpc 5.1 - 10"
-  ],
-  "genesys_outbound": [
-    "genesys outbound"
-  ],
-  "data_architecture": [
-    "data architecture"
-  ],
-  "data_foundation": [
-    "data foundation"
-  ],
   "sharepoint": [
     "sharepoint",
     "sharepoint 2013",
-    "sharepoint 2016"
+    "sharepoint 2016",
+    "sharepoint online",
+    "sharepoint 2019",
+    "sharepoint 2010",
+    "sharepoint 2007",
+    "spfx",
+    "event receivers",
+    "pnp",
+    "pnp provisioning",
+    "pnp powershell",
+    "wsp",
+    "timer jobs",
+    "custom web parts",
+    "custom field types",
+    "caml",
+    "workflows",
+    "performancepoint dashboards",
+    "secure store services",
+    "master pages",
+    "themes",
+    "search",
+    "csom",
+    "custom columns",
+    "custom master page",
+    "sharepoint migration tool"
   ],
   "icefaces": [
     "icefaces"
-  ],
-  "assembler_hlasm": [
-    "assembler (hlasm)"
   ],
   "puma": [
     "puma"
@@ -6382,29 +6155,17 @@
   "webex": [
     "webex"
   ],
-  "office_360": [
-    "office 360"
-  ],
   "near": [
     "near"
   ],
-  "gsm_modems": [
-    "gsm-modems"
-  ],
   "ultrasound": [
     "ultrasound"
-  ],
-  "amazon_ec2_container_service": [
-    "amazon ec2 container service"
   ],
   "rtts": [
     "rtts"
   ],
   "sqlalchemy": [
     "sqlalchemy"
-  ],
-  "aws_codebuild": [
-    "aws codebuild"
   ],
   "xpath": [
     "xpath"
@@ -6440,28 +6201,22 @@
     "assertj"
   ],
   "3d": [
-    "3d"
+    "3d",
+    "3d/4d imaging"
   ],
   "tcp": [
-    "tcp"
+    "tcp",
+    "tcp and unix sockets",
+    "tcp/ip socket"
   ],
   "nagios": [
     "nagios"
   ],
-  "suse_linux_enterprise_11": [
-    "suse linux enterprise 11"
-  ],
   "bem": [
     "bem"
   ],
-  "google_workspace": [
-    "google workspace"
-  ],
   "logic_apps": [
     "logic apps"
-  ],
-  "z_wave_modules": [
-    "z-wave modules"
   ],
   "jooq": [
     "jooq"
@@ -6475,9 +6230,6 @@
   "coordinator": [
     "coordinator"
   ],
-  "angular_material": [
-    "angular material"
-  ],
   "bluesnap": [
     "bluesnap"
   ],
@@ -6486,9 +6238,6 @@
   ],
   "modelio": [
     "modelio"
-  ],
-  "google_web_toolkit": [
-    "google web toolkit"
   ],
   "databases_postgresql": [
     "databases: postgresql"
@@ -6501,9 +6250,6 @@
   ],
   "nlog": [
     "nlog"
-  ],
-  "wi_fi_mesh": [
-    "wi-fi-mesh"
   ],
   "gulp": [
     "gulp"
@@ -6524,25 +6270,18 @@
     "http"
   ],
   "bw": [
-    "bw"
+    "bw",
+    "bw workbench"
   ],
   "algorithms": [
     "algorithms"
   ],
-  "ar_transactions": [
-    "ar transactions"
-  ],
-  "paypal_api": [
-    "paypal api"
-  ],
   "abap": [
-    "abap"
+    "abap",
+    "abap oo"
   ],
   "misys": [
     "misys"
-  ],
-  "rest_api_httpclient_flurl": [
-    "rest api (httpclient, flurl)"
   ],
   "mode": [
     "mode"
@@ -6559,17 +6298,11 @@
   "linq": [
     "linq"
   ],
-  "jboss_application_server": [
-    "jboss application server"
-  ],
   "keil_uvision": [
     "keil uvision"
   ],
   "mockk": [
     "mockk"
-  ],
-  "amazon_mws_api": [
-    "amazon mws api"
   ],
   "analytical_warehouse": [
     "analytical warehouse"
@@ -6577,23 +6310,14 @@
   "mcr": [
     "mcr"
   ],
-  "material_ui_ux": [
-    "material ui/ux"
-  ],
   "cockroachdb": [
     "cockroachdb"
   ],
   "adc": [
     "adc"
   ],
-  "azure_service_fabric": [
-    "azure service fabric"
-  ],
   "llm": [
     "llm"
-  ],
-  "oracle_financials_cloud": [
-    "oracle financials cloud"
   ],
   "kml": [
     "kml"
@@ -6603,9 +6327,6 @@
   ],
   "opsgenie": [
     "opsgenie"
-  ],
-  "data_stewardship": [
-    "data stewardship"
   ],
   "metric_collection_tool": [
     "metric collection tool"
@@ -6641,16 +6362,8 @@
     "mockit"
   ],
   "repo": [
-    "repo"
-  ],
-  "project_planning": [
-    "project planning"
-  ],
-  "nvidia_ngc": [
-    "nvidia ngc"
-  ],
-  "nvidia_cuda": [
-    "nvidia cuda"
+    "repo",
+    "repo: vsts"
   ],
   "enhancement_framework": [
     "enhancement framework"
@@ -6667,41 +6380,21 @@
   "e_learning_platform": [
     "e-learning platform"
   ],
-  "security_testing": [
-    "security testing"
-  ],
   "kinetis_sdk": [
     "kinetis sdk"
-  ],
-  "cisco_jabber": [
-    "cisco jabber"
   ],
   "deb": [
     "deb"
   ],
-  "apache_akka": [
-    "apache akka"
-  ],
   "appium": [
-    "appium"
-  ],
-  "aldon_lme": [
-    "aldon lme"
+    "appium",
+    "appium windriver"
   ],
   "iseries": [
     "iseries"
   ],
-  "user_exits": [
-    "user-exits"
-  ],
-  "oracle_gl_r11": [
-    "oracle gl r11"
-  ],
   "gpts": [
     "gpts"
-  ],
-  "business_intelligence_tools": [
-    "business intelligence tools"
   ],
   "isolates": [
     "isolates"
@@ -6721,9 +6414,6 @@
   "biometrics": [
     "biometrics"
   ],
-  "oracle_financials_r12": [
-    "oracle financials r12"
-  ],
   "quality_assurance": [
     "quality assurance"
   ],
@@ -6733,14 +6423,8 @@
   "blade": [
     "blade"
   ],
-  "sap_hana_sps11": [
-    "sap hana sps11"
-  ],
   "lombok": [
     "lombok"
-  ],
-  "sap_hr": [
-    "sap hr"
   ],
   "mobx": [
     "mobx"
@@ -6752,14 +6436,9 @@
     "mwaa",
     "aws mwaa"
   ],
-  "firebase_realtime_db": [
-    "firebase realtime db"
-  ],
   "moment_js": [
-    "moment.js"
-  ],
-  "nrf52_beacon": [
-    "nrf52 beacon"
+    "moment.js",
+    "moment js"
   ],
   "outlook": [
     "outlook"
@@ -6787,9 +6466,6 @@
     "sap bw 7.0",
     "sap bw 7.3"
   ],
-  "twitter_api": [
-    "twitter api"
-  ],
   "rxjava": [
     "rxjava"
   ],
@@ -6811,9 +6487,6 @@
   "simondata": [
     "simondata"
   ],
-  "aws_msk": [
-    "aws msk"
-  ],
   "joi": [
     "joi"
   ],
@@ -6825,9 +6498,6 @@
   ],
   "unicode": [
     "unicode"
-  ],
-  "azure_data_factory": [
-    "azure data factory"
   ],
   "transport_layer": [
     "transport layer"
@@ -6850,17 +6520,8 @@
   "adt": [
     "adt"
   ],
-  "desktop_applications": [
-    "desktop applications"
-  ],
   "xmind": [
     "xmind"
-  ],
-  "apache_cassandra": [
-    "apache cassandra"
-  ],
-  "sap_abap": [
-    "sap abap"
   ],
   "implementation_methodology": [
     "implementation methodology"
@@ -6881,17 +6542,8 @@
   "mks": [
     "mks"
   ],
-  "aws_aurora_mysql": [
-    "aws aurora mysql"
-  ],
-  "razor_pages": [
-    "razor pages"
-  ],
   "strimzi_kafka_operator": [
     "strimzi kafka operator"
-  ],
-  "sap_ecc": [
-    "sap ecc"
   ],
   "extent_reports": [
     "extent reports"
@@ -6911,9 +6563,6 @@
   "apollo_federation": [
     "apollo federation"
   ],
-  "apache_log4j_2": [
-    "apache log4j 2"
-  ],
   "zephyr": [
     "zephyr"
   ],
@@ -6930,10 +6579,8 @@
     "avr jtagice mkii"
   ],
   "asp": [
-    "asp"
-  ],
-  "api_test_systems": [
-    "api test systems"
+    "asp",
+    "asp mvc"
   ],
   "subnets": [
     "subnets"
@@ -6941,20 +6588,15 @@
   "construct_3": [
     "construct 3"
   ],
-  "aws_amplify": [
-    "aws amplify"
-  ],
   "nativemodules_for_ble": [
     "nativemodules for ble"
-  ],
-  "django_channels": [
-    "django channels"
   ],
   "regulatory_monitoring": [
     "regulatory monitoring"
   ],
   "twilio": [
-    "twilio"
+    "twilio",
+    "twilio segment"
   ],
   "snapkit": [
     "snapkit"
@@ -6962,35 +6604,21 @@
   "monday_com": [
     "monday.com"
   ],
-  "business_central": [
-    "business central"
-  ],
   "viper": [
     "viper"
   ],
-  "ibm_bpm_designer": [
-    "ibm bpm designer"
-  ],
   "blazor": [
-    "blazor"
-  ],
-  "build_scripts": [
-    "build scripts"
+    "blazor",
+    "blazor hybrid"
   ],
   "https": [
     "https"
-  ],
-  "api_documentation_testing": [
-    "api documentation & testing"
   ],
   "bioinformatics_analysis": [
     "bioinformatics analysis"
   ],
   "thingsboard": [
     "thingsboard"
-  ],
-  "s_4hana_2021": [
-    "s/4hana 2021"
   ],
   "sops": [
     "sops"
@@ -7001,23 +6629,14 @@
   "rap": [
     "rap"
   ],
-  "amazon_elasticache": [
-    "amazon elasticache"
-  ],
   "tfs": [
     "tfs"
-  ],
-  "intellij_idea": [
-    "intellij idea"
   ],
   "filezilla": [
     "filezilla"
   ],
   "sabre": [
     "sabre"
-  ],
-  "can_bus": [
-    "can bus"
   ],
   "serilog": [
     "serilog"
@@ -7034,12 +6653,6 @@
   "avfoundation": [
     "avfoundation"
   ],
-  "oebs_11i": [
-    "oebs 11i"
-  ],
-  "ct_mri_diagnostics": [
-    "ct/mri diagnostics"
-  ],
   "gsap": [
     "gsap"
   ],
@@ -7049,47 +6662,19 @@
   "etmf": [
     "etmf"
   ],
-  "firebase_analytics": [
-    "firebase analytics"
-  ],
-  "oracle_sql": [
-    "oracle sql"
-  ],
   "arm7_str710": [
     "arm7 (str710)"
   ],
-  "semantic_web": [
-    "semantic web"
-  ],
-  "ct_toshiba_128_slice": [
-    "ct toshiba 128-slice"
-  ],
-  "git_bitbucket": [
-    "git (bitbucket)"
-  ],
   "arm": [
-    "arm"
-  ],
-  "linux_device_driver": [
-    "linux device driver"
-  ],
-  "data_quality": [
-    "data quality"
-  ],
-  "assembler_x86": [
-    "assembler (x86)"
+    "arm",
+    "arm-jtag"
   ],
   "dmn": [
-    "dmn"
+    "dmn",
+    "dmn tables"
   ],
   "biocompatibility_testing": [
     "biocompatibility testing"
-  ],
-  "oracle_solaris": [
-    "oracle solaris"
-  ],
-  "ci": [
-    "ci"
   ],
   "dunning": [
     "dunning"
@@ -7100,14 +6685,8 @@
   "pointnet": [
     "pointnet"
   ],
-  "oracle_applications": [
-    "oracle applications"
-  ],
   "citrus_framework": [
     "citrus framework"
-  ],
-  "adobe_illustrator": [
-    "adobe illustrator"
   ],
   "cics": [
     "cics"
@@ -7116,22 +6695,18 @@
     "medusajs"
   ],
   "salesforce": [
-    "salesforce"
+    "salesforce",
+    "salesforce dx"
   ],
   "wave_modules_zensys": [
     "wave modules (zensys)"
   ],
-  "google_docs": [
-    "google docs"
-  ],
   "end_to_end_e2e_testing": [
-    "end-to-end (e2e) testing"
+    "end-to-end (e2e) testing",
+    "e2e tests"
   ],
   "coronarography": [
     "coronarography"
-  ],
-  "as_400_operator": [
-    "as/400 operator"
   ],
   "biophysical_profiling": [
     "biophysical profiling"
@@ -7157,9 +6732,6 @@
   "redhat_linux": [
     "redhat linux"
   ],
-  "test_driven_development": [
-    "test-driven development"
-  ],
   "ratchet": [
     "ratchet"
   ],
@@ -7181,24 +6753,11 @@
   "webdav": [
     "webdav"
   ],
-  "android_jni": [
-    "android jni"
-  ],
-  "camunda_bpm_engine": [
-    "camunda bpm engine"
-  ],
-  "oracle_xe": [
-    "oracle xe"
-  ],
-  "amazon_aws": [
-    "amazon aws"
-  ],
   "as_400": [
     "as/400",
-    "as400"
-  ],
-  "api_documentation": [
-    "api documentation"
+    "as400",
+    "as/400 administrator",
+    "as/400 operator"
   ],
   "odata": [
     "odata"
@@ -7206,38 +6765,21 @@
   "spi": [
     "spi"
   ],
-  "video_players": [
-    "video players"
-  ],
   "tips": [
     "tips"
   ],
-  "event_sourcing": [
-    "event sourcing"
-  ],
-  "openapi_annotations": [
-    "openapi annotations"
-  ],
   "autofixture": [
     "autofixture"
-  ],
-  "oracle_11g": [
-    "oracle 11g"
-  ],
-  "microsoft_powerpoint": [
-    "microsoft powerpoint"
   ],
   "devtool": [
     "devtool"
   ],
   "cloud": [
-    "cloud"
-  ],
-  "google_zxing": [
-    "google zxing"
-  ],
-  "sap_hcm": [
-    "sap hcm"
+    "cloud",
+    "cloud bigtable",
+    "cloud connector",
+    "cloud flow",
+    "cloud messaging"
   ],
   "thanos": [
     "thanos"
@@ -7248,20 +6790,15 @@
   "qt5": [
     "qt5"
   ],
-  "fb_auth": [
-    "fb auth"
-  ],
   "karma": [
-    "karma"
+    "karma",
+    "karma tests"
   ],
   "smartview": [
     "smartview"
   ],
   "rup": [
     "rup"
-  ],
-  "rpg_free_form": [
-    "rpg free form"
   ],
   "neteller": [
     "neteller"
@@ -7274,9 +6811,6 @@
   ],
   "vsto": [
     "vsto"
-  ],
-  "business_objects_enterprise_3_1_4_2": [
-    "business objects enterprise 3.1 - 4.2"
   ],
   "win7": [
     "win7",
@@ -7291,12 +6825,6 @@
   "ct": [
     "ct"
   ],
-  "twilio_segment": [
-    "twilio segment"
-  ],
-  "microsoft_dynamics_365": [
-    "microsoft dynamics 365"
-  ],
   "haml": [
     "haml"
   ],
@@ -7306,17 +6834,8 @@
   "hr": [
     "hr"
   ],
-  "data_compliance": [
-    "data compliance"
-  ],
   "ruff": [
     "ruff"
-  ],
-  "azure_virtual_machines": [
-    "azure virtual machines"
-  ],
-  "linux_ubuntu": [
-    "linux ubuntu"
   ],
   "agarose_gel_electrophoresis": [
     "agarose gel electrophoresis"
@@ -7329,9 +6848,6 @@
   ],
   "room": [
     "room"
-  ],
-  "apache_jena": [
-    "apache jena"
   ],
   "phantomjs": [
     "phantomjs"
@@ -7349,7 +6865,9 @@
     "activereports"
   ],
   "facebook": [
-    "facebook"
+    "facebook",
+    "facebook api",
+    "facebook sdk"
   ],
   "deepchem": [
     "deepchem"
@@ -7378,17 +6896,9 @@
   "metadata_management": [
     "metadata management"
   ],
-  "firebase_a_b_tests": [
-    "firebase a/b tests"
-  ],
-  "bi_dashboard": [
-    "bi dashboard"
-  ],
-  "bobj_data_services_4_2": [
-    "bobj data services 4.2"
-  ],
   "btp": [
-    "btp"
+    "btp",
+    "btp event mesh"
   ],
   "ingress": [
     "ingress"
@@ -7450,17 +6960,8 @@
   "oaia": [
     "oaia"
   ],
-  "microsoft_windows": [
-    "microsoft windows"
-  ],
-  "automation_tools": [
-    "automation tools"
-  ],
   "mustache": [
     "mustache"
-  ],
-  "social_media": [
-    "social media"
   ],
   "ses": [
     "ses",
@@ -7477,38 +6978,20 @@
   "fda": [
     "fda"
   ],
-  "tpl_dataflow": [
-    "tpl dataflow"
-  ],
   "magwell_video_capture_sdk": [
     "magwell video capture sdk"
   ],
   "twig": [
     "twig"
   ],
-  "internal_systems": [
-    "internal systems"
-  ],
-  "linux_kernel_2_6": [
-    "linux kernel 2.6"
-  ],
   "flowable": [
     "flowable"
-  ],
-  "sap_pi": [
-    "sap pi"
-  ],
-  "instagram_api": [
-    "instagram api"
   ],
   "apple_pay": [
     "apple pay"
   ],
   "customs_clearance": [
     "customs clearance"
-  ],
-  "agile_metrics": [
-    "agile metrics"
   ],
   "cocoapods": [
     "cocoapods"
@@ -7528,9 +7011,6 @@
   "webrick": [
     "webrick"
   ],
-  "ionic_deploy": [
-    "ionic deploy"
-  ],
   "codeception": [
     "codeception"
   ],
@@ -7543,9 +7023,6 @@
   "ehr": [
     "ehr"
   ],
-  "audio_players": [
-    "audio players"
-  ],
   "v8": [
     "v8"
   ],
@@ -7554,12 +7031,6 @@
   ],
   "archunit": [
     "archunit"
-  ],
-  "c_core": [
-    "c# core"
-  ],
-  "github_flows": [
-    "github flows"
   ],
   "akana": [
     "akana"
@@ -7570,17 +7041,12 @@
   "bsp": [
     "bsp"
   ],
-  "semantic_ui": [
-    "semantic-ui"
-  ],
   "spock": [
-    "spock"
+    "spock",
+    "spock framework"
   ],
   "face_recognition": [
     "face recognition"
-  ],
-  "hadoop_mr": [
-    "hadoop mr"
   ],
   "flash": [
     "flash"
@@ -7589,19 +7055,15 @@
     "hudson"
   ],
   "integration_testing": [
-    "integration testing"
+    "integration testing",
+    "unit & integration testing",
+    "integration tests"
   ],
   "workflow_foundation": [
     "workflow foundation"
   ],
-  "azure_cdn": [
-    "azure cdn"
-  ],
   "sac": [
     "sac"
-  ],
-  "oracle_soa_suite": [
-    "oracle soa suite"
   ],
   "yaml": [
     "yaml"
@@ -7617,9 +7079,6 @@
   ],
   "azurerm": [
     "azurerm"
-  ],
-  "gcp_messaging": [
-    "google cloud messaging"
   ],
   "directshow": [
     "directshow"
@@ -7639,17 +7098,8 @@
   "ess_mss": [
     "ess/mss"
   ],
-  "wcf_duplex": [
-    "wcf duplex"
-  ],
   "illustrator": [
     "illustrator"
-  ],
-  "oracle_erp": [
-    "oracle erp"
-  ],
-  "spring_security": [
-    "spring security"
   ],
   "io_homecontrol": [
     "io-homecontrol"
@@ -7663,9 +7113,6 @@
   "tun_tap": [
     "tun/tap"
   ],
-  "sap_netweaver_bi_6_40_7_5": [
-    "sap netweaver bi 6.40 - 7.5"
-  ],
   "rpgle": [
     "rpgle"
   ],
@@ -7674,9 +7121,6 @@
   ],
   "filerun": [
     "filerun"
-  ],
-  "spring_core": [
-    "spring core"
   ],
   "website_hosting": [
     "website hosting"
@@ -7687,14 +7131,9 @@
   "cherwell": [
     "cherwell"
   ],
-  "react_query": [
-    "react query"
-  ],
   "itsm": [
-    "itsm"
-  ],
-  "amazon_maps": [
-    "amazon maps"
+    "itsm",
+    "itsm-maximo"
   ],
   "coffeescript": [
     "coffeescript"
@@ -7726,9 +7165,6 @@
   "billing_platform": [
     "billing platform"
   ],
-  "internal_programs": [
-    "internal programs"
-  ],
   "udp": [
     "udp"
   ],
@@ -7737,9 +7173,6 @@
   ],
   "ulink": [
     "ulink"
-  ],
-  "vue_js_3": [
-    "vue.js 3"
   ],
   "unicorn": [
     "unicorn"
@@ -7791,7 +7224,8 @@
     "cars"
   ],
   "openstreetmap_api": [
-    "openstreetmap api"
+    "openstreetmap api",
+    "osm"
   ],
   "sourcetree": [
     "sourcetree"
@@ -7811,32 +7245,17 @@
   "prompting": [
     "prompting"
   ],
-  "alexa_voice_service": [
-    "alexa voice service"
-  ],
   "rs_232": [
     "rs-232"
   ],
-  "security_risk_management": [
-    "security risk management"
-  ],
   "ioomega_lifeline_sdk": [
     "ioomega lifeline sdk"
-  ],
-  "google_auth": [
-    "google auth"
-  ],
-  "spock_framework": [
-    "spock framework"
   ],
   "prever": [
     "prever"
   ],
   "thymeleaf": [
     "thymeleaf"
-  ],
-  "oracle_financials_r11i": [
-    "oracle financials r11i"
   ],
   "jsf": [
     "jsf"
@@ -7850,20 +7269,11 @@
   "load_impact": [
     "load impact"
   ],
-  "rpg_iii": [
-    "rpg iii"
-  ],
-  "assembler_arm_stm32": [
-    "assembler (arm stm32)"
-  ],
   "msmq": [
     "msmq"
   ],
   "nexus": [
     "nexus"
-  ],
-  "voice_detection": [
-    "voice detection"
   ],
   "kreya": [
     "kreya"
@@ -7874,17 +7284,11 @@
   "elasticache": [
     "elasticache"
   ],
-  "fiori_elements": [
-    "fiori elements"
-  ],
   "pm2": [
     "pm2"
   ],
   "cloudinary": [
     "cloudinary"
-  ],
-  "sap_hana_platform_edition_2_0": [
-    "sap hana platform edition 2.0"
   ],
   "lint": [
     "lint"
@@ -7892,53 +7296,38 @@
   "androidannotations": [
     "androidannotations"
   ],
-  "c_cli": [
-    "c++ cli"
-  ],
-  "security_cards": [
-    "security cards"
-  ],
-  "genesys_cloud": [
-    "genesys cloud"
-  ],
-  "microsoft_dynamics_365_common_data_service": [
-    "microsoft dynamics 365 common data service"
-  ],
-  "supabase_auth": [
-    "supabase auth"
-  ],
-  "data_governance_framework": [
-    "data governance framework"
-  ],
   "barcodes": [
     "barcodes"
   ],
   "fpm": [
     "fpm"
   ],
-  "ble_mesh": [
-    "ble-mesh"
-  ],
   "nextcloud": [
     "nextcloud"
-  ],
-  "video_tutorials": [
-    "video tutorials"
   ],
   "uml": [
     "uml"
   ],
   "gis": [
-    "gis"
+    "gis",
+    "postgis",
+    "nettopologysuite",
+    "qgis",
+    "geographic.lib",
+    "sasplanet",
+    "rasterio",
+    "shapely",
+    "gdal",
+    "geopandas",
+    "apache sedona",
+    "maxar",
+    "gis geocad"
   ],
   "icbs": [
     "icbs"
   ],
   "weweb": [
     "weweb"
-  ],
-  "sap_data_services_4_2": [
-    "sap data services 4.2"
   ],
   "nuget": [
     "nuget"
@@ -7950,10 +7339,8 @@
     "device drivers"
   ],
   "aac": [
-    "aac"
-  ],
-  "sap_query": [
-    "sap query"
+    "aac",
+    "aac decoder"
   ],
   "positional_roles": [
     "positional roles"
@@ -7970,20 +7357,11 @@
   "glide": [
     "glide"
   ],
-  "assembler_arm": [
-    "assembler (arm)"
-  ],
   "endeca_information_discovery": [
     "endeca information discovery"
   ],
   "limma": [
     "limma"
-  ],
-  "data_matrix": [
-    "data-matrix"
-  ],
-  "firebase_function": [
-    "firebase function"
   ],
   "mailchimp": [
     "mailchimp"
@@ -8010,16 +7388,14 @@
     "desktop"
   ],
   "chrome_runtime": [
-    "chrome runtime"
+    "chrome runtime",
+    "chrome data"
   ],
   "wml": [
     "wml"
   ],
   "memcached": [
     "memcached"
-  ],
-  "bitrix_cms": [
-    "bitrix cms"
   ],
   "hevc": [
     "hevc"
@@ -8034,7 +7410,8 @@
     "black duck"
   ],
   "hosting": [
-    "hosting"
+    "hosting",
+    "hosting and virtualization platforms"
   ],
   "tox": [
     "tox"
@@ -8057,15 +7434,6 @@
   "tfrecords": [
     "tfrecords"
   ],
-  "3d_4d_imaging": [
-    "3d/4d imaging"
-  ],
-  "video_processing": [
-    "video processing"
-  ],
-  "genesys_gia": [
-    "genesys gia"
-  ],
   "collibra": [
     "collibra"
   ],
@@ -8076,13 +7444,11 @@
     "airtable"
   ],
   "cisco": [
-    "cisco"
+    "cisco",
+    "cisco jabber"
   ],
   "casper_ibm_bpm_system": [
     "casper ibm bpm system"
-  ],
-  "s_4hana_cloud": [
-    "s/4hana cloud"
   ],
   "pusher_js": [
     "pusher.js"
@@ -8092,9 +7458,6 @@
   ],
   "k_tp": [
     "k+tp"
-  ],
-  "oracle_bpm_suite_11g": [
-    "oracle bpm suite 11g"
   ],
   "bing_search": [
     "bing search"
@@ -8111,11 +7474,10 @@
   "bioconductor_packages": [
     "bioconductor packages"
   ],
-  "xml_xpath": [
-    "xml/xpath"
-  ],
   "soa": [
-    "soa"
+    "soa",
+    "soa practice",
+    "soa suite"
   ],
   "camera": [
     "camera"
@@ -8126,9 +7488,6 @@
   "x_ray_equipment": [
     "x-ray equipment"
   ],
-  "react_admin": [
-    "react admin"
-  ],
   "analytical_data_warehouse": [
     "analytical data warehouse"
   ],
@@ -8136,10 +7495,8 @@
     "rad studio"
   ],
   "supabase": [
-    "supabase"
-  ],
-  "ms_crm": [
-    "ms crm"
+    "supabase",
+    "supabase auth"
   ],
   "classic_asp": [
     "classic asp"
@@ -8154,10 +7511,8 @@
     "diffusion probabilistic models"
   ],
   "cron_jobs": [
-    "cron jobs"
-  ],
-  "apache_free_marker": [
-    "apache free marker"
+    "cron jobs",
+    "coravel background worker"
   ],
   "supl": [
     "supl"
@@ -8168,12 +7523,6 @@
   "puppeteer": [
     "puppeteer"
   ],
-  "nunit_reports": [
-    "nunit reports"
-  ],
-  "tcp_and_unix_sockets": [
-    "tcp and unix sockets"
-  ],
   "vscode": [
     "vscode",
     "vs code"
@@ -8181,21 +7530,12 @@
   "ipso": [
     "ipso"
   ],
-  "ms_middleware": [
-    "ms middleware"
-  ],
   "analysis_for_microsoft_excel": [
     "analysis for microsoft excel"
   ],
   "cloudfront": [
     "cloudfront",
     "aws cloudfront"
-  ],
-  "semantic_platform": [
-    "semantic platform"
-  ],
-  "hana_sdi": [
-    "hana sdi"
   ],
   "sparkleformation": [
     "sparkleformation"
@@ -8209,14 +7549,11 @@
   "oligo": [
     "oligo"
   ],
-  "ibm_watson_machine_learning": [
-    "ibm watson machine learning"
-  ],
-  "aws_sdn": [
-    "aws sdn"
-  ],
   "internal_tools": [
-    "internal tools"
+    "internal tools",
+    "internal systems",
+    "internal programs",
+    "internal developer portal (idp)"
   ],
   "tvos": [
     "tvos"
@@ -8257,9 +7594,6 @@
   "specflow": [
     "specflow"
   ],
-  "mri_siemens_3_0t": [
-    "mri siemens 3.0t"
-  ],
   "youtube_android_player_api": [
     "youtube android player api"
   ],
@@ -8270,7 +7604,8 @@
     "madcap flare"
   ],
   "networking": [
-    "networking"
+    "networking",
+    "networking (l2/l3)"
   ],
   "server_api": [
     "server api"
@@ -8284,17 +7619,11 @@
   "dac": [
     "dac"
   ],
-  "fluent_ffmpeg": [
-    "fluent-ffmpeg"
-  ],
   "visionkit": [
     "visionkit"
   ],
   "castle": [
     "castle"
-  ],
-  "fiori_2_0": [
-    "fiori 2.0"
   ],
   "biochemical_identification": [
     "biochemical identification"
@@ -8302,12 +7631,6 @@
   "dagger": [
     "dagger",
     "dagger 2"
-  ],
-  "usb_device_drivers": [
-    "usb device drivers"
-  ],
-  "sap_ao_2_3": [
-    "sap ao 2.3"
   ],
   "kvm": [
     "kvm"
@@ -8321,11 +7644,9 @@
   "stardog": [
     "stardog"
   ],
-  "adobe_cq_aem": [
-    "adobe cq (aem)"
-  ],
   "elastic_beanstalk": [
-    "elastic beanstalk"
+    "elastic beanstalk",
+    "elasticbeanstalk"
   ],
   "literature_review": [
     "literature review"
@@ -8342,9 +7663,6 @@
   "gisagro": [
     "gisagro"
   ],
-  "google_tag_manager": [
-    "google tag manager"
-  ],
   "xsl": [
     "xsl"
   ],
@@ -8356,9 +7674,6 @@
   ],
   "colyseus": [
     "colyseus"
-  ],
-  "as_400_administrator": [
-    "as/400 administrator"
   ],
   "cloudfoundry": [
     "cloudfoundry"
@@ -8380,9 +7695,6 @@
   ],
   "activecampaign": [
     "activecampaign"
-  ],
-  "oracle_applications_r11": [
-    "oracle applications r11"
   ],
   "cubit": [
     "cubit"
@@ -8423,9 +7735,6 @@
   "samu": [
     "samu"
   ],
-  "cloud_connector": [
-    "cloud connector"
-  ],
   "relational_dbs": [
     "relational dbs"
   ],
@@ -8433,17 +7742,9 @@
     "chrome dev tools",
     "chrome devtools"
   ],
-  "power_automate": [
-    "power automate"
-  ],
-  "react_flow": [
-    "react flow"
-  ],
-  "soa_suite": [
-    "soa suite"
-  ],
   "fluent_validation": [
-    "fluent validation"
+    "fluent validation",
+    "fluentvalidation"
   ],
   "prettier": [
     "prettier"
@@ -8459,9 +7760,6 @@
   ],
   "leaderboard": [
     "leaderboard"
-  ],
-  "jboss_wildfly": [
-    "jboss wildfly"
   ],
   "braintree": [
     "braintree"
@@ -8483,9 +7781,6 @@
   ],
   "paas": [
     "paas"
-  ],
-  "hyperion_fm": [
-    "hyperion fm"
   ],
   "sap_netweaver": [
     "sap netweaver",
@@ -8516,9 +7811,6 @@
   "gaap": [
     "gaap"
   ],
-  "react_hook_form": [
-    "react hook form"
-  ],
   "voip": [
     "voip"
   ],
@@ -8529,13 +7821,8 @@
     "opensl es"
   ],
   "vmware": [
-    "vmware"
-  ],
-  "ms_dynamics": [
-    "ms dynamics"
-  ],
-  "html_css": [
-    "html/css"
+    "vmware",
+    "vmware vsphere"
   ],
   "bullmq": [
     "bullmq"
@@ -8548,12 +7835,6 @@
   ],
   "dx11": [
     "dx11"
-  ],
-  "aac_decoder": [
-    "aac decoder"
-  ],
-  "sap_nakisa": [
-    "sap nakisa"
   ],
   "stomp": [
     "stomp"
@@ -8573,12 +7854,6 @@
   "citrix_systems": [
     "citrix systems"
   ],
-  "appium_windriver": [
-    "appium windriver"
-  ],
-  "ms_business_intelligence": [
-    "ms business intelligence"
-  ],
   "rabbit": [
     "rabbit"
   ],
@@ -8588,38 +7863,11 @@
   "pro_cobol": [
     "pro*cobol"
   ],
-  "windows_server_2012": [
-    "windows server 2012"
-  ],
-  "firebase_crashlytics": [
-    "firebase crashlytics"
-  ],
   "eslint": [
     "eslint"
   ],
-  "oracle_e_business_suite_r12": [
-    "oracle e-business suite r12"
-  ],
-  "semantic_search": [
-    "semantic search"
-  ],
-  "apache_lucene": [
-    "apache lucene"
-  ],
-  "sap_hana_database": [
-    "sap hana database"
-  ],
-  "adobe_photoshop": [
-    "adobe photoshop"
-  ],
   "sails_js": [
     "sails.js"
-  ],
-  "c_treeace_db": [
-    "c-treeace db"
-  ],
-  "jca_jce_extensions": [
-    "jca/jce extensions"
   ],
   "dns": [
     "dns"
@@ -8634,10 +7882,10 @@
     "combine"
   ],
   "api_gw": [
-    "api gw"
-  ],
-  "mobile_vlc_kit": [
-    "mobile vlc kit"
+    "api gw",
+    "api management",
+    "apim",
+    "api rate limiting"
   ],
   "microbiological_purity_testing": [
     "microbiological purity testing"
@@ -8660,12 +7908,6 @@
   "admin_api": [
     "admin api"
   ],
-  "responsive_ui": [
-    "responsive ui"
-  ],
-  "aws_dms": [
-    "aws dms"
-  ],
   "espressif_sdk": [
     "espressif sdk"
   ],
@@ -8681,9 +7923,6 @@
   "g_cloud_storage": [
     "g-cloud storage"
   ],
-  "sharepoint_migration_tool": [
-    "sharepoint migration tool"
-  ],
   "virtual_machines": [
     "virtual machines"
   ],
@@ -8695,9 +7934,6 @@
   ],
   "npsharp_framework": [
     "npsharp framework"
-  ],
-  "sap_hana_studio": [
-    "sap hana studio"
   ],
   "crystal_reports": [
     "crystal reports"
@@ -8720,20 +7956,11 @@
   "win_scp": [
     "win scp"
   ],
-  "s_4hana_1709": [
-    "s/4hana 1709"
-  ],
   "blockchain": [
     "blockchain"
   ],
   "kops": [
     "kops"
-  ],
-  "gps_module": [
-    "gps module"
-  ],
-  "bitbucket_pipeline": [
-    "bitbucket pipeline"
   ],
   "delphi": [
     "delphi",
@@ -8748,9 +7975,6 @@
   "jax_ws": [
     "jax-ws"
   ],
-  "windows_services": [
-    "windows services"
-  ],
   "retrieval": [
     "retrieval"
   ],
@@ -8762,7 +7986,8 @@
   ],
   "knockout_js": [
     "knockout js",
-    "knockoutjs"
+    "knockoutjs",
+    "knockout"
   ],
   "clearquest": [
     "clearquest"
@@ -8771,7 +7996,9 @@
     "dialogflow"
   ],
   "telegram": [
-    "telegram"
+    "telegram",
+    "telegram api",
+    "telegram apis"
   ],
   "sup_2_3": [
     "sup 2.3"
@@ -8781,9 +8008,6 @@
   ],
   "balsamiq": [
     "balsamiq"
-  ],
-  "amazon_alexa_skills_kit": [
-    "amazon alexa skills kit"
   ],
   "u_boot": [
     "u-boot"
@@ -8800,14 +8024,12 @@
   "gtm": [
     "gtm"
   ],
-  "aws_well_architected_framework": [
-    "aws well-architected framework"
-  ],
   "jstl": [
     "jstl"
   ],
   "wi_fi": [
-    "wi-fi"
+    "wi-fi",
+    "wi-fi-mesh"
   ],
   "alpine_js": [
     "alpine js"
@@ -8815,23 +8037,11 @@
   "pyramid": [
     "pyramid"
   ],
-  "adobe_premiere_pro": [
-    "adobe premiere pro"
-  ],
-  "windows_embedded": [
-    "windows embedded"
-  ],
   "wiremock": [
     "wiremock"
   ],
   "planning_and_rostering": [
     "planning and rostering"
-  ],
-  "web_dynpro_abap": [
-    "web dynpro abap"
-  ],
-  "power_bi_dataflow": [
-    "power bi dataflow"
   ],
   "coda": [
     "coda"
@@ -8842,24 +8052,11 @@
   "uniorg_udina_commerce_1_0": [
     "uniorg udina commerce 1.0"
   ],
-  "cloud_bigtable": [
-    "cloud bigtable"
-  ],
-  "prometheus_operator": [
-    "prometheus operator"
-  ],
   "playfab": [
     "playfab"
   ],
   "nvda": [
     "nvda"
-  ],
-  "spring_webflux": [
-    "spring webflux",
-    "spring web flux"
-  ],
-  "firebase_service": [
-    "firebase service"
   ],
   "bcp": [
     "bcp"
@@ -8880,16 +8077,14 @@
     "banner ads"
   ],
   "quasar": [
-    "quasar"
+    "quasar",
+    "quasar framework"
   ],
   "brf": [
     "brf+"
   ],
   "i18n": [
     "i18n"
-  ],
-  "firebase_firestore": [
-    "firebase firestore"
   ],
   "ecospend": [
     "ecospend"
@@ -8899,9 +8094,6 @@
   ],
   "creatio": [
     "creatio"
-  ],
-  "js_es6": [
-    "js es6"
   ],
   "transport_system": [
     "transport system"
@@ -8919,10 +8111,8 @@
     "stylecop"
   ],
   "win32": [
-    "win32"
-  ],
-  "web_browsers": [
-    "web browsers"
+    "win32",
+    "win api"
   ],
   "resteasy": [
     "resteasy"
@@ -8930,20 +8120,11 @@
   "chatgpt": [
     "chatgpt"
   ],
-  "business_process_automation": [
-    "business process automation"
-  ],
-  "enterprise_data_management": [
-    "enterprise data management"
-  ],
   "zeromq": [
     "zeromq"
   ],
   "in_house_orchestration_tool": [
     "in-house orchestration tool"
-  ],
-  "kotlin_multiplatform_mobile_kmm": [
-    "kotlin multiplatform mobile (kmm)"
   ],
   "play_store": [
     "play store"
@@ -8951,20 +8132,8 @@
   "bpmn": [
     "bpmn"
   ],
-  "nvidia_nsight": [
-    "nvidia nsight"
-  ],
-  "telegram_api": [
-    "telegram api"
-  ],
   "copilot": [
     "copilot"
-  ],
-  "facebook_api": [
-    "facebook api"
-  ],
-  "iar_j_link": [
-    "iar j-link"
   ],
   "mkdocs": [
     "mkdocs"
@@ -8979,7 +8148,8 @@
     "texttospeech engine"
   ],
   "automapper": [
-    "automapper"
+    "automapper",
+    "auto mapper"
   ],
   "ngxs": [
     "ngxs"
@@ -8997,17 +8167,12 @@
   "raspberry_pi": [
     "raspberry pi"
   ],
-  "responsive_design": [
-    "responsive design"
-  ],
-  "hana_procedures": [
-    "hana procedures"
-  ],
   "knx": [
     "knx"
   ],
   "oauth": [
-    "oauth"
+    "oauth",
+    "user authorization"
   ],
   "pega": [
     "pega"
@@ -9024,9 +8189,6 @@
   "jacoco": [
     "jacoco"
   ],
-  "oracle_e_business_suite_r11i": [
-    "oracle e-business suite r11i"
-  ],
   "quilt": [
     "quilt"
   ],
@@ -9039,26 +8201,23 @@
   "dpm": [
     "dpm"
   ],
-  "react_beautiful_dnd": [
-    "react beautiful dnd"
-  ],
-  "oebs_r11i": [
-    "oebs r11i"
-  ],
   "gearman": [
     "gearman"
   ],
   "mvvm": [
-    "mvvm"
+    "mvvm",
+    "durandal",
+    "caliburn micro"
   ],
   "october_cms": [
     "october cms"
   ],
   "web": [
-    "web"
-  ],
-  "visual_basic": [
-    "visual basic"
+    "web",
+    "web application",
+    "web dynpro abap",
+    "web browsers",
+    "web audio api"
   ],
   "dgraph": [
     "dgraph"
@@ -9073,7 +8232,8 @@
     "mjml"
   ],
   "axon": [
-    "axon"
+    "axon",
+    "axon framework"
   ],
   "mvp": [
     "mvp"
@@ -9084,26 +8244,19 @@
   "ssh": [
     "ssh"
   ],
-  "repo_vsts": [
-    "repo: vsts"
-  ],
   "seo": [
-    "seo"
+    "seo",
+    "seo tools"
   ],
   "ngx_charts": [
     "ngx-charts"
-  ],
-  "api_testing": [
-    "api testing"
-  ],
-  "google_authentication": [
-    "google authentication"
   ],
   "unix": [
     "unix"
   ],
   "nhibernate": [
-    "nhibernate"
+    "nhibernate",
+    "nhibernate orm"
   ],
   "ads": [
     "ads"
@@ -9111,20 +8264,15 @@
   "frs": [
     "frs"
   ],
-  "google_slides": [
-    "google slides"
-  ],
   "analytics": [
-    "analytics"
+    "analytics",
+    "analytics (services)"
   ],
   "networkx": [
     "networkx"
   ],
   "icm": [
     "icm"
-  ],
-  "windows_media_foundation": [
-    "windows media foundation"
   ],
   "lean_order_api": [
     "lean order api"
@@ -9134,18 +8282,6 @@
   ],
   "mdg": [
     "mdg"
-  ],
-  "sap_data_services_3_2": [
-    "sap data services 3.2"
-  ],
-  "websphere_application_server_nd": [
-    "websphere application server nd"
-  ],
-  "data_analytics_platforms": [
-    "data analytics platforms"
-  ],
-  "pl_sql_developer": [
-    "pl/sql developer"
   ],
   "pocketbase": [
     "pocketbase"
@@ -9157,10 +8293,46 @@
     "socketrocket"
   ],
   "can": [
-    "can"
+    "can",
+    "can bus"
   ],
   "sap": [
-    "sap"
+    "sap",
+    "sap query",
+    "sap router",
+    "sap java",
+    "sap abap",
+    "sap ao 2.3",
+    "sap basis 4.6c – sap netweaver 7.5",
+    "sap bo",
+    "sap bpc 5.1 - 10",
+    "sap btp",
+    "sap data services 3.2",
+    "sap data services 4.2",
+    "sap ecc",
+    "sap gateway 2.0",
+    "sap gts",
+    "sap hana database",
+    "sap hana platform edition 2.0",
+    "sap hana sps11",
+    "sap hana sps12",
+    "sap hana studio",
+    "sap hana studio - modelling",
+    "sap hcm",
+    "sap hr",
+    "sap hybris",
+    "sap nakisa",
+    "sap netweaver bi 6.40 - 7.5",
+    "sap netweaver ep",
+    "sap pi",
+    "s/4hana 1610",
+    "s/4hana 2021",
+    "s/4hana cloud",
+    "s/4hana 1709",
+    "fiori 3.0",
+    "fiori elements",
+    "fiori 2.0",
+    "sap bw 3.0 - sap nw 7.0 ehp1"
   ],
   "msa_patterns": [
     "msa patterns"
@@ -9181,7 +8353,9 @@
     "metrc api"
   ],
   "sybase": [
-    "sybase"
+    "sybase",
+    "sybase sql anywhere",
+    "sybase sql"
   ],
   "groovy": [
     "groovy"
@@ -9193,10 +8367,8 @@
     "planetscale"
   ],
   "message_queue": [
-    "message queue"
-  ],
-  "data_analytics": [
-    "data analytics"
+    "message queue",
+    "eventbus"
   ],
   "osb": [
     "osb"
@@ -9204,16 +8376,10 @@
   "msp_fet430uif": [
     "msp-fet430uif"
   ],
-  "jira_xray": [
-    "jira (xray)"
-  ],
   "tcp_ip": [
     "tcp/ip",
     "tcp/ip v4",
     "tcp/ip v6"
-  ],
-  "automation_and_billing_tools": [
-    "automation and billing tools"
   ],
   "silverlight": [
     "silverlight"
@@ -9230,9 +8396,6 @@
   "robert": [
     "robert"
   ],
-  "django_rest": [
-    "django rest"
-  ],
   "jsp": [
     "jsp"
   ],
@@ -9243,7 +8406,8 @@
     "vsts"
   ],
   "fb": [
-    "fb"
+    "fb",
+    "fb auth"
   ],
   "prisma": [
     "prisma"
@@ -9267,7 +8431,13 @@
     "netx"
   ],
   "design_patterns": [
-    "design patterns"
+    "design patterns",
+    "repository pattern",
+    "fluent api",
+    "cloud design patterns",
+    "dependency injection",
+    "di controllers",
+    "generic service"
   ],
   "movavi": [
     "movavi"
@@ -9281,11 +8451,9 @@
   "intershop_enfinity": [
     "intershop enfinity"
   ],
-  "amazon_advertisement_api": [
-    "amazon advertisement api"
-  ],
   "intellij": [
-    "intellij"
+    "intellij",
+    "intellij idea"
   ],
   "struts": [
     "struts"
@@ -9296,17 +8464,13 @@
   "alamofire": [
     "alamofire"
   ],
-  "oracle_atg": [
-    "oracle atg"
-  ],
   "event_mesh": [
     "event mesh"
   ],
   "desktop_apps": [
-    "desktop apps"
-  ],
-  "sap_gts": [
-    "sap gts"
+    "desktop apps",
+    "windows application",
+    "desktop applications"
   ],
   "thunderbird": [
     "thunderbird"
@@ -9329,17 +8493,11 @@
   "canon_ct": [
     "canon ct"
   ],
-  "genesys_framework_tools": [
-    "genesys framework tools"
-  ],
   "ftp": [
     "ftp"
   ],
   "qml": [
     "qml"
-  ],
-  "hana_olap": [
-    "hana olap"
   ],
   "steampunk": [
     "steampunk"
@@ -9354,14 +8512,12 @@
   "sles": [
     "sles"
   ],
-  "mobile_testing": [
-    "mobile testing"
-  ],
   "nrf_connect_sdk": [
     "nrf connect sdk"
   ],
   "mobile": [
-    "mobile"
+    "mobile",
+    "mobile vlc kit"
   ],
   "scalable_data_solutions": [
     "scalable data solutions"
@@ -9378,14 +8534,8 @@
   "spotify": [
     "spotify"
   ],
-  "project_reactor": [
-    "project reactor"
-  ],
   "easymock": [
     "easymock"
-  ],
-  "sass_scss": [
-    "sass/scss"
   ],
   "passport_js": [
     "passport.js"
@@ -9405,9 +8555,6 @@
   "merchandising_management_systems": [
     "merchandising management systems"
   ],
-  "camunda_7": [
-    "camunda 7"
-  ],
   "after_effects": [
     "after effects"
   ],
@@ -9419,9 +8566,6 @@
   ],
   "mui": [
     "mui"
-  ],
-  "ios_sdk": [
-    "ios sdk"
   ],
   "testcontainers": [
     "testcontainers"
@@ -9444,20 +8588,11 @@
   "axure_rp": [
     "axure rp"
   ],
-  "rest_json_api": [
-    "rest json api"
-  ],
   "b2c": [
     "b2c"
   ],
   "zazmic": [
     "zazmic"
-  ],
-  "rest_hooks": [
-    "rest hooks"
-  ],
-  "open_ai_gpt": [
-    "open ai gpt"
   ],
   "clean_core": [
     "clean core"
@@ -9477,23 +8612,8 @@
   "stacked": [
     "stacked"
   ],
-  "asynchronous_programming": [
-    "asynchronous programming"
-  ],
-  "dmn_tables": [
-    "dmn tables"
-  ],
-  "ms_365": [
-    "ms 365"
-  ],
   "information_architecture": [
     "information architecture"
-  ],
-  "xslt": [
-    "xslt"
-  ],
-  "bobj_data_integrator": [
-    "bobj data integrator"
   ],
   "firebird": [
     "firebird"
@@ -9504,9 +8624,6 @@
   "dx9": [
     "dx9"
   ],
-  "data_analysis": [
-    "data analysis"
-  ],
   "csra681xx": [
     "csra681xx"
   ],
@@ -9516,20 +8633,11 @@
   "atlassia": [
     "atlassia"
   ],
-  "abap_oo": [
-    "abap oo"
-  ],
-  "microsoft_dts": [
-    "microsoft dts"
-  ],
   "redbooth": [
     "redbooth"
   ],
   "appstore": [
     "appstore"
-  ],
-  "sybase_sql": [
-    "sybase sql"
   ],
   "sample_streaking": [
     "sample streaking"
@@ -9537,20 +8645,11 @@
   "screen_painter": [
     "screen painter"
   ],
-  "facebook_sdk": [
-    "facebook sdk"
-  ],
   "rs_485": [
     "rs-485"
   ],
   "tso": [
     "tso"
-  ],
-  "android_ui": [
-    "android ui"
-  ],
-  "firebase_notifications": [
-    "firebase notifications"
   ],
   "choco": [
     "choco"
@@ -9570,9 +8669,6 @@
   "budget_estimation": [
     "budget estimation"
   ],
-  "sap_hana_sps12": [
-    "sap hana sps12"
-  ],
   "nav": [
     "nav"
   ],
@@ -9582,11 +8678,9 @@
   "ms_unit_tests": [
     "ms unit-tests"
   ],
-  "oebs_r12": [
-    "oebs r12"
-  ],
   "razor": [
-    "razor"
+    "razor",
+    "razor pages"
   ],
   "zigbee": [
     "zigbee"
@@ -9598,10 +8692,8 @@
     "bapi"
   ],
   "chromium_embedded": [
-    "chromium embedded"
-  ],
-  "java_microservices": [
-    "java microservices"
+    "chromium embedded",
+    "cefsharp"
   ],
   "pycharm": [
     "pycharm"
@@ -9624,14 +8716,9 @@
   "labvantage": [
     "labvantage"
   ],
-  "material_design": [
-    "material design"
-  ],
   "gsm": [
-    "gsm"
-  ],
-  "react_mui": [
-    "react mui"
+    "gsm",
+    "gsm-modems"
   ],
   "dynamic_links": [
     "dynamic links"
@@ -9642,29 +8729,22 @@
   "jade": [
     "jade"
   ],
-  "amazon_alexa": [
-    "amazon alexa"
-  ],
   "yocto": [
     "yocto"
   ],
   "camera2_api": [
     "camera2 api"
   ],
-  "adobe_cq": [
-    "adobe cq"
-  ],
-  "oracle_service_bus": [
-    "oracle service bus"
-  ],
   "uikit": [
     "uikit"
   ],
   "gps": [
-    "gps"
+    "gps",
+    "gps module"
   ],
   "webflow": [
-    "webflow"
+    "webflow",
+    "webflow interactions"
   ],
   "ngrx": [
     "ngrx"
@@ -9674,12 +8754,6 @@
   ],
   "automated_e2e_tests": [
     "automated e2e tests"
-  ],
-  "ibm_bpm": [
-    "ibm bpm"
-  ],
-  "firebase_authentication": [
-    "firebase authentication"
   ],
   "lwip": [
     "lwip"
@@ -9693,12 +8767,6 @@
   "zeppelin": [
     "zeppelin"
   ],
-  "firebase_app_distribution": [
-    "firebase app distribution"
-  ],
-  "build_runner": [
-    "build_runner"
-  ],
   "hp_ux": [
     "hp-ux"
   ],
@@ -9710,12 +8778,6 @@
   ],
   "live555": [
     "live555"
-  ],
-  "internal_developer_portal_idp": [
-    "internal developer portal (idp)"
-  ],
-  "firebase_storage": [
-    "firebase storage"
   ],
   "third_party_integrations": [
     "third-party integrations"
@@ -9735,10 +8797,341 @@
   "rational_clearcase": [
     "rational clearcase"
   ],
-  "data_management": [
-    "data management"
-  ],
   "ssr": [
     "ssr"
+  ],
+  "3gpp": [
+    "3gpp"
+  ],
+  "cdn": [
+    "cdn"
+  ],
+  "cronofy": [
+    "cronofy"
+  ],
+  "dbforge": [
+    "dbforge",
+    "dbforge studio"
+  ],
+  "direct_project_open_library": [
+    "direct project open library"
+  ],
+  "file_uploads": [
+    "inline file uploads",
+    "uppy file uploading"
+  ],
+  "fsharp": [
+    "f#",
+    "fsharp"
+  ],
+  "frei0r": [
+    "frei0r"
+  ],
+  "hcaptcha": [
+    "hcaptcha"
+  ],
+  "iqtoolkit": [
+    "iqtoolkit"
+  ],
+  "kendo_ui": [
+    "kendo ui",
+    "kendoui"
+  ],
+  "ldap": [
+    "ldap",
+    "ldap forms-based authentication"
+  ],
+  "lisp": [
+    "lisp"
+  ],
+  "lrs": [
+    "lrs"
+  ],
+  "msdn": [
+    "msdn"
+  ],
+  "o_ran": [
+    "o-ran"
+  ],
+  "pascal": [
+    "pascal"
+  ],
+  "plex_c": [
+    "plex-c"
+  ],
+  "progress_4gl": [
+    "progress 4gl"
+  ],
+  "prolog": [
+    "prolog"
+  ],
+  "repgen": [
+    "repgen"
+  ],
+  "requirejs": [
+    "requirejs"
+  ],
+  "restsharp": [
+    "restsharp"
+  ],
+  "rhino_mocks": [
+    "rhino mocks"
+  ],
+  "sendgrid": [
+    "sendgrid",
+    "twilio sendgrid"
+  ],
+  "symitar": [
+    "symitar"
+  ],
+  "toastr": [
+    "toastr"
+  ],
+  "underscore_js": [
+    "underscore"
+  ],
+  "webrtc": [
+    "webrtc"
+  ],
+  "xapi": [
+    "xapi"
+  ],
+  "integration": [
+    "integration"
+  ],
+  "redgate": [
+    "redgate"
+  ],
+  "version_control": [
+    "version control",
+    "version control system",
+    "custom integrated version control system"
+  ],
+  "data": [
+    "data analysis",
+    "data analytics",
+    "data analytics platforms",
+    "data architecture",
+    "data catalog",
+    "data compliance",
+    "data foundation",
+    "data governance",
+    "data governance framework",
+    "data integration",
+    "data jpa",
+    "data management",
+    "data-matrix",
+    "data mining",
+    "data quality",
+    "data science pipelines",
+    "data stewardship",
+    "data visualization"
+  ],
+  "google": [
+    "google ad manager",
+    "google auth",
+    "google authentication",
+    "google bots",
+    "google console apis",
+    "google docs",
+    "google navigation services",
+    "google pay",
+    "google play services",
+    "google slides",
+    "google tag manager",
+    "google vision",
+    "google web toolkit",
+    "google workspace",
+    "google zxing"
+  ],
+  "microsoft": [
+    "microsoft",
+    "ms 365",
+    "ms business intelligence",
+    "ms crm",
+    "ms dynamics",
+    "ms middleware",
+    "ms sharepoint",
+    "ms teams",
+    "microsoft 365",
+    "microsoft power apps",
+    "microsoft clarity",
+    "microsoft analysis services",
+    "microsoft dataverse",
+    "microsoft dynamics 365",
+    "graph api",
+    "azure graph api",
+    "microsoft graph",
+    "microsoft windows",
+    "microsoft dynamics 365 common data service",
+    "microsoft dts"
+  ],
+  "apache": [
+    "apache",
+    "apache akka",
+    "apache cassandra",
+    "apache free marker",
+    "apache hudi",
+    "apache jena",
+    "apache log4j 2",
+    "apache lucene",
+    "apache poi",
+    "apache thrift"
+  ],
+  "twitter": [
+    "twitter api",
+    "twitter auth",
+    "twitter sdk",
+    "twitter bootstrap 3"
+  ],
+  "social": [
+    "social",
+    "social auth",
+    "social media",
+    "social networks"
+  ],
+  "adobe": [
+    "adobe",
+    "adobe creative suite",
+    "adobe cq",
+    "adobe cq (aem)",
+    "adobe illustrator",
+    "adobe photoshop",
+    "adobe premiere pro"
+  ],
+  "responsive": [
+    "responsive",
+    "responsive design",
+    "responsive framework",
+    "responsive ui"
+  ],
+  "video": [
+    "video",
+    "video players",
+    "video processing",
+    "video streaming",
+    "video/audio codec",
+    "video tutorials"
+  ],
+  "audio": [
+    "audio",
+    "audio players",
+    "audio video encoding"
+  ],
+  "ibm": [
+    "ibm",
+    "ibm db2 udb 9.7",
+    "ibm os/400",
+    "ibm rational telelogic",
+    "ibm filenet",
+    "ibm bpm designer",
+    "ibm watson machine learning",
+    "ibm bpm"
+  ],
+  "semantic": [
+    "semantic",
+    "semantic modeling",
+    "semantic web",
+    "semantic-ui",
+    "semantic platform",
+    "semantic search"
+  ],
+  "camunda": [
+    "camunda",
+    "camunda modeler",
+    "camunda bpm",
+    "camunda bpm engine",
+    "camunda 7"
+  ],
+  "genesys": [
+    "genesys",
+    "genesys outbound",
+    "genesys cloud",
+    "genesys gia",
+    "genesys framework tools"
+  ],
+  "nvidia": [
+    "nvidia",
+    "nvidia ngc",
+    "nvidia cuda",
+    "nvidia nsight"
+  ],
+  "voice": [
+    "voice",
+    "voice assistant",
+    "voice codec",
+    "voice detection"
+  ],
+  "aldon": [
+    "aldon",
+    "aldon lmi",
+    "aldon cms",
+    "aldon lme"
+  ],
+  "medical_imaging": [
+    "medical imaging",
+    "ct toshiba 16-slice",
+    "ct/mri diagnostics",
+    "ct toshiba 128-slice"
+  ],
+  "ux": [
+    "ux",
+    "user interface",
+    "user verify",
+    "user-exits"
+  ],
+  "security": [
+    "security",
+    "security testing",
+    "security risk management",
+    "security cards"
+  ],
+  "fluent": [
+    "fluent",
+    "fluent api validation",
+    "fluent-ffmpeg",
+    "fluent ui"
+  ],
+  "open_source": [
+    "open source",
+    "open source llms",
+    "open filtration method",
+    "open ai gpt"
+  ],
+  "jboss": [
+    "jboss",
+    "jboss application server",
+    "jboss wildfly"
+  ],
+  "enterprise": [
+    "enterprise",
+    "enterprise data glossary",
+    "enterprise data management"
+  ],
+  "build": [
+    "build",
+    "build_runner",
+    "build scripts"
+  ],
+  "automation": [
+    "automation",
+    "automation tools",
+    "automation and billing tools"
+  ],
+  "project": [
+    "project",
+    "project planning",
+    "project reactor"
+  ],
+  "material": [
+    "material",
+    "material design",
+    "material ui",
+    "material-ui",
+    "material ui/ux"
+  ],
+  "events": [
+    "events",
+    "event sourcing"
   ]
 }

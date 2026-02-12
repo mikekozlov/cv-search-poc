@@ -1,15 +1,45 @@
-CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE TABLE IF NOT EXISTS app_config (
-    key TEXT PRIMARY KEY,
-    value TEXT
+CREATE TABLE IF NOT EXISTS search_run (
+    run_id TEXT PRIMARY KEY,
+    run_kind TEXT NOT NULL,
+    run_dir TEXT,
+    user_email TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    status TEXT NOT NULL DEFAULT 'running',
+    completed_at TIMESTAMPTZ,
+    duration_ms INTEGER,
+    result_count INTEGER,
+    error_type TEXT,
+    error_message TEXT,
+    error_stage TEXT,
+    error_traceback TEXT,
+    criteria_json TEXT,
+    raw_text TEXT,
+    top_k INTEGER,
+    seat_count INTEGER,
+    note TEXT,
+    feedback_sentiment TEXT CHECK (feedback_sentiment IN ('like','dislike')),
+    feedback_comment TEXT,
+    feedback_submitted_at TIMESTAMPTZ
 );
+
+CREATE INDEX IF NOT EXISTS idx_search_run_created_at ON search_run(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_search_run_feedback_at ON search_run(feedback_submitted_at);
+
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'running';
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS duration_ms INTEGER;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS result_count INTEGER;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_type TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_message TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_stage TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS error_traceback TEXT;
+ALTER TABLE search_run ADD COLUMN IF NOT EXISTS user_email TEXT;
 
 CREATE TABLE IF NOT EXISTS candidate (
     candidate_id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    location TEXT,
     seniority TEXT,
     last_updated TEXT,
     source_filename TEXT,
@@ -39,8 +69,7 @@ CREATE TABLE IF NOT EXISTS experience (
     project_description TEXT,
     responsibilities_text TEXT,
     domain_tags_csv TEXT,
-    tech_tags_csv TEXT,
-    highlights TEXT
+    tech_tags_csv TEXT
 );
 
 CREATE TABLE IF NOT EXISTS experience_tag (
@@ -57,18 +86,15 @@ CREATE TABLE IF NOT EXISTS candidate_doc (
     summary_text TEXT,
     experience_text TEXT,
     tags_text TEXT,
-    embedding VECTOR(384),
     tsv_document tsvector GENERATED ALWAYS AS (
         setweight(to_tsvector('english', coalesce(summary_text, '')), 'A')
         || setweight(to_tsvector('english', coalesce(experience_text, '')), 'B')
         || setweight(to_tsvector('english', coalesce(tags_text, '')), 'C')
     ) STORED,
     last_updated TEXT,
-    location TEXT,
     seniority TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_candidate_doc_embedding ON candidate_doc USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 CREATE INDEX IF NOT EXISTS idx_candidate_doc_tsv ON candidate_doc USING GIN (tsv_document);
 
 CREATE TABLE IF NOT EXISTS candidate_qualification (
@@ -83,3 +109,6 @@ CREATE INDEX IF NOT EXISTS idx_candidate_qualification_candidate ON candidate_qu
 
 ALTER TABLE experience ADD COLUMN IF NOT EXISTS project_description TEXT;
 ALTER TABLE experience ADD COLUMN IF NOT EXISTS responsibilities_text TEXT;
+ALTER TABLE candidate DROP COLUMN IF EXISTS location;
+ALTER TABLE experience DROP COLUMN IF EXISTS highlights;
+ALTER TABLE candidate_doc DROP COLUMN IF EXISTS location;

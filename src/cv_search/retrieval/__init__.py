@@ -1,5 +1,9 @@
-from .gating import GatingFilter
+from .gating import GatingDiagnostics, GatingFilter, GatingResult
 from .lexical import LexicalRetriever
-from .pgvector import PgVectorSemanticRetriever
 
-__all__ = ["GatingFilter", "LexicalRetriever", "PgVectorSemanticRetriever"]
+__all__ = [
+    "GatingDiagnostics",
+    "GatingFilter",
+    "GatingResult",
+    "LexicalRetriever",
+]

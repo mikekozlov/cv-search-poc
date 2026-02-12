@@ -27,7 +27,8 @@ def test_ingest_gdrive_single_file(monkeypatch) -> None:
     pptx_path = helpers.make_inbox_pptx_placeholder(
         settings, role_folder="backend_engineer", filename="test.pptx"
     )
-    expected_candidate_id = helpers.pptx_candidate_id(pptx_path.name)
+    relative_source_path = pptx_path.relative_to(settings.gdrive_local_dest_dir).as_posix()
+    expected_candidate_id = helpers.pptx_candidate_id(relative_source_path)
 
     helpers.run_cli(["init-db"], env)
     helpers.run_cli(["ingest-gdrive", "--file", pptx_path.name], env)
@@ -35,15 +36,15 @@ def test_ingest_gdrive_single_file(monkeypatch) -> None:
     db = CVDatabase(settings)
     try:
         row = db.conn.execute(
-            "SELECT candidate_id, name, location, seniority, source_filename FROM candidate WHERE source_filename = %s",
+            "SELECT candidate_id, name, seniority, source_filename, source_gdrive_path FROM candidate WHERE source_filename = %s",
             (pptx_path.name,),
         ).fetchone()
         assert row, "Candidate row should exist for ingested PPTX."
         candidate_id = row["candidate_id"]
         assert candidate_id == expected_candidate_id
         assert row["name"] == "Stub Backend"
-        assert row["location"] == "Testville"
         assert row["seniority"] == "senior"
+        assert row["source_gdrive_path"] == relative_source_path
 
         tag_rows = db.conn.execute(
             "SELECT tag_type, tag_key FROM candidate_tag WHERE candidate_id = %s",
@@ -68,14 +69,11 @@ def test_ingest_gdrive_single_file(monkeypatch) -> None:
         assert "kafka" in (exp_row["tech_tags_csv"] or "")
 
         doc_row = db.conn.execute(
-            "SELECT summary_text, experience_text, tags_text, embedding FROM candidate_doc WHERE candidate_id = %s",
+            "SELECT summary_text, experience_text, tags_text FROM candidate_doc WHERE candidate_id = %s",
             (candidate_id,),
         ).fetchone()
-        assert doc_row, "Candidate doc should be persisted with embedding."
-        assert doc_row["embedding"] is not None
-        emb = doc_row["embedding"]
-        if hasattr(emb, "__len__"):
-            assert len(emb) == 384
+        assert doc_row, "Candidate doc should be persisted."
+        assert doc_row["summary_text"] is not None
 
     finally:
         db.close()

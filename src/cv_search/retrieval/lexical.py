@@ -32,10 +32,12 @@ class LexicalRetriever:
         must_set = set(must_have)
         nice_to_have = [t for t in nice_deduped if t not in must_set]
         domains = [d for d in dict.fromkeys(seat.get("domains", [])) if d]
+        expertise = [e for e in dict.fromkeys(seat.get("expertise", [])) if e]
         seat = {**seat, "must_have": must_have, "nice_to_have": nice_to_have, "domains": domains}
 
         idf_must = self.db.compute_idf(must_have, "tech")
         idf_nice = self.db.compute_idf(nice_to_have, "tech")
+        idf_expertise = self.db.compute_idf(expertise, "expertise")
 
         ranked_rows, ranking_sql = self.db.rank_weighted_set(
             gated_ids=gated_ids,
@@ -45,6 +47,8 @@ class LexicalRetriever:
             idf_must=idf_must,
             idf_nice=idf_nice,
             top_k=top_k,
+            expertise=expertise,
+            idf_expertise=idf_expertise,
         )
 
         fts_sql: str | None = None

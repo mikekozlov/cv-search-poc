@@ -23,7 +23,7 @@ def register(cli: click.Group) -> None:
         click.echo("--- Loaded from Settings ---")
         click.echo(f"OPENAI_API_KEY: {mask_secret(settings.openai_api_key_str)}")
         click.echo(f"OPENAI_MODEL:   {settings.openai_model}")
-        click.echo(f"SEARCH_MODE:    {settings.search_mode}")
+        click.echo("SEARCH_MODE:    llm")
         click.echo(f"DB_URL:         {settings.db_url}")
         click.echo(f"ACTIVE_DB_URL:  {settings.active_db_url}")
         click.echo(f"LEXICON_DIR:    {settings.lexicon_dir}")
