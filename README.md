@@ -35,10 +35,6 @@ PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python -m pip install 
 $env:UV_PROJECT_ENVIRONMENT = ".venv"
 PS C:\Users\<you>\Projects\cv-search-poc> uv sync --inexact --python .\.venv\Scripts\python.exe
 ```
-Important:
-
-> **Do not run plain `uv sync` on this venv anymore**
-> or pip will be uninstalled
 
 ---
 
@@ -55,7 +51,7 @@ PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py init-db
 PS C:\Users\<you>\Projects\cv-search-poc> .\.venv\Scripts\python main.py check-db
 ```
 
-Postgres 16 with pg_trgm is required (no pgvector needed).
+Postgres 16 with pg_trgm is required
 
 ---
 
